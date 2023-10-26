@@ -1,8 +1,5 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
-import { SessionUser } from "@/types/next-auth";
 import { ErrorResponse } from "@/types/errorResponse";
 import { generateUploadSignedUrl } from "@/libs/cloudStorage";
 import { addMonths, startOfMonth } from "date-fns";
@@ -13,16 +10,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
-
-  if (!session) return res.status(401).json({ error: "ログインしてください" });
-
-  const user = session.user;
-
   try {
     switch (req.method) {
       case "GET":
-        await getHandler(req, res, user);
+        await getHandler(req, res);
         break;
 
       default:
@@ -36,12 +27,18 @@ export default async function handler(
 }
 
 // GET request
-export type GetEventsResponseBody = Event[] | ErrorResponse;
+export type GetEventsResponseBody =
+  | {
+      events: Event[];
+      totalCount: number;
+      totalPages: number;
+      currentPage: number;
+    }
+  | ErrorResponse;
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetEventsResponseBody>,
-  sessionUser: SessionUser
+  res: NextApiResponse<GetEventsResponseBody>
 ) => {
   const page = Number(req.query.page || 1);
   const year = req.query.year ? Number(req.query.year) : undefined;
@@ -72,7 +69,6 @@ const getHandler = async (
   const [events, meta] = await prismaWithPaginate.event
     .paginate({
       where: {
-        id: sessionUser.id,
         eventLocationEvents: {
           some: { eventDates: { some: { date: dateCondition } } },
           ...(eventLocationIds && {
@@ -95,7 +91,7 @@ const getHandler = async (
       includePageCount: true,
     });
 
-  const data = await Promise.all(
+  const eventsData = await Promise.all(
     events.map(async (event) => {
       const eventLocationEvents = event.eventLocationEvents;
       const prefectures = eventLocationEvents.map(
@@ -160,5 +156,10 @@ const getHandler = async (
     })
   );
 
-  res.status(200).json(data);
+  res.status(200).json({
+    totalCount: meta.totalCount,
+    totalPages: meta.pageCount,
+    currentPage: meta.currentPage,
+    events: eventsData,
+  });
 };

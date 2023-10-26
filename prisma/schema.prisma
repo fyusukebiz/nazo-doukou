@@ -179,7 +179,6 @@ model EventHour {
 
 model Recruit {
   id String @id @default(cuid())
-  date DateTime? @db.Date
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
   eventName String? // eventIdがない場合に記入、つまりEventと紐づいてない場合
@@ -194,6 +193,17 @@ model Recruit {
   updatedAt DateTime @updatedAt
 
   commentToRecruits CommentToRecruit[]
+  possibleDates PossibleDate[]
+}
+
+model PossibleDate {
+  id String @id @default(cuid())
+  date DateTime @db.Date
+  priority Int?
+  recruit Recruit @relation(fields: [recruitId], references: [id], onDelete: Cascade)
+  recruitId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CommentToRecruit {

@@ -36,7 +36,7 @@ export default async function handler(
 }
 
 // POST request
-export type PostEventsRequestBody = {
+export type PostEventRequestBody = {
   event: {
     name: string;
     description?: string;
@@ -55,14 +55,14 @@ export type PostEventsRequestBody = {
     }[];
   };
 };
-export type PostEventsResponseBody = "" | ErrorResponse;
+export type PostEventResponseBody = "" | ErrorResponse;
 
 const postHandler = async (
   req: NextApiRequest,
   res: NextApiResponse,
   sessionUser: SessionUser
 ) => {
-  const rawParams: PostEventsRequestBody = req.body;
+  const rawParams: PostEventRequestBody = req.body;
 
   const schema = z.object({
     event: z.object({
