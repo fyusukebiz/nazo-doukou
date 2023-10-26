@@ -5,15 +5,15 @@ const nextConfig = withInterceptStdout(
   {
     reactStrictMode: false,
     swcMinify: true,
-    // async redirects() {
-    //   return [
-    //     {
-    //       source: '/',
-    //       destination: '/auth/login',
-    //       permanent: true,
-    //     },
-    //   ];
-    // },
+    async redirects() {
+      return [
+        {
+          source: "/",
+          destination: "/events",
+          permanent: true,
+        },
+      ];
+    },
     webpack: (config) => {
       config.resolve.fallback = { fs: false };
       return config;

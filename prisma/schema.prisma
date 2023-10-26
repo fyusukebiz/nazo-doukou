@@ -5,7 +5,204 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+// NextAuth
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String? // 使わない
+  iconImageFileKey String? // 追加でアップロードした場合
+  role          Role?
+  sex           Sex?
+  age           Int?
+  startedAt     DateTime?
+  description   String? @db.Text
+  twitter       String?
+  instagram     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  userGameTypes UserGameType[]
+  recruits Recruit[]
+  commentToRecruits CommentToRecruit[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model GameType {
+  id String    @id @default(cuid())
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userGameTypes UserGameType[]
+}
+
+enum LikeOrDislike {
+  LIKE
+  DISLIKE
+}
+
+model UserGameType {
+  id String    @id @default(cuid())
+  likeOrDislike LikeOrDislike
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  gameType GameType @relation(fields: [gameTypeId], references: [id], onDelete: Cascade)
+  gameTypeId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, gameTypeId])
+}
+
+model Event {
+  id String @id @default(cuid())
+  name String @unique
+  description String? @db.Text
+  sourceUrl String?
+  coverImageFileKey String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventLocationEvents EventLocationEvent[]
+  recruits Recruit[]
+}
+
+model Prefecture {
+  id String @id @default(cuid())
+  name String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventLocations EventLocation[]
+}
+
+model EventLocation {
+  id String @id @default(cuid())
+  name String @unique
+  prefecture Prefecture @relation(fields: [prefectureId], references: [id], onDelete: Cascade)
+  prefectureId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventLocationEvents EventLocationEvent[]
+}
+
+model EventLocationEvent {
+  id String @id @default(cuid())
+  description String? @db.Text // EventLocation.nameがothersの時や開催日時が不明確の場合に、書き入れる
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+  eventLocation EventLocation @relation(fields: [eventLocationId], references: [id], onDelete: Cascade)
+  eventLocationId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventDates EventDate[]
+  recruits Recruit[]
+}
+
+model EventDate {
+  id String @id @default(cuid())
+  date DateTime @db.Date
+  eventLocationEvent EventLocationEvent @relation(fields: [eventLocationEventId], references: [id], onDelete: Cascade)
+  eventLocationEventId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventHours EventHour[]
+}
+
+model EventHour {
+  id String @id @default(cuid())
+  startedAt DateTime?
+  endedAt DateTime?
+  eventDate EventDate @relation(fields: [eventDateId], references: [id], onDelete: Cascade)
+  eventDateId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recruit {
+  id String @id @default(cuid())
+  date DateTime? @db.Date
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+  eventName String? // eventIdがない場合に記入、つまりEventと紐づいてない場合
+  eventLocation String? // eventLocationEventIdがない場合に記入
+  event Event? @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String?
+  eventLocationEvent EventLocationEvent? @relation(fields: [eventLocationEventId], references: [id], onDelete: Cascade)
+  eventLocationEventId String?
+  numberOfPeople Int?
+  description String? @db.Text 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commentToRecruits CommentToRecruit[]
+}
+
+model CommentToRecruit {
+  id String @id @default(cuid())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  recruit Recruit @relation(fields: [recruitId], references: [id], onDelete: Cascade)
+  recruitId String
+  message String @db.Text 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
