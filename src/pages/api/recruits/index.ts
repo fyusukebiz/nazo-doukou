@@ -79,7 +79,7 @@ const getHandler = async (
     model: { recruit: { paginate } },
   });
 
-  // TODO 場所と日付とイベント名検索をあとでつけること
+  // TODO: 場所と日付とイベント名検索をあとでつけること
 
   const [recruits, meta] = await prismaWithPaginate.recruit
     .paginate({

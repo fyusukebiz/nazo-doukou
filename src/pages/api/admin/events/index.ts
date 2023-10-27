@@ -36,7 +36,7 @@ export default async function handler(
 }
 
 // POST request
-export type PostEventRequestBody = {
+export type PostEventByAdminRequestBody = {
   event: {
     name: string;
     description?: string;
@@ -55,14 +55,14 @@ export type PostEventRequestBody = {
     }[];
   };
 };
-export type PostEventResponseBody = "" | ErrorResponse;
+export type PostEventByAdminResponseBody = "" | ErrorResponse;
 
 const postHandler = async (
   req: NextApiRequest,
   res: NextApiResponse,
   sessionUser: SessionUser
 ) => {
-  const rawParams: PostEventRequestBody = req.body;
+  const rawParams: PostEventByAdminRequestBody = req.body;
 
   const schema = z.object({
     event: z.object({
@@ -76,7 +76,7 @@ const postHandler = async (
           description: z.string().optional(),
           eventDates: z
             .object({
-              date: z.string().min(1), // TODO Date型でバリデーションをかけるべき
+              date: z.string().min(1), // TODO: Date型でバリデーションをかけるべき
               eventHours: z
                 .object({
                   startedAt: z.string().optional(),
@@ -98,7 +98,7 @@ const postHandler = async (
 
   const eventData = validation.data.event;
 
-  // TODO 動作確認必須！！！
+  // TODO: 動作確認必須！！！
   const event = await prisma.event.create({
     data: {
       name: eventData.name,

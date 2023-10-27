@@ -33,19 +33,19 @@ export default async function handler(
 }
 
 // GET request
-export type GetAdminNewEventResponseBody =
-  | { uploadCoverImageUrl: string }
+export type GetUploadSignedUrlResponseBody =
+  | { uploadUrl: string }
   | ErrorResponse;
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetAdminNewEventResponseBody>,
+  res: NextApiResponse<GetUploadSignedUrlResponseBody>,
   sessionUser: SessionUser
 ) => {
   const fileKey = uuidv4();
 
   const data = {
-    uploadCoverImageUrl: await generateUploadSignedUrl(fileKey),
+    uploadUrl: await generateUploadSignedUrl(fileKey),
   };
 
   res.status(200).json(data);

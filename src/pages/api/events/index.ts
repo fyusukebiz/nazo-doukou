@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { ErrorResponse } from "@/types/errorResponse";
-import { generateUploadSignedUrl } from "@/libs/cloudStorage";
+import { generateReadSignedUrl } from "@/libs/cloudStorage";
 import { addMonths, startOfMonth } from "date-fns";
 import { paginate } from "prisma-extension-pagination";
 import { Event } from "@/types/event";
@@ -62,7 +62,7 @@ const getHandler = async (
     year && month
       ? {
           gte: startOfMonth(new Date(year, month, 1)),
-          lt: addMonths(startOfMonth(new Date(year, month, 1)), +1), // TODO monthが11でも翌年になるかを確認
+          lt: addMonths(startOfMonth(new Date(year, month, 1)), +1), // TODO: monthが11でも翌年になるかを確認
         }
       : { gte: new Date() };
 
@@ -147,7 +147,7 @@ const getHandler = async (
         ...(event.description && { description: event.description }),
         ...(event.sourceUrl && { sourceUrl: event.sourceUrl }),
         ...(event.coverImageFileKey && {
-          coverImageFileUrl: await generateUploadSignedUrl(
+          coverImageFileUrl: await generateReadSignedUrl(
             event.coverImageFileKey
           ),
         }),

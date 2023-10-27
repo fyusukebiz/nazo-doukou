@@ -1,16 +1,67 @@
 -- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN');
+
+-- CreateEnum
 CREATE TYPE "Sex" AS ENUM ('MALE', 'FEMALE');
 
 -- CreateEnum
 CREATE TYPE "LikeOrDislike" AS ENUM ('LIKE', 'DISLIKE');
 
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "age" INTEGER,
-ADD COLUMN     "description" TEXT,
-ADD COLUMN     "instagram" TEXT,
-ADD COLUMN     "sex" "Sex",
-ADD COLUMN     "startedAt" TIMESTAMP(3),
-ADD COLUMN     "twitter" TEXT;
+-- CreateTable
+CREATE TABLE "Account" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "providerAccountId" TEXT NOT NULL,
+    "refresh_token" TEXT,
+    "access_token" TEXT,
+    "expires_at" INTEGER,
+    "token_type" TEXT,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
+
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL,
+    "sessionToken" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "name" TEXT,
+    "email" TEXT,
+    "emailVerified" TIMESTAMP(3),
+    "image" TEXT,
+    "iconImageFileKey" TEXT,
+    "role" "Role",
+    "sex" "Sex",
+    "age" INTEGER,
+    "startedAt" TIMESTAMP(3),
+    "description" TEXT,
+    "twitter" TEXT,
+    "instagram" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "VerificationToken" (
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL
+);
 
 -- CreateTable
 CREATE TABLE "GameType" (
@@ -39,7 +90,7 @@ CREATE TABLE "Event" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "url" TEXT,
+    "sourceUrl" TEXT,
     "coverImageFileKey" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -48,10 +99,21 @@ CREATE TABLE "Event" (
 );
 
 -- CreateTable
+CREATE TABLE "Prefecture" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "sort" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Prefecture_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "EventLocation" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "nameJp" TEXT NOT NULL,
+    "prefectureId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -96,8 +158,7 @@ CREATE TABLE "EventHour" (
 -- CreateTable
 CREATE TABLE "Recruit" (
     "id" TEXT NOT NULL,
-    "date" DATE,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT,
     "eventName" TEXT,
     "eventLocation" TEXT,
     "eventId" TEXT,
@@ -108,6 +169,18 @@ CREATE TABLE "Recruit" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Recruit_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PossibleDate" (
+    "id" TEXT NOT NULL,
+    "date" DATE NOT NULL,
+    "priority" INTEGER,
+    "recruitId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PossibleDate_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -123,22 +196,49 @@ CREATE TABLE "CommentToRecruit" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserGameType_userId_gameTypeId_key" ON "UserGameType"("userId", "gameTypeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Event_name_key" ON "Event"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "EventLocation_name_key" ON "EventLocation"("name");
+CREATE UNIQUE INDEX "Prefecture_name_key" ON "Prefecture"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "EventLocation_nameJp_key" ON "EventLocation"("nameJp");
+CREATE UNIQUE INDEX "Prefecture_sort_key" ON "Prefecture"("sort");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "EventLocation_name_key" ON "EventLocation"("name");
+
+-- AddForeignKey
+ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserGameType" ADD CONSTRAINT "UserGameType_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserGameType" ADD CONSTRAINT "UserGameType_gameTypeId_fkey" FOREIGN KEY ("gameTypeId") REFERENCES "GameType"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EventLocation" ADD CONSTRAINT "EventLocation_prefectureId_fkey" FOREIGN KEY ("prefectureId") REFERENCES "Prefecture"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EventLocationEvent" ADD CONSTRAINT "EventLocationEvent_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -160,6 +260,9 @@ ALTER TABLE "Recruit" ADD CONSTRAINT "Recruit_eventId_fkey" FOREIGN KEY ("eventI
 
 -- AddForeignKey
 ALTER TABLE "Recruit" ADD CONSTRAINT "Recruit_eventLocationEventId_fkey" FOREIGN KEY ("eventLocationEventId") REFERENCES "EventLocationEvent"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PossibleDate" ADD CONSTRAINT "PossibleDate_recruitId_fkey" FOREIGN KEY ("recruitId") REFERENCES "Recruit"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CommentToRecruit" ADD CONSTRAINT "CommentToRecruit_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

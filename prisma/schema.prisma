@@ -125,6 +125,7 @@ model Event {
 model Prefecture {
   id String @id @default(cuid())
   name String @unique
+  sort Int @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -216,7 +216,7 @@ const patchHandler = async (
   });
 
   const possibleDatesData = validation.data.possibleDates;
-  // TODO 一旦全て消す、後々更新に切り替えること
+  // TODO: 一旦全て消す、後々更新に切り替えること
   for (const possibleDate of recruit.possibleDates) {
     await prisma.possibleDate.delete({
       where: { id: possibleDate.id },

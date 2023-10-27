@@ -50,12 +50,12 @@ export default async function handler(
 }
 
 // PATCH request
-export type PatchEventLocationEventRequestBody = {
+export type PatchEventLocationEventByAdminRequestBody = {
   eventLocationEvent: {
     description?: string;
   };
 };
-export type PatchEventLocationEventResponseBody = "" | ErrorResponse;
+export type PatchEventLocationEventByAdminResponseBody = "" | ErrorResponse;
 
 const patchHandler = async (
   req: NextApiRequest,
@@ -63,7 +63,7 @@ const patchHandler = async (
   sessionUser: SessionUser,
   eventLocationEvent: EventLocationEvent
 ) => {
-  const rawParams: PatchEventLocationEventRequestBody = req.body;
+  const rawParams: PatchEventLocationEventByAdminRequestBody = req.body;
 
   const schema = z.object({
     eventLocationEvent: z.object({
@@ -90,11 +90,11 @@ const patchHandler = async (
 };
 
 // DELETE request
-export type DeleteEventLocationEventResponseBody = "" | ErrorResponse;
+export type DeleteEventLocationEventByAdminResponseBody = "" | ErrorResponse;
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<DeleteEventLocationEventResponseBody>,
+  res: NextApiResponse<DeleteEventLocationEventByAdminResponseBody>,
   sessionUser: SessionUser,
   eventLocationEvent: EventLocationEvent
 ) => {

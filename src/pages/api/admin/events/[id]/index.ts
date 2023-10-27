@@ -32,6 +32,10 @@ export default async function handler(
         await patchHandler(req, res, user, event);
         break;
 
+      case "DELETE":
+        await deleteHandler(req, res, user, event);
+        break;
+
       default:
         res.status(405).end(`Not Allowed`);
         break;
@@ -43,7 +47,7 @@ export default async function handler(
 }
 
 // PATCH request
-export type PatchAdminEventRequestBody = {
+export type PatchEventByAdminRequestBody = {
   event: {
     name: string;
     description?: string;
@@ -51,7 +55,7 @@ export type PatchAdminEventRequestBody = {
     coverImageFileKey?: string;
   };
 };
-export type PatchAdminEventResponseBody = "" | ErrorResponse;
+export type PatchEventByAdminResponseBody = "" | ErrorResponse;
 
 const patchHandler = async (
   req: NextApiRequest,
@@ -59,7 +63,7 @@ const patchHandler = async (
   sessionUser: SessionUser,
   event: Event
 ) => {
-  const rawParams: PatchAdminEventRequestBody = req.body;
+  const rawParams: PatchEventByAdminRequestBody = req.body;
 
   const schema = z.object({
     event: z.object({
@@ -76,7 +80,7 @@ const patchHandler = async (
 
   const eventData = validation.data.event;
 
-  // TODO 動作確認必須！！！
+  // TODO: 動作確認必須！！！
   await prisma.event.update({
     where: { id: event.id },
     data: {
@@ -87,6 +91,22 @@ const patchHandler = async (
         coverImageFileKey: eventData.coverImageFileKey,
       }),
     },
+  });
+
+  res.status(200).end();
+};
+
+// DELETE request
+export type DeleteEventByAdminResponseBody = "" | ErrorResponse;
+
+const deleteHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<DeleteEventByAdminResponseBody>,
+  sessionUser: SessionUser,
+  event: Event
+) => {
+  await prisma.event.delete({
+    where: { id: event.id },
   });
 
   res.status(200).end();

@@ -50,12 +50,12 @@ export default async function handler(
 }
 
 // PATCH request
-export type PatchEventDateRequestBody = {
+export type PatchEventDateByAdminRequestBody = {
   eventDate: {
     date: string;
   };
 };
-export type PatchEventDateResponseBody = "" | ErrorResponse;
+export type PatchEventDateByAdminResponseBody = "" | ErrorResponse;
 
 const patchHandler = async (
   req: NextApiRequest,
@@ -63,7 +63,7 @@ const patchHandler = async (
   sessionUser: SessionUser,
   eventDate: EventDate
 ) => {
-  const rawParams: PatchEventDateRequestBody = req.body;
+  const rawParams: PatchEventDateByAdminRequestBody = req.body;
 
   const schema = z.object({
     eventDate: z.object({
@@ -86,11 +86,11 @@ const patchHandler = async (
 };
 
 // DELETE request
-export type DeleteEventDateResponseBody = "" | ErrorResponse;
+export type DeleteEventDateByAdminResponseBody = "" | ErrorResponse;
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<DeleteEventDateResponseBody>,
+  res: NextApiResponse<DeleteEventDateByAdminResponseBody>,
   sessionUser: SessionUser,
   eventDate: EventDate
 ) => {

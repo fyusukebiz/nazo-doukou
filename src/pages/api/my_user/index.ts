@@ -7,11 +7,7 @@ import { SessionUser } from "@/types/next-auth";
 import { Sex } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 import { ErrorResponse } from "@/types/errorResponse";
-import {
-  deleteFile,
-  generateReadSignedUrl,
-  generateUploadSignedUrl,
-} from "@/libs/cloudStorage";
+import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
 
 export default async function handler(
   req: NextApiRequest,
@@ -48,7 +44,6 @@ export type GetMyUserResponseBody =
   | {
       name: string;
       iconImageUrl?: string;
-      uploadIconImageUrl: string;
       sex?: Sex;
       age?: number;
       startedAt?: string;
@@ -80,7 +75,6 @@ const getHandler = async (
     ...(user.iconImageFileKey && {
       iconImageUrl: await generateReadSignedUrl(user.iconImageFileKey),
     }),
-    uploadIconImageUrl: await generateUploadSignedUrl(fileKey),
     ...(user.sex && { sex: user.sex }),
     ...(user.age && { age: user.age }),
     ...(user.startedAt && { startedAt: user.startedAt.toISOString() }),
