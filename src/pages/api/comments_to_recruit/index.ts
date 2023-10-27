@@ -39,7 +39,7 @@ export type PostCommentToRecruitRequestBody = {
     message: string;
   };
 };
-export type PostCommnetToRecruitResponseBody = "" | ErrorResponse;
+export type PostCommentToRecruitResponseBody = "" | ErrorResponse;
 
 const postHandler = async (
   req: NextApiRequest,
