@@ -4,6 +4,8 @@ export type Event = {
   description?: string;
   sourceUrl?: string;
   coverImageFileUrl?: string;
+  numberOfPeopleInTeam?: string;
+  timeRequired?: string;
   organization?: {
     id: string;
     name: string;
@@ -17,11 +19,6 @@ export type Event = {
       dates: {
         id: string;
         date: string;
-        hours: {
-          id: string;
-          startedAt?: string;
-          endedAt?: string;
-        }[];
       }[];
     }[];
   }[];

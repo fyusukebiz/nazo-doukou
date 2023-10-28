@@ -81,7 +81,7 @@ const getHandler = async (
         eventLocationEvents: {
           include: {
             eventLocation: { include: { prefecture: true } },
-            eventDates: { include: { eventHours: true } },
+            eventDates: true,
           },
         },
       },
@@ -122,15 +122,6 @@ const getHandler = async (
                   dates: ele.eventDates.map((eventDate) => ({
                     id: eventDate.id,
                     date: eventDate.date.toISOString(),
-                    hours: eventDate.eventHours.map((eventHour) => ({
-                      id: eventHour.id,
-                      ...(eventHour.startedAt && {
-                        startedAt: eventHour.startedAt.toISOString(),
-                      }),
-                      ...(eventHour.endedAt && {
-                        endedAt: eventHour.endedAt.toISOString(),
-                      }),
-                    })),
                   })),
                 };
               })
@@ -145,6 +136,10 @@ const getHandler = async (
       return {
         id: event.id,
         name: event.name,
+        ...(event.numberOfPeopleInTeam && {
+          numberOfPeopleInTeam: event.numberOfPeopleInTeam,
+        }),
+        ...(event.timeRequired && { timeRequired: event.timeRequired }),
         ...(event.organization && {
           organization: {
             id: event.organization.id,

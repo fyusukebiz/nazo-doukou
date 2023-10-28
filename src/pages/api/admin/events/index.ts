@@ -43,15 +43,13 @@ export type PostEventByAdminRequestBody = {
     description?: string;
     sourceUrl?: string;
     coverImageFileKey?: string;
+    numberOfPeopleInTeam?: string;
+    timeRequired?: string;
     eventLocationEvents: {
       description?: string;
       eventLocationId: string;
       eventDates?: {
         date: string;
-        eventHours?: {
-          startedAt?: string;
-          endedAt?: string;
-        }[];
       }[];
     }[];
   };
@@ -72,6 +70,8 @@ const postHandler = async (
       description: z.string().optional(),
       sourceUrl: z.string().optional(),
       coverImageFileKey: z.string().optional(),
+      numberOfPeopleInTeam: z.string().optional(),
+      timeRequired: z.string().optional(),
       eventLocationEvents: z
         .object({
           eventLocationId: z.string().min(1),
@@ -79,13 +79,6 @@ const postHandler = async (
           eventDates: z
             .object({
               date: z.string().min(1), // TODO: Date型でバリデーションをかけるべき
-              eventHours: z
-                .object({
-                  startedAt: z.string().optional(),
-                  endedAt: z.string().optional(),
-                })
-                .array()
-                .optional(),
             })
             .array()
             .optional(),
@@ -112,6 +105,10 @@ const postHandler = async (
       ...(eventData.coverImageFileKey && {
         coverImageFileKey: eventData.coverImageFileKey,
       }),
+      ...(eventData.numberOfPeopleInTeam && {
+        numberOfPeopleInTeam: eventData.numberOfPeopleInTeam,
+      }),
+      ...(eventData.timeRequired && { timeRequired: eventData.timeRequired }),
     },
   });
 
@@ -132,22 +129,6 @@ const postHandler = async (
             date: eventDateData.date,
           },
         });
-
-        if (eventDateData.eventHours) {
-          for (const eventHourData of eventDateData.eventHours) {
-            await prisma.eventHour.create({
-              data: {
-                eventDateId: eventDate.id,
-                ...(eventHourData.startedAt && {
-                  startedAt: eventHourData.startedAt,
-                }),
-                ...(eventHourData.endedAt && {
-                  endedAt: eventHourData.endedAt,
-                }),
-              },
-            });
-          }
-        }
       }
     }
   }

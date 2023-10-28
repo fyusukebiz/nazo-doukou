@@ -112,6 +112,7 @@ model UserGameType {
 model Organization {
   id String    @id @default(cuid())
   name String @unique
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   events Event[]
@@ -125,6 +126,8 @@ model Event {
   description String? @db.Text
   sourceUrl String?
   coverImageFileKey String?
+  numberOfPeopleInTeam String?
+  timeRequired String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -172,18 +175,6 @@ model EventDate {
   date DateTime @db.Date
   eventLocationEvent EventLocationEvent @relation(fields: [eventLocationEventId], references: [id], onDelete: Cascade)
   eventLocationEventId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  eventHours EventHour[]
-}
-
-model EventHour {
-  id String @id @default(cuid())
-  startedAt DateTime?
-  endedAt DateTime?
-  eventDate EventDate @relation(fields: [eventDateId], references: [id], onDelete: Cascade)
-  eventDateId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
