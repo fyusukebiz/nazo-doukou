@@ -109,8 +109,18 @@ model UserGameType {
   @@unique([userId, gameTypeId])
 }
 
+model Organization {
+  id String    @id @default(cuid())
+  name String @unique
+  updatedAt DateTime @updatedAt
+
+  events Event[]
+}
+
 model Event {
   id String @id @default(cuid())
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String?
   name String @unique
   description String? @db.Text
   sourceUrl String?

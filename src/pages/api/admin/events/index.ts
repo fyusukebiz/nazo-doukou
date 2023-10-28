@@ -38,6 +38,7 @@ export default async function handler(
 // POST request
 export type PostEventByAdminRequestBody = {
   event: {
+    organizationId?: string;
     name: string;
     description?: string;
     sourceUrl?: string;
@@ -67,6 +68,7 @@ const postHandler = async (
   const schema = z.object({
     event: z.object({
       name: z.string().min(1).max(255),
+      organizationId: z.string().optional(),
       description: z.string().optional(),
       sourceUrl: z.string().optional(),
       coverImageFileKey: z.string().optional(),
@@ -102,6 +104,9 @@ const postHandler = async (
   const event = await prisma.event.create({
     data: {
       name: eventData.name,
+      ...(eventData.organizationId && {
+        organizationId: eventData.organizationId,
+      }),
       ...(eventData.description && { description: eventData.description }),
       ...(eventData.sourceUrl && { sourceUrl: eventData.sourceUrl }),
       ...(eventData.coverImageFileKey && {

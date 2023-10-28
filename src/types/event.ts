@@ -4,6 +4,10 @@ export type Event = {
   description?: string;
   sourceUrl?: string;
   coverImageFileUrl?: string;
+  organization?: {
+    id: string;
+    name: string;
+  };
   prefectures: {
     id: string;
     name: string;

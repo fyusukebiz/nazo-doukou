@@ -10,7 +10,7 @@ type DeleteRecruitRequest = {
 
 const deleteRecruitFn = async (req: DeleteRecruitRequest) => {
   const { data } = await axios.delete<DeleteRecruitResponseBody>(
-    `/api/comments_to_recruit/${req.path.recruitId}`
+    `/api/recruits/${req.path.recruitId}`
   );
   return data;
 };

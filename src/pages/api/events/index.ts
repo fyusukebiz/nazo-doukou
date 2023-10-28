@@ -77,6 +77,7 @@ const getHandler = async (
         },
       },
       include: {
+        organization: true,
         eventLocationEvents: {
           include: {
             eventLocation: { include: { prefecture: true } },
@@ -144,6 +145,12 @@ const getHandler = async (
       return {
         id: event.id,
         name: event.name,
+        ...(event.organization && {
+          organization: {
+            id: event.organization.id,
+            name: event.organization.name,
+          },
+        }),
         ...(event.description && { description: event.description }),
         ...(event.sourceUrl && { sourceUrl: event.sourceUrl }),
         ...(event.coverImageFileKey && {

@@ -68,6 +68,7 @@ const patchHandler = async (
   const schema = z.object({
     event: z.object({
       name: z.string().min(1).max(255),
+      organizationId: z.string().optional(),
       description: z.string().optional(),
       sourceUrl: z.string().optional(),
       coverImageFileKey: z.string().optional(),
@@ -85,6 +86,9 @@ const patchHandler = async (
     where: { id: event.id },
     data: {
       name: eventData.name,
+      ...(eventData.organizationId && {
+        organizationId: eventData.organizationId,
+      }),
       ...(eventData.description && { description: eventData.description }),
       ...(eventData.sourceUrl && { sourceUrl: eventData.sourceUrl }),
       ...(eventData.coverImageFileKey && {
