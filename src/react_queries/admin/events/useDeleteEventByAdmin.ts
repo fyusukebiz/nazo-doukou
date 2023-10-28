@@ -10,7 +10,7 @@ type DeleteEventByAdminRequest = {
 
 const deleteEventByAdminFn = async (req: DeleteEventByAdminRequest) => {
   const { data } = await axios.delete<DeleteEventByAdminResponseBody>(
-    `/api/admin/event_hours/${req.path.eventId}`
+    `/api/admin/events/${req.path.eventId}`
   );
   return data;
 };
