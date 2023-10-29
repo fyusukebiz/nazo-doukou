@@ -1,6 +1,6 @@
 import {
   PostCommentToRecruitRequestBody,
-  PostCommentToRecruitResponseBody,
+  PostCommentToRecruitResponseSuccessBody,
 } from "@/pages/api/comments_to_recruit";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -10,7 +10,7 @@ type PostCommentToRecruitRequest = {
 };
 
 const postCommentToRecruitFn = async (req: PostCommentToRecruitRequest) => {
-  const { data } = await axios.post<PostCommentToRecruitResponseBody>(
+  const { data } = await axios.post<PostCommentToRecruitResponseSuccessBody>(
     `/api/comments_to_recruit`,
     req.body
   );

@@ -1,4 +1,4 @@
-export type ErrorResponse =
+export type ResponseErrorBody =
   | {
       // 422以外
       error: string;

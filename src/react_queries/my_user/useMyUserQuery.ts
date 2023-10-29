@@ -1,9 +1,11 @@
-import { GetMyUserResponseBody } from "@/pages/api/my_user";
+import { GetMyUserResponseSuccessBody } from "@/pages/api/my_user";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const getMyUser = async () => {
-  const { data } = await axios.get<GetMyUserResponseBody>("/api/my_user");
+  const { data } = await axios.get<GetMyUserResponseSuccessBody>(
+    "/api/my_user"
+  );
   return data;
 };
 

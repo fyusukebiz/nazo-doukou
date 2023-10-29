@@ -22,7 +22,7 @@ export const EditMyUser = () => {
             background: "#F0F0F0",
           }}
         >
-          <PageHeader>
+          <PageHeader sx={{ height: "64px" }}>
             <Typography variant="h6">アカウント編集</Typography>
             <Button
               variant="outlined"

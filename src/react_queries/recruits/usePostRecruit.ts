@@ -1,6 +1,6 @@
 import {
   PostRecruitRequestBody,
-  PostRecruitResponseBody,
+  PostRecruitResponseSuccessBody,
 } from "@/pages/api/recruits";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -10,7 +10,7 @@ type PostRecruitRequest = {
 };
 
 const postRecruitFn = async (req: PostRecruitRequest) => {
-  const { data } = await axios.post<PostRecruitResponseBody>(
+  const { data } = await axios.post<PostRecruitResponseSuccessBody>(
     `/api/recruits`,
     req.body
   );

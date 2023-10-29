@@ -3,7 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 import { Event } from "@prisma/client";
 
@@ -55,11 +55,13 @@ export type PatchEventByAdminRequestBody = {
     coverImageFileKey?: string;
   };
 };
-export type PatchEventByAdminResponseBody = "" | ErrorResponse;
+export type PatchEventByAdminResponseSuccessBody = "";
 
 const patchHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<
+    PatchEventByAdminResponseSuccessBody | ResponseErrorBody
+  >,
   sessionUser: SessionUser,
   event: Event
 ) => {
@@ -101,11 +103,13 @@ const patchHandler = async (
 };
 
 // DELETE request
-export type DeleteEventByAdminResponseBody = "" | ErrorResponse;
+export type DeleteEventByAdminResponseSuccessBody = "";
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<DeleteEventByAdminResponseBody>,
+  res: NextApiResponse<
+    DeleteEventByAdminResponseSuccessBody | ResponseErrorBody
+  >,
   sessionUser: SessionUser,
   event: Event
 ) => {

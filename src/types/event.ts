@@ -16,6 +16,8 @@ export type Event = {
     eventLocations: {
       id: string;
       name: string;
+      color?: string;
+      bgColor?: string;
       dates: {
         id: string;
         date: string;

@@ -147,13 +147,17 @@ model Prefecture {
 
 model EventLocation {
   id String @id @default(cuid())
-  name String @unique
+  name String
   prefecture Prefecture @relation(fields: [prefectureId], references: [id], onDelete: Cascade)
   prefectureId String
+  color String?
+  bgColor String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   eventLocationEvents EventLocationEvent[]
+
+  @@unique([prefectureId, name])
 }
 
 model EventLocationEvent {

@@ -1,6 +1,6 @@
 import {
   PostEventByAdminRequestBody,
-  PostEventByAdminResponseBody,
+  PostEventByAdminResponseSuccessBody,
 } from "@/pages/api/admin/events";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -10,7 +10,7 @@ type PostEventByAdminRequest = {
 };
 
 const postEventByAdminFn = async (req: PostEventByAdminRequest) => {
-  const { data } = await axios.post<PostEventByAdminResponseBody>(
+  const { data } = await axios.post<PostEventByAdminResponseSuccessBody>(
     `/api/admin/events`,
     req.body
   );

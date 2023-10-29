@@ -1,4 +1,4 @@
-import { DeleteCommentToRecruitResponseBody } from "@/pages/api/comments_to_recruit/[id]";
+import { DeleteCommentToRecruitResponseSuccessBody } from "@/pages/api/comments_to_recruit/[id]";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -9,9 +9,10 @@ type DeleteCommentToRecruitRequest = {
 };
 
 const deleteCommentToRecruitFn = async (req: DeleteCommentToRecruitRequest) => {
-  const { data } = await axios.delete<DeleteCommentToRecruitResponseBody>(
-    `/api/comments_to_recruit/${req.path.commentToRecruitId}`
-  );
+  const { data } =
+    await axios.delete<DeleteCommentToRecruitResponseSuccessBody>(
+      `/api/comments_to_recruit/${req.path.commentToRecruitId}`
+    );
   return data;
 };
 

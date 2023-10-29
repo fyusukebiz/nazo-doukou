@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,15 +23,13 @@ export default async function handler(
 }
 
 // GET request
-export type GetOrganizationsResponseBody =
-  | {
-      organizations: { id: string; name: string }[];
-    }
-  | ErrorResponse;
+export type GetOrganizationsResponseSuccessBody = {
+  organizations: { id: string; name: string }[];
+};
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetOrganizationsResponseBody>
+  res: NextApiResponse<GetOrganizationsResponseSuccessBody | ResponseErrorBody>
 ) => {
   const organizations = await prisma.organization.findMany();
 

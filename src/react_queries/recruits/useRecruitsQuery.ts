@@ -1,4 +1,4 @@
-import { GetRecruitsResponseBody } from "@/pages/api/recruits";
+import { GetRecruitsResponseSuccessBody } from "@/pages/api/recruits";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -14,7 +14,7 @@ const getRecruits = async (req: GetRecruitsRequest) => {
   const urlSearchParam = new URLSearchParams();
   urlSearchParam.set("page", page.toString());
 
-  const { data } = await axios.get<GetRecruitsResponseBody>(
+  const { data } = await axios.get<GetRecruitsResponseSuccessBody>(
     `/api/recruits?${urlSearchParam.toString()}`
   );
 

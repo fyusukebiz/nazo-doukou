@@ -6,7 +6,7 @@ import { z } from "zod";
 import { SessionUser } from "@/types/next-auth";
 import { Sex } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
 
 export default async function handler(
@@ -40,26 +40,24 @@ export default async function handler(
 }
 
 // GET request
-export type GetMyUserResponseBody =
-  | {
-      name: string;
-      iconImageUrl?: string;
-      sex?: Sex;
-      age?: number;
-      startedAt?: string;
-      description?: string;
-      twitter?: string;
-      instagram?: string;
-      userGameTypes: {
-        gameTypeId: string;
-        likeOrDislike: "LIKE" | "DISLIKE";
-      }[];
-    }
-  | ErrorResponse;
+export type GetMyUserResponseSuccessBody = {
+  name: string;
+  iconImageUrl?: string;
+  sex?: Sex;
+  age?: number;
+  startedAt?: string;
+  description?: string;
+  twitter?: string;
+  instagram?: string;
+  userGameTypes: {
+    gameTypeId: string;
+    likeOrDislike: "LIKE" | "DISLIKE";
+  }[];
+};
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetMyUserResponseBody>,
+  res: NextApiResponse<GetMyUserResponseSuccessBody | ResponseErrorBody>,
   sessionUser: SessionUser
 ) => {
   const user = await prisma.user.findUnique({
@@ -106,11 +104,11 @@ export type PatchMyUserRequestBody = {
   }[];
 };
 
-export type PatchMyUserResponseBody = "" | ErrorResponse;
+export type PatchMyUserResponseSuccessBody = "";
 
 const patchHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<PatchMyUserResponseBody>,
+  res: NextApiResponse<PatchMyUserResponseSuccessBody | ResponseErrorBody>,
   sessionUser: SessionUser
 ) => {
   const rawParams: PatchMyUserRequestBody = req.body;

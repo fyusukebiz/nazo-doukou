@@ -17,6 +17,8 @@ import translation from "@/libs/zod-i18n-map/ja/zod.json";
 import { z } from "zod";
 import { RouterHistoryProvider } from "@/features/common/RouterHistoryProvider";
 import { Roboto } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
+import { Session } from "next-auth";
 
 const roboto = Roboto({
   weight: ["400", "700"],
@@ -41,33 +43,38 @@ type AppPropsWithLayout<P = {}> = AppProps<P> & {
   Component: NextPageWithLayout<P>;
 };
 
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+export default function App({
+  Component,
+  pageProps,
+}: AppPropsWithLayout<{ session: Session }>) {
   const getLayout = Component.getLayout ?? ((page) => page);
   const customQueryClient = useCustomQueryClient();
 
   return (
     <ThemeProvider theme={MuiTheme}>
-      <QueryClientProvider client={customQueryClient}>
-        <IsMobileProvider>
-          <RouterHistoryProvider>
-            <main className={roboto.className} style={{ height: "100%" }}>
-              {getLayout(
-                <>
-                  <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    pauseOnHover
-                  />
-                  <Component {...pageProps} />
-                </>
-              )}
-            </main>
-          </RouterHistoryProvider>
-        </IsMobileProvider>
-      </QueryClientProvider>
+      <SessionProvider session={pageProps.session}>
+        <QueryClientProvider client={customQueryClient}>
+          <IsMobileProvider>
+            <RouterHistoryProvider>
+              <main className={roboto.className} style={{ height: "100%" }}>
+                {getLayout(
+                  <>
+                    <ToastContainer
+                      position="top-right"
+                      autoClose={5000}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      pauseOnHover
+                    />
+                    <Component {...pageProps} />
+                  </>
+                )}
+              </main>
+            </RouterHistoryProvider>
+          </IsMobileProvider>
+        </QueryClientProvider>
+      </SessionProvider>
     </ThemeProvider>
   );
 }

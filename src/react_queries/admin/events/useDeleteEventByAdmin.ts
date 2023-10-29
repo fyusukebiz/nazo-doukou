@@ -1,4 +1,4 @@
-import { DeleteEventByAdminResponseBody } from "@/pages/api/admin/events/[id]";
+import { DeleteEventByAdminResponseSuccessBody } from "@/pages/api/admin/events/[id]";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -9,7 +9,7 @@ type DeleteEventByAdminRequest = {
 };
 
 const deleteEventByAdminFn = async (req: DeleteEventByAdminRequest) => {
-  const { data } = await axios.delete<DeleteEventByAdminResponseBody>(
+  const { data } = await axios.delete<DeleteEventByAdminResponseSuccessBody>(
     `/api/admin/events/${req.path.eventId}`
   );
   return data;

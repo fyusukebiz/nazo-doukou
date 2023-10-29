@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,19 +23,17 @@ export default async function handler(
 }
 
 // GET request
-export type GetPrefecturesResponseBody =
-  | {
-      prefectures: {
-        id: string;
-        name: string;
-        eventLocations: { id: string; name: string }[];
-      }[];
-    }
-  | ErrorResponse;
+export type GetPrefecturesResponseSuccessBody = {
+  prefectures: {
+    id: string;
+    name: string;
+    eventLocations: { id: string; name: string }[];
+  }[];
+};
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetPrefecturesResponseBody>
+  res: NextApiResponse<GetPrefecturesResponseSuccessBody | ResponseErrorBody>
 ) => {
   const prefectures = await prisma.prefecture.findMany({
     include: { eventLocations: true },

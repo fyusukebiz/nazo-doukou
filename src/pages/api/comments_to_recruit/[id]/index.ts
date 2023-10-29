@@ -3,7 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 
 export default async function handler(
   req: NextApiRequest,
@@ -31,11 +31,13 @@ export default async function handler(
 }
 
 // DELETE request
-export type DeleteCommentToRecruitResponseBody = "" | ErrorResponse;
+export type DeleteCommentToRecruitResponseSuccessBody = "";
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<DeleteCommentToRecruitResponseBody>,
+  res: NextApiResponse<
+    DeleteCommentToRecruitResponseSuccessBody | ResponseErrorBody
+  >,
   sessionUser: SessionUser
 ) => {
   const commentToRecruitId = req.query.id as string | undefined;

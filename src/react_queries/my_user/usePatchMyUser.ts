@@ -1,21 +1,16 @@
+import {
+  PatchMyUserRequestBody,
+  PatchMyUserResponseSuccessBody,
+} from "@/pages/api/my_user";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 type PatchMyUserRequest = {
-  body: {
-    user: {
-      lastName: string;
-      firstName: string;
-      lastNameKana: string;
-      firstNameKana: string;
-    };
-  };
+  body: PatchMyUserRequestBody;
 };
 
-type PatchMyUserResponse = "";
-
 const patchMyUserFn = async (req: PatchMyUserRequest) => {
-  const { data } = await axios.patch<PatchMyUserResponse>(
+  const { data } = await axios.patch<PatchMyUserResponseSuccessBody>(
     "/api/my_user",
     req.body
   );

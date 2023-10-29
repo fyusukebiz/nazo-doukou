@@ -1,6 +1,6 @@
 import {
   PatchEventDateByAdminRequestBody,
-  PatchEventDateByAdminResponseBody,
+  PatchEventDateByAdminResponseSuccessBody,
 } from "@/pages/api/admin/event_dates/[id]";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -11,7 +11,7 @@ type PatchEventDateByAdminRequest = {
 };
 
 const patchEventDateFn = async (req: PatchEventDateByAdminRequest) => {
-  const { data } = await axios.patch<PatchEventDateByAdminResponseBody>(
+  const { data } = await axios.patch<PatchEventDateByAdminResponseSuccessBody>(
     `/api/admin/event_dates/${req.path.eventDateId}`,
     req.body
   );

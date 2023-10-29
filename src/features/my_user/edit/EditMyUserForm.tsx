@@ -13,20 +13,20 @@ import { useSession } from "next-auth/react";
 
 export const EditMyUserForm = memo(() => {
   const { handleSubmit, control } = useEditMyUserFormContext();
-  const { patchMyUser } = usePatchMyUser();
-  const router = useRouter();
-  const { update } = useSession();
+  // const { patchMyUser } = usePatchMyUser();
+  // const router = useRouter();
+  // const { update } = useSession();
 
   const onSubmit: SubmitHandler<EditMyUserFormSchema> = async (data) => {
-    patchMyUser.mutate(
-      { body: { user: data } },
-      {
-        onSuccess: async (res) => {
-          await update();
-          router.push("/videos");
-        },
-      }
-    );
+    // patchMyUser.mutate(
+    //   { body: { user: data } },
+    //   {
+    //     onSuccess: async (res) => {
+    //       await update();
+    //       router.push("/videos");
+    //     },
+    //   }
+    // );
   };
 
   return (
@@ -42,7 +42,7 @@ export const EditMyUserForm = memo(() => {
         </Grid> */}
       </Grid>
       <Box sx={{ display: "flex", width: "100%", mt: 4 }}>
-        <LoadingButton
+        {/* <LoadingButton
           type="submit"
           variant="contained"
           size="large"
@@ -50,7 +50,7 @@ export const EditMyUserForm = memo(() => {
           loading={patchMyUser.isIdle}
         >
           保存
-        </LoadingButton>
+        </LoadingButton> */}
       </Box>
     </Box>
   );

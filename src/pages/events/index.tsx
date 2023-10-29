@@ -1,8 +1,9 @@
 import { NextPageWithLayout } from "@/pages/_app";
 import { Layout } from "@/components/layouts/general/layout/Layout";
+import { Events } from "@/features/events/Events";
 
 const EventsPage: NextPageWithLayout = () => {
-  return <div>test</div>;
+  return <Events />;
 };
 
 EventsPage.getLayout = (page) => {

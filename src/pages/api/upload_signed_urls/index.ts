@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import { SessionUser } from "@/types/next-auth";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { v4 as uuidv4 } from "uuid";
 import { generateUploadSignedUrl } from "@/libs/cloudStorage";
 
@@ -33,19 +33,22 @@ export default async function handler(
 }
 
 // GET request
-export type GetUploadSignedUrlResponseBody =
-  | { uploadUrl: string }
-  | ErrorResponse;
+export type GetUploadSignedUrlsResponseSuccessBody = {
+  uploads: { url: string; fileKey: string }[];
+};
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetUploadSignedUrlResponseBody>,
+  res: NextApiResponse<
+    GetUploadSignedUrlsResponseSuccessBody | ResponseErrorBody
+  >,
   sessionUser: SessionUser
 ) => {
   const fileKey = uuidv4();
 
+  // TODO 一度に複数個のURLを生成できるようにする
   const data = {
-    uploadUrl: await generateUploadSignedUrl(fileKey),
+    uploads: [{ url: await generateUploadSignedUrl(fileKey), fileKey }],
   };
 
   res.status(200).json(data);

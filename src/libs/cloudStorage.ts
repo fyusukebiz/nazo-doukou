@@ -95,7 +95,7 @@ export const uploadToGCS = ({
     readStream.pipe(writeStream);
 
     writeStream.on("error", (err) => {
-      console.error(err.message);
+      console.error("#1", err.message);
       reject("アップロードに失敗しました");
     });
 

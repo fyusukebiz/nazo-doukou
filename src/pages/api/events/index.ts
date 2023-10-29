@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { generateReadSignedUrl } from "@/libs/cloudStorage";
 import { addMonths, startOfMonth } from "date-fns";
 import { paginate } from "prisma-extension-pagination";
@@ -27,18 +27,17 @@ export default async function handler(
 }
 
 // GET request
-export type GetEventsResponseBody =
-  | {
-      events: Event[];
-      totalCount: number;
-      totalPages: number;
-      currentPage: number;
-    }
-  | ErrorResponse;
+
+export type GetEventsResponseSuccessBody = {
+  events: Event[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+};
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetEventsResponseBody>
+  res: NextApiResponse<GetEventsResponseSuccessBody | ResponseErrorBody>
 ) => {
   const page = Number(req.query.page || 1);
   const year = req.query.year ? Number(req.query.year) : undefined;
@@ -119,6 +118,8 @@ const getHandler = async (
                 return {
                   id: loc.id,
                   name: loc.name,
+                  ...(loc.color && { color: loc.color }),
+                  ...(loc.bgColor && { bgColor: loc.bgColor }),
                   dates: ele.eventDates.map((eventDate) => ({
                     id: eventDate.id,
                     date: eventDate.date.toISOString(),

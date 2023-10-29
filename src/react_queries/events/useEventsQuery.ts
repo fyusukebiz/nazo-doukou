@@ -1,4 +1,4 @@
-import { GetEventsResponseBody } from "@/pages/api/events";
+import { GetEventsResponseSuccessBody } from "@/pages/api/events";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -13,7 +13,7 @@ export type EventSearchQueryParams =
 type GetEventsRequest = {
   query: {
     page: number;
-    params: EventSearchQueryParams;
+    params?: EventSearchQueryParams;
   };
 };
 
@@ -33,15 +33,19 @@ const getEvents = async (req: GetEventsRequest) => {
     }
   }
 
-  const { data } = await axios.get<GetEventsResponseBody>(
+  const { data } = await axios.get<GetEventsResponseSuccessBody>(
     `/api/events?${urlSearchParam.toString()}`
   );
   return data;
 };
 
-export const useEventsQuery = (req: GetEventsRequest) => {
+export const useEventsQuery = (
+  req: GetEventsRequest,
+  isInitialized: boolean
+) => {
   return useQuery({
     queryKey: ["getEvents", req.query],
     queryFn: () => getEvents(req),
+    enabled: isInitialized,
   });
 };

@@ -86,12 +86,25 @@ CREATE TABLE "UserGameType" (
 );
 
 -- CreateTable
+CREATE TABLE "Organization" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Event" (
     "id" TEXT NOT NULL,
+    "organizationId" TEXT,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "sourceUrl" TEXT,
     "coverImageFileKey" TEXT,
+    "numberOfPeopleInTeam" TEXT,
+    "timeRequired" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -114,6 +127,8 @@ CREATE TABLE "EventLocation" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "prefectureId" TEXT NOT NULL,
+    "color" TEXT,
+    "bgColor" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -141,18 +156,6 @@ CREATE TABLE "EventDate" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "EventDate_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "EventHour" (
-    "id" TEXT NOT NULL,
-    "startedAt" TIMESTAMP(3),
-    "endedAt" TIMESTAMP(3),
-    "eventDateId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "EventHour_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -214,6 +217,9 @@ CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationTok
 CREATE UNIQUE INDEX "UserGameType_userId_gameTypeId_key" ON "UserGameType"("userId", "gameTypeId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Organization_name_key" ON "Organization"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Event_name_key" ON "Event"("name");
 
 -- CreateIndex
@@ -223,7 +229,7 @@ CREATE UNIQUE INDEX "Prefecture_name_key" ON "Prefecture"("name");
 CREATE UNIQUE INDEX "Prefecture_sort_key" ON "Prefecture"("sort");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "EventLocation_name_key" ON "EventLocation"("name");
+CREATE UNIQUE INDEX "EventLocation_prefectureId_name_key" ON "EventLocation"("prefectureId", "name");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -238,6 +244,9 @@ ALTER TABLE "UserGameType" ADD CONSTRAINT "UserGameType_userId_fkey" FOREIGN KEY
 ALTER TABLE "UserGameType" ADD CONSTRAINT "UserGameType_gameTypeId_fkey" FOREIGN KEY ("gameTypeId") REFERENCES "GameType"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Event" ADD CONSTRAINT "Event_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "EventLocation" ADD CONSTRAINT "EventLocation_prefectureId_fkey" FOREIGN KEY ("prefectureId") REFERENCES "Prefecture"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -248,9 +257,6 @@ ALTER TABLE "EventLocationEvent" ADD CONSTRAINT "EventLocationEvent_eventLocatio
 
 -- AddForeignKey
 ALTER TABLE "EventDate" ADD CONSTRAINT "EventDate_eventLocationEventId_fkey" FOREIGN KEY ("eventLocationEventId") REFERENCES "EventLocationEvent"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "EventHour" ADD CONSTRAINT "EventHour_eventDateId_fkey" FOREIGN KEY ("eventDateId") REFERENCES "EventDate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Recruit" ADD CONSTRAINT "Recruit_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

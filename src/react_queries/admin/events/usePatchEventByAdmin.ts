@@ -1,6 +1,6 @@
 import {
   PatchEventByAdminRequestBody,
-  PatchEventByAdminResponseBody,
+  PatchEventByAdminResponseSuccessBody,
 } from "@/pages/api/admin/events/[id]";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -11,7 +11,7 @@ type PatchEventByAdminRequest = {
 };
 
 const patchEventByAdminFn = async (req: PatchEventByAdminRequest) => {
-  const { data } = await axios.patch<PatchEventByAdminResponseBody>(
+  const { data } = await axios.patch<PatchEventByAdminResponseSuccessBody>(
     `/api/admin/events/${req.path.eventId}`,
     req.body
   );

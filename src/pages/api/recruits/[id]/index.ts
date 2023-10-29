@@ -3,7 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 import { Sex } from "@prisma/client";
 import { paginate } from "prisma-extension-pagination";
@@ -46,45 +46,43 @@ export default async function handler(
 }
 
 // GET request
-export type GetRecruitResponseBody =
-  | {
-      recruit: {
+export type GetRecruitResponseSuccessBody = {
+  recruit: {
+    id: string;
+    user: {
+      id?: string;
+      name: string;
+      iconImageUrl?: string;
+      twitter?: string;
+      instagram?: string;
+    };
+    eventName: string;
+    eventLocation?: string;
+    numberOfPeople?: number;
+    description?: string;
+    createdAt: string;
+    possibleDate: {
+      id: string;
+      date: string;
+      priority?: number;
+    }[];
+    comments: {
+      id: string;
+      message: string;
+      createdAt: string;
+      updatedAt: string;
+      user: {
         id: string;
-        user: {
-          id?: string;
-          name: string;
-          iconImageUrl?: string;
-          twitter?: string;
-          instagram?: string;
-        };
-        eventName: string;
-        eventLocation?: string;
-        numberOfPeople?: number;
-        description?: string;
-        createdAt: string;
-        possibleDate: {
-          id: string;
-          date: string;
-          priority?: number;
-        }[];
-        comments: {
-          id: string;
-          message: string;
-          createdAt: string;
-          updatedAt: string;
-          user: {
-            id: string;
-            name: string;
-            iconImageUrl?: string;
-          };
-        }[];
+        name: string;
+        iconImageUrl?: string;
       };
-    }
-  | ErrorResponse;
+    }[];
+  };
+};
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetRecruitResponseBody>
+  res: NextApiResponse<GetRecruitResponseSuccessBody | ResponseErrorBody>
 ) => {
   const recruitId = req.query.id as string | undefined;
   if (!recruitId) return res.status(404).json({ error: "募集がありません" });
@@ -170,11 +168,11 @@ export type PatchRecruitRequestBody = {
     priority: number;
   }[];
 };
-export type PatchRecruitResponseBody = "" | ErrorResponse;
+export type PatchRecruitResponseSuccessBody = "";
 
 const patchHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<PatchRecruitResponseSuccessBody | ResponseErrorBody>,
   sessionUser: SessionUser
 ) => {
   const recruitId = req.query.id as string | undefined;
@@ -236,11 +234,11 @@ const patchHandler = async (
 };
 
 // DELETE request
-export type DeleteRecruitResponseBody = "" | ErrorResponse;
+export type DeleteRecruitResponseSuccessBody = "";
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<DeleteRecruitResponseBody>,
+  res: NextApiResponse<DeleteRecruitResponseSuccessBody | ResponseErrorBody>,
   sessionUser: SessionUser
 ) => {
   const recruitId = req.query.id as string | undefined;

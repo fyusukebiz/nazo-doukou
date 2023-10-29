@@ -3,7 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 import { Sex } from "@prisma/client";
 import { paginate } from "prisma-extension-pagination";
@@ -41,37 +41,35 @@ export default async function handler(
 }
 
 // GET request
-export type GetRecruitsResponseBody =
-  | {
-      recruits: {
-        id: string;
-        user: {
-          id?: string;
-          name: string;
-          iconImageUrl?: string;
-          twitter?: string;
-          instagram?: string;
-        };
-        eventName: string;
-        eventLocation?: string;
-        numberOfPeople?: number;
-        description?: string;
-        createdAt: string;
-        possibleDate: {
-          id: string;
-          date: string;
-          priority?: number;
-        }[];
-      }[];
-      totalCount: number;
-      totalPages: number;
-      currentPage: number;
-    }
-  | ErrorResponse;
+export type GetRecruitsResponseSuccessBody = {
+  recruits: {
+    id: string;
+    user: {
+      id?: string;
+      name: string;
+      iconImageUrl?: string;
+      twitter?: string;
+      instagram?: string;
+    };
+    eventName: string;
+    eventLocation?: string;
+    numberOfPeople?: number;
+    description?: string;
+    createdAt: string;
+    possibleDate: {
+      id: string;
+      date: string;
+      priority?: number;
+    }[];
+  }[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+};
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetRecruitsResponseBody>
+  res: NextApiResponse<GetRecruitsResponseSuccessBody | ResponseErrorBody>
 ) => {
   const page = Number(req.query.page || 1);
 
@@ -154,11 +152,11 @@ export type PostRecruitRequestBody = {
     priority: number;
   }[];
 };
-export type PostRecruitResponseBody = "" | ErrorResponse;
+export type PostRecruitResponseSuccessBody = "";
 
 const postHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<PostRecruitResponseSuccessBody | ResponseErrorBody>,
   sessionUser: SessionUser
 ) => {
   const rawParams: PostRecruitRequestBody = req.body;

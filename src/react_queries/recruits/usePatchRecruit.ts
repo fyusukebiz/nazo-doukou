@@ -1,6 +1,6 @@
 import {
   PatchRecruitRequestBody,
-  PatchRecruitResponseBody,
+  PatchRecruitResponseSuccessBody,
 } from "@/pages/api/recruits/[id]";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -11,7 +11,7 @@ type PatchRecruitRequest = {
 };
 
 const patchRecruitFn = async (req: PatchRecruitRequest) => {
-  const { data } = await axios.patch<PatchRecruitResponseBody>(
+  const { data } = await axios.patch<PatchRecruitResponseSuccessBody>(
     `/api/recruits/${req.path.recruitId}`,
     req.body
   );

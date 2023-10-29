@@ -3,7 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 import { EventLocationEvent } from "@prisma/client";
 
@@ -55,11 +55,13 @@ export type PatchEventLocationEventByAdminRequestBody = {
     description?: string;
   };
 };
-export type PatchEventLocationEventByAdminResponseBody = "" | ErrorResponse;
+export type PatchEventLocationEventByAdminResponseSuccessBody = "";
 
 const patchHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<
+    PatchEventLocationEventByAdminResponseSuccessBody | ResponseErrorBody
+  >,
   sessionUser: SessionUser,
   eventLocationEvent: EventLocationEvent
 ) => {
@@ -90,11 +92,13 @@ const patchHandler = async (
 };
 
 // DELETE request
-export type DeleteEventLocationEventByAdminResponseBody = "" | ErrorResponse;
+export type DeleteEventLocationEventByAdminResponseSuccessBody = "";
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<DeleteEventLocationEventByAdminResponseBody>,
+  res: NextApiResponse<
+    DeleteEventLocationEventByAdminResponseSuccessBody | ResponseErrorBody
+  >,
   sessionUser: SessionUser,
   eventLocationEvent: EventLocationEvent
 ) => {

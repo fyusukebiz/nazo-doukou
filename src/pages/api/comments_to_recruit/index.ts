@@ -3,7 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
-import { ErrorResponse } from "@/types/errorResponse";
+import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 
 export default async function handler(
@@ -39,11 +39,13 @@ export type PostCommentToRecruitRequestBody = {
     message: string;
   };
 };
-export type PostCommentToRecruitResponseBody = "" | ErrorResponse;
+export type PostCommentToRecruitResponseSuccessBody = "";
 
 const postHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<
+    PostCommentToRecruitResponseSuccessBody | ResponseErrorBody
+  >,
   sessionUser: SessionUser
 ) => {
   const rawParams: PostCommentToRecruitRequestBody = req.body;
