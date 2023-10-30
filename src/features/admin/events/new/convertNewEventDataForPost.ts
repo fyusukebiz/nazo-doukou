@@ -21,6 +21,9 @@ export const convertNewEventDataForPost = ({
       }),
       ...(data.timeRequired && { timeRequired: data.timeRequired }),
       eventLocationEvents: data.eventLocationEvents.map((ele) => ({
+        ...(ele.building && { building: ele.building }),
+        ...(ele.startedAt && { startedAt: ele.startedAt.toISOString() }),
+        ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }),
         ...(ele.description && { description: ele.description }),
         eventLocationId: ele.eventLocation.value!, // zodでバリデーションずみ
         ...(ele.eventDates && {

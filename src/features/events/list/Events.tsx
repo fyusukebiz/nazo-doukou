@@ -7,7 +7,7 @@ import { Box, Container, Grid, Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { EventCard } from "./misc/EventCard";
-import { useRouterHistoryContext } from "../common/RouterHistoryProvider";
+import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
 
 export const Events = () => {
   const router = useRouter();
@@ -67,7 +67,7 @@ export const Events = () => {
         {eventsStatus === "pending" && <LoadingSpinner />}
         {eventsStatus === "success" && (
           <>
-            <Box>
+            <Box sx={{ marginBottom: "10px" }}>
               全{eventsData.totalCount}中{eventsData.currentPage}ページ目
             </Box>
             <Grid container spacing={2}>

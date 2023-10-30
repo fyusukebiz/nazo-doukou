@@ -21,11 +21,18 @@ import { grey } from "@mui/material/colors";
 import { SingleSelectWithLabelRHF } from "@/components/forms/hook_form/SingleSelectWithLabelRHF";
 import { useUploadSignedUrlsQuery } from "@/react_queries/upload_signed_urls";
 import axios from "axios";
+import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
+import { BiCalendar } from "react-icons/bi";
 
 export const NewEventForm = () => {
   const router = useRouter();
-  const { handleSubmit, control } = useNewEventFormContext();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useNewEventFormContext();
   const { postEventByAdmin } = usePostEventByAdmin();
+  console.log(errors);
 
   const { data: prefecturesData, status: prefecturesStatus } =
     usePrefecturesQuery();
@@ -207,15 +214,37 @@ export const NewEventForm = () => {
                   />
                 </Box>
                 <InputWithLabelRHF<NewEventFormSchema>
-                  name={`eventLocationEvents.${index}.description`}
-                  label="詳細"
+                  name={`eventLocationEvents.${index}.building`}
+                  label="建物名"
                   control={control}
                   fullWidth
                 />
-                <EventDatesForm
+                <DatePickerWithLabelRHF<NewEventFormSchema>
+                  name={`eventLocationEvents.${index}.startedAt`}
+                  label="開始日"
+                  control={control}
+                  endIcon={<BiCalendar size={30} />}
+                  minDate={new Date()}
+                />
+                <DatePickerWithLabelRHF<NewEventFormSchema>
+                  name={`eventLocationEvents.${index}.endedAt`}
+                  label="終了日"
+                  control={control}
+                  endIcon={<BiCalendar size={30} />}
+                  minDate={new Date()}
+                />
+                <InputWithLabelRHF<NewEventFormSchema>
+                  name={`eventLocationEvents.${index}.description`}
+                  label="詳細"
+                  control={control}
+                  multiline
+                  minRows={5}
+                  fullWidth
+                />
+                {/* <EventDatesForm
                   control={control}
                   eventLocationEventIndex={index}
-                />
+                /> */}
               </Box>
             ))}
           </Box>

@@ -22,23 +22,31 @@ export const EventCard = (props: Props) => {
   };
 
   const period = useMemo(() => {
-    const dateArrayInMsec = event.prefectures
-      .map((pref) =>
-        pref.eventLocations
-          .map((loc) => loc.dates.map((date) => date.date))
-          .flat()
-      )
-      .flat()
-      .map((date) => new Date(date).getTime());
-    if (dateArrayInMsec.length === 0) {
-      return "期間未記載";
-    }
+    // const dateArrayInMsec = event.prefectures
+    //   .map((pref) =>
+    //     pref.eventLocations
+    //       .map((loc) => loc.dates.map((date) => date.date))
+    //       .flat()
+    //   )
+    //   .flat()
+    //   .map((date) => new Date(date).getTime());
+    // if (dateArrayInMsec.length === 0) {
+    //   return "";
+    // }
 
-    const earliestDate = new Date(Math.min(...dateArrayInMsec));
-    const latestDate = new Date(Math.max(...dateArrayInMsec));
-    if (earliestDate === latestDate) return format(earliestDate, "MM/dd");
+    // const earliestDate = new Date(Math.min(...dateArrayInMsec));
+    // const latestDate = new Date(Math.max(...dateArrayInMsec));
+    // if (earliestDate === latestDate) return format(earliestDate, "MM/dd");
 
-    return `${format(earliestDate, "MM/dd")} ~ ${format(latestDate, "MM/dd")}`;
+    // return `${format(earliestDate, "MM/dd")} ~ ${format(latestDate, "MM/dd")}`;
+
+    // TODO: 臨時
+    const ele = event.prefectures.map((pref) => pref.eventLocations).flat()[0];
+    if (!ele) return "";
+    if (!ele.startedAt && !ele.endedAt) return "";
+    return `${
+      ele.startedAt ? format(new Date(ele.startedAt), "MM/dd") : ""
+    } ~ ${ele.endedAt ? format(new Date(ele.endedAt), "MM/dd") : ""}`;
   }, [event.prefectures]);
 
   return (

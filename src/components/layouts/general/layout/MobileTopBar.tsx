@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
-export const PcTopBar = () => {
+export const MobileTopBar = () => {
   return (
     <Box
       sx={{

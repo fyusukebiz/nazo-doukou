@@ -47,7 +47,10 @@ export type PostEventByAdminRequestBody = {
     timeRequired?: string;
     eventLocationEvents: {
       description?: string;
+      building?: string;
       eventLocationId: string;
+      startedAt?: string;
+      endedAt?: string;
       eventDates?: {
         date: string;
       }[];
@@ -75,7 +78,10 @@ const postHandler = async (
       eventLocationEvents: z
         .object({
           eventLocationId: z.string().min(1),
+          building: z.string().optional(),
           description: z.string().optional(),
+          startedAt: z.string().optional(), // TODO:臨時
+          endedAt: z.string().optional(), // TODO:臨時
           eventDates: z
             .object({
               date: z.string().min(1), // TODO: Date型でバリデーションをかけるべき
@@ -117,6 +123,9 @@ const postHandler = async (
       data: {
         eventId: event.id,
         eventLocationId: eleData.eventLocationId,
+        ...(eleData.startedAt && { startedAt: eleData.startedAt }),
+        ...(eleData.endedAt && { endedAt: eleData.endedAt }),
+        ...(eleData.building && { building: eleData.building }),
         ...(eleData.description && { description: eleData.description }),
       },
     });

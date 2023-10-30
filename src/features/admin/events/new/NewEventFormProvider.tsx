@@ -39,6 +39,29 @@ const schema = z.object({
           }),
         label: z.string(),
       }),
+      startedAt: z
+        .date()
+        .nullable()
+        .transform((value, ctx) => {
+          if (value == null)
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "日付を入力してください",
+            });
+          return value;
+        }),
+      endedAt: z
+        .date()
+        .nullable()
+        .transform((value, ctx) => {
+          if (value == null)
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "日付を入力してください",
+            });
+          return value;
+        }),
+      building: z.string(),
       description: z.string(),
       eventDates: z
         .object({
@@ -74,8 +97,12 @@ export const defaultEventDate = {
 
 export const defaultEventLocationEvent = {
   eventLocation: { value: null, label: "" },
+  startedAt: null,
+  endedAt: null,
+  building: "",
   description: "",
-  eventDates: [defaultEventDate],
+  // eventDates: [defaultEventDate],
+  eventDates: [],
 };
 
 export const NewEventFormProvider = ({ children }: Props) => {

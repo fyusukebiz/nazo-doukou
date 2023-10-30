@@ -16,8 +16,12 @@ export type Event = {
     eventLocations: {
       id: string;
       name: string;
+      description?: string;
+      building?: string;
       color?: string;
       bgColor?: string;
+      startedAt?: string; // TODO:臨時
+      endedAt?: string; // TODO:臨時
       dates: {
         id: string;
         date: string;

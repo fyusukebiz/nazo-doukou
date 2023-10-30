@@ -69,7 +69,7 @@ const getHandler = async (
     .paginate({
       where: {
         eventLocationEvents: {
-          some: { eventDates: { some: { date: dateCondition } } },
+          // some: { eventDates: { some: { date: dateCondition } } }, // TODO: 一時的に解除
           ...(eventLocationIds && {
             some: { eventLocationId: { in: eventLocationIds } },
           }),
@@ -118,8 +118,14 @@ const getHandler = async (
                 return {
                   id: loc.id,
                   name: loc.name,
+                  ...(ele.building && { building: ele.building }),
+                  ...(ele.description && { description: ele.description }),
                   ...(loc.color && { color: loc.color }),
                   ...(loc.bgColor && { bgColor: loc.bgColor }),
+                  ...(ele.startedAt && {
+                    startedAt: ele.startedAt.toISOString(),
+                  }), // TODO: 一時的
+                  ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }), // TODO: 一時的
                   dates: ele.eventDates.map((eventDate) => ({
                     id: eventDate.id,
                     date: eventDate.date.toISOString(),
