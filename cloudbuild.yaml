@@ -14,6 +14,8 @@ steps:
       - "NEXT_PUBLIC_SERVICE_NAME=$_NEXT_PUBLIC_SERVICE_NAME"
       - "--build-arg"
       - "NEXT_PUBLIC_HOST=$_NEXT_PUBLIC_HOST"
+      - "--build-arg"
+      - "NEXT_PUBLIC_MAX_FILE_SIZE_MB=$_NEXT_PUBLIC_MAX_FILE_SIZE_MB"
   - id: Push
     name: gcr.io/cloud-builders/docker
     args:
