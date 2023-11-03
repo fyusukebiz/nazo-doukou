@@ -1,7 +1,11 @@
 import { Box } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import { useRouter } from "next/router";
 
-export const PcTopBar = () => {
+export const MobileTopBar = () => {
+  const router = useRouter();
+  const pathname = router.pathname;
+
   return (
     <Box
       sx={{
@@ -14,10 +18,10 @@ export const PcTopBar = () => {
       }}
     >
       <Box component="h1" sx={{ fontSize: "20px" }}>
-        {process.env.NEXT_PUBLIC_SERVICE_NAME}
+        {/^\/admin/.test(pathname)
+          ? "【管理画面】" + process.env.NEXT_PUBLIC_SERVICE_NAME
+          : process.env.NEXT_PUBLIC_SERVICE_NAME}
       </Box>
-      {/* <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
-      </Box> */}
     </Box>
   );
 };

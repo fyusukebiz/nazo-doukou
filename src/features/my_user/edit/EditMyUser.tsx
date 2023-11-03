@@ -4,7 +4,7 @@ import { EditMyUserFormProvider } from "./EditMyUserFormProvider";
 import { useLogoutAndClearStorage } from "@/hooks/useLogoutAndClearStorage";
 import { useSession } from "next-auth/react";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
-import { PageHeader } from "@/components/layouts/general/PageHeader";
+import { PageHeader } from "@/components/layouts/PageHeader";
 
 export const EditMyUser = () => {
   const { status } = useSession();

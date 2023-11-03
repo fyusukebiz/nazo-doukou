@@ -10,7 +10,6 @@ type Props = {
   saveScrollPosition?: () => void;
 };
 
-// TODO 詳細と一覧でコンポーネントを分けた方が良い
 export const EventLocationEventCard = (props: Props) => {
   const { eventLocationEvent: ele, saveScrollPosition } = props;
   const router = useRouter();

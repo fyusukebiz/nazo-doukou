@@ -101,7 +101,8 @@ export const EventLocationEvent = () => {
                   item="Xタグ"
                   content={
                     <a
-                      href={`https://twitter.com/intent/tweet?hashtags=${eleData.eventLocationEvent.event.twitterTag}`}
+                      href={`https://twitter.com/hashtag/${eleData.eventLocationEvent.event.twitterTag}`}
+                      // href={`https://twitter.com/intent/tweet?hashtags=${eleData.eventLocationEvent.event.twitterTag}`}
                       target="_blank"
                     >
                       {eleData.eventLocationEvent.event.twitterTag}

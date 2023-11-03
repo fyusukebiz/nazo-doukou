@@ -6,6 +6,8 @@ import { SessionUser } from "@/types/next-auth";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 import { Event } from "@prisma/client";
+import { EventDetail } from "@/types/event";
+import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,8 +30,12 @@ export default async function handler(
 
   try {
     switch (req.method) {
+      case "GET":
+        await getHandler(req, res, user, eventId);
+        break;
+
       case "PATCH":
-        await patchHandler(req, res, user, event);
+        await patchHandler(req, res, user, eventId);
         break;
 
       case "DELETE":
@@ -46,13 +52,92 @@ export default async function handler(
   }
 }
 
+export type GetEventByAdminResponseSuccessBody = {
+  event: EventDetail;
+};
+
+const getHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<GetEventByAdminResponseSuccessBody | ResponseErrorBody>,
+  sessionUser: SessionUser,
+  eventId: string
+) => {
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+    include: {
+      organization: true,
+      eventGameTypes: { include: { gameType: true } },
+      eventLocationEvents: {
+        include: {
+          eventLocation: { include: { prefecture: true } },
+        },
+      },
+    },
+  });
+  if (!event) return res.status(404).json({ error: "イベントが存在しません" });
+
+  const eventData = {
+    id: event.id,
+    name: event.name,
+    ...(event.twitterTag && { twitterTag: event.twitterTag }),
+    ...(event.description && { description: event.description }),
+    ...(event.sourceUrl && { sourceUrl: event.sourceUrl }),
+    ...(event.numberOfPeopleInTeam && {
+      numberOfPeopleInTeam: event.numberOfPeopleInTeam,
+    }),
+    ...(event.timeRequired && { timeRequired: event.timeRequired }),
+    ...(event.coverImageFileKey && {
+      coverImageFileUrl: await generateReadSignedUrl(event.coverImageFileKey),
+    }),
+    ...(event.organization && {
+      organization: {
+        id: event.organization.id,
+        name: event.organization.name,
+      },
+    }),
+    eventLocationEvents: event.eventLocationEvents.map((ele) => ({
+      id: ele.id,
+      eventLocation: {
+        id: ele.eventLocation.id,
+        name: ele.eventLocation.name,
+      },
+      ...(ele.building && { building: ele.building }),
+      ...(ele.description && { description: ele.description }),
+      ...(ele.startedAt && { startedAt: ele.startedAt.toISOString() }),
+      ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }),
+      ...(ele.detailedSchedule && { detailedSchedule: ele.detailedSchedule }),
+    })),
+    gameTypes: event.eventGameTypes.map((egt) => ({
+      id: egt.gameType.id,
+      name: egt.gameType.name,
+    })),
+  };
+
+  res.status(200).json({
+    event: eventData,
+  });
+};
+
 // PATCH request
 export type PatchEventByAdminRequestBody = {
   event: {
+    organizationId?: string;
     name: string;
     description?: string;
     sourceUrl?: string;
     coverImageFileKey?: string;
+    numberOfPeopleInTeam?: string;
+    timeRequired?: string;
+    twitterTag?: string;
+    gameTypeIds: string[];
+    eventLocationEvents: {
+      eventLocationId: string;
+      description?: string;
+      building?: string;
+      startedAt?: string;
+      endedAt?: string;
+      detailedSchedule?: string;
+    }[];
   };
 };
 export type PatchEventByAdminResponseSuccessBody = "";
@@ -63,18 +148,31 @@ const patchHandler = async (
     PatchEventByAdminResponseSuccessBody | ResponseErrorBody
   >,
   sessionUser: SessionUser,
-  event: Event
+  eventId: string
 ) => {
   const rawParams: PatchEventByAdminRequestBody = req.body;
 
   const schema = z.object({
     event: z.object({
       name: z.string().min(1).max(255),
-      twitterTag: z.string().optional(),
       organizationId: z.string().optional(),
+      twitterTag: z.string().optional(),
       description: z.string().optional(),
       sourceUrl: z.string().optional(),
       coverImageFileKey: z.string().optional(),
+      numberOfPeopleInTeam: z.string().optional(),
+      timeRequired: z.string().optional(),
+      gameTypeIds: z.string().array(),
+      eventLocationEvents: z
+        .object({
+          eventLocationId: z.string().min(1),
+          description: z.string().optional(),
+          building: z.string().optional(),
+          startedAt: z.string().optional(),
+          endedAt: z.string().optional(),
+          detailedSchedule: z.string().optional(),
+        })
+        .array(),
     }),
   });
 
@@ -84,9 +182,19 @@ const patchHandler = async (
 
   const eventData = validation.data.event;
 
-  // TODO: 動作確認必須！！！
+  const eventInDb = await prisma.event.findUniqueOrThrow({
+    where: { id: eventId },
+    include: { eventGameTypes: true, eventLocationEvents: true },
+  });
+
+  // 既に画像が設定されているなら事前に消す
+  if (eventData.coverImageFileKey) {
+    if (eventInDb.coverImageFileKey)
+      await deleteFile(eventInDb.coverImageFileKey);
+  }
+
   await prisma.event.update({
-    where: { id: event.id },
+    where: { id: eventId },
     data: {
       name: eventData.name,
       ...(eventData.organizationId && {
@@ -98,8 +206,45 @@ const patchHandler = async (
       ...(eventData.coverImageFileKey && {
         coverImageFileKey: eventData.coverImageFileKey,
       }),
+      ...(eventData.numberOfPeopleInTeam && {
+        numberOfPeopleInTeam: eventData.numberOfPeopleInTeam,
+      }),
+      ...(eventData.timeRequired && { timeRequired: eventData.timeRequired }),
     },
   });
+
+  // TODO: 一旦全て消す、後々更新に切り替えること
+  for (const egtId of eventInDb.eventGameTypes.map((egt) => egt.id)) {
+    await prisma.eventGameType.delete({
+      where: { id: egtId },
+    });
+  }
+  const gameTypeIds = validation.data.event.gameTypeIds;
+  for (const gameTypeId of gameTypeIds) {
+    await prisma.eventGameType.create({
+      data: { eventId, gameTypeId },
+    });
+  }
+
+  for (const eleId of eventInDb.eventLocationEvents.map((ele) => ele.id)) {
+    await prisma.eventLocationEvent.delete({
+      where: { id: eleId },
+    });
+  }
+  const eventLocationEvents = validation.data.event.eventLocationEvents;
+  for (const ele of eventLocationEvents) {
+    await prisma.eventLocationEvent.create({
+      data: {
+        eventId: eventId,
+        eventLocationId: ele.eventLocationId,
+        ...(ele.description && { description: ele.description }),
+        ...(ele.building && { building: ele.building }),
+        ...(ele.startedAt && { startedAt: ele.startedAt }),
+        ...(ele.endedAt && { endedAt: ele.endedAt }),
+        ...(ele.detailedSchedule && { detailedSchedule: ele.detailedSchedule }),
+      },
+    });
+  }
 
   res.status(200).end();
 };
@@ -115,6 +260,8 @@ const deleteHandler = async (
   sessionUser: SessionUser,
   event: Event
 ) => {
+  if (event.coverImageFileKey) await deleteFile(event.coverImageFileKey);
+
   await prisma.event.delete({
     where: { id: event.id },
   });

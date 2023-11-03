@@ -5,6 +5,9 @@ import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
+import { paginate } from "prisma-extension-pagination";
+import { generateReadSignedUrl } from "@/libs/cloudStorage";
+import { EventSimple } from "@/types/event";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,6 +24,10 @@ export default async function handler(
 
   try {
     switch (req.method) {
+      case "GET":
+        await getHandler(req, res, user);
+        break;
+
       case "POST":
         await postHandler(req, res, user);
         break;
@@ -34,6 +41,53 @@ export default async function handler(
     res.status(500).json({ error: "エラーが発生しました" });
   }
 }
+
+// GET request
+export type GetEventsByAdminResponseSuccessBody = {
+  events: EventSimple[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+};
+
+const getHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<GetEventsByAdminResponseSuccessBody | ResponseErrorBody>,
+  sessionUser: SessionUser
+) => {
+  const page = Number(req.query.page || 1);
+
+  const prismaWithPaginate = prisma.$extends({
+    model: { event: { paginate } },
+  });
+
+  const [events, meta] = await prismaWithPaginate.event
+    .paginate({
+      orderBy: { createdAt: "desc" },
+    })
+    .withPages({
+      limit: 20, // 1ページあたりの最大数
+      page: page,
+      includePageCount: true,
+    });
+
+  const eventsData = await Promise.all(
+    events.map(async (event) => ({
+      id: event.id,
+      name: event.name,
+      ...(event.coverImageFileKey && {
+        coverImageFileUrl: await generateReadSignedUrl(event.coverImageFileKey),
+      }),
+    }))
+  );
+
+  res.status(200).json({
+    totalCount: meta.totalCount,
+    totalPages: meta.pageCount,
+    currentPage: meta.currentPage,
+    events: eventsData,
+  });
+};
 
 // POST request
 export type PostEventByAdminRequestBody = {

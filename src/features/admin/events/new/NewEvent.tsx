@@ -1,14 +1,7 @@
-import { PageHeader } from "@/components/layouts/general/PageHeader";
-import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
-import {
-  EventSearchQueryParams,
-  useEventsQuery,
-} from "@/react_queries/events/useEventsQuery";
-import { Box, Container, Grid, Pagination, Typography } from "@mui/material";
-import { useRouter } from "next/router";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Box, Button, Container } from "@mui/material";
 import { NewEventFormProvider } from "./NewEventFormProvider";
 import { NewEventForm } from "./NewEeventForm";
+import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 
 export const NewEvent = () => {
   return (
@@ -21,10 +14,13 @@ export const NewEvent = () => {
         overflowY: "scroll",
       }}
     >
-      <PageHeader sx={{ height: "64px" }}>
-        <Typography variant="h6">新規イベント作成</Typography>
-      </PageHeader>
+      <SubPageHeader title="新規イベント作成" />
       <Container maxWidth="sm" sx={{ paddingY: "24px", background: "white" }}>
+        <Box sx={{ display: "flex" }}>
+          <Button variant="outlined" sx={{ marginLeft: "auto" }}>
+            新規作成
+          </Button>
+        </Box>
         <NewEventFormProvider>
           <NewEventForm />
         </NewEventFormProvider>

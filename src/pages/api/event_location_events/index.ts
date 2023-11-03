@@ -52,6 +52,7 @@ const getHandler = async (
           event: true,
           eventLocation: { include: { prefecture: true } },
         },
+        orderBy: { createdAt: "desc" },
       })
       .withPages({
         limit: 20, // 1ページあたりの最大数

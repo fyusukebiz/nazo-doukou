@@ -235,13 +235,13 @@ const patchHandler = async (
     });
   }
 
-  const recruitTagIdsData = validation.data.recruitTagIds;
   // TODO: 一旦全て消す、後々更新に切り替えること
   for (const rtr of recruit.recruitTagRecruits) {
     await prisma.recruitTagRecruit.delete({
       where: { id: rtr.id },
     });
   }
+  const recruitTagIdsData = validation.data.recruitTagIds;
   for (const recruitTagId of recruitTagIdsData) {
     await prisma.recruitTagRecruit.create({
       data: {

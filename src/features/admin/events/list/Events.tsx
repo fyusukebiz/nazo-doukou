@@ -1,21 +1,20 @@
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
-import { useEventLocationEventsQuery } from "@/react_queries/event_location_events/useEventLocationEventsQuery";
+import { useEventsQueryByAdmin } from "@/react_queries/admin/events/useEventsQueryByAdmin";
 import { Box, Container, Grid, Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { EventLocationEventCard } from "./misc/EventLocationEventCard";
-import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
+import { EventCard } from "./misc/EventCard";
+import { useRouterHistoryContext } from "@/features/common/RouterHistoryProvider";
 
-export const EventLocationEvents = () => {
+export const Events = () => {
   const router = useRouter();
   const [page, setPage] = useState(Number(router.query.page || 1));
-  const { data: eventLocationEventsData, status: eventLocationEventsStatus } =
-    useEventLocationEventsQuery({
-      query: { page },
-    });
+  const { data: eventsData, status: eventsStatus } = useEventsQueryByAdmin({
+    query: { page },
+  });
 
   const handleClickPage = (event: ChangeEvent<unknown>, _page: number) => {
-    sessionStorage.setItem("eventLoctionEventListPage", _page.toString()); // 次回戻ってきた時用
+    sessionStorage.setItem("eventListPage", _page.toString()); // 次回戻ってきた時用
     setPage(_page); // ページを切り替え
   };
 
@@ -25,40 +24,39 @@ export const EventLocationEvents = () => {
 
   // 初期レンダリング時のスクロール
   useEffect(() => {
-    if (eventLocationEventsStatus !== "success") return;
-    if (/^\/event_location_events\//.test(routerHistory[1])) {
+    if (eventsStatus !== "success") return;
+    if (/^\/admin\/events\//.test(routerHistory[1])) {
       // イベント詳細から戻ってきた場合、前回のスクロール位置を復元
-      const posY = sessionStorage.getItem("eventLocationEventListPosY");
+      const posY = sessionStorage.getItem("eventListPosY");
       if (posY) listBoxRef.current?.scroll(0, Number(posY));
     } else {
       // その他の場合、トップにスクロール
       listBoxRef.current?.scroll(0, 0);
     }
-    sessionStorage.removeItem("eventLocationEventListPosY");
-  }, [routerHistory, eventLocationEventsStatus]);
+    sessionStorage.removeItem("eventListPosY");
+  }, [routerHistory, eventsStatus]);
 
   const saveScrollPosition = useCallback(() => {
     const posY = listBoxRef.current?.scrollTop;
     if (posY) {
-      sessionStorage.setItem("eventLocationEventListPosY", String(posY));
+      sessionStorage.setItem("eventListPosY", String(posY));
     }
   }, []);
 
   return (
     <Box ref={listBoxRef} sx={{ height: "100%", overflowY: "scroll" }}>
       <Container sx={{ padding: "16px" }} maxWidth="xl">
-        {eventLocationEventsStatus === "pending" && <LoadingSpinner />}
-        {eventLocationEventsStatus === "success" && (
+        {eventsStatus === "pending" && <LoadingSpinner />}
+        {eventsStatus === "success" && (
           <>
             <Box sx={{ marginBottom: "10px" }}>
-              全{eventLocationEventsData.totalCount}中
-              {eventLocationEventsData.currentPage}ページ目
+              全{eventsData.totalCount}中{eventsData.currentPage}ページ目
             </Box>
             <Grid container spacing={2}>
-              {eventLocationEventsData.eventLocationEvents.map((ele, index) => (
+              {eventsData.events.map((event, index) => (
                 <Grid key={index} item xs={12} sm={6} md={4}>
-                  <EventLocationEventCard
-                    eventLocationEvent={ele}
+                  <EventCard
+                    event={event}
                     saveScrollPosition={saveScrollPosition}
                   />
                 </Grid>
@@ -73,7 +71,7 @@ export const EventLocationEvents = () => {
               }}
             >
               <Pagination
-                count={eventLocationEventsData.totalPages}
+                count={eventsData.totalPages}
                 page={page}
                 boundaryCount={0}
                 siblingCount={2}
