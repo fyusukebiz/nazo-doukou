@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 RUN yarn --frozen-lockfile
-RUN yarn prisma generate
+# RUN yarn prisma generate
 RUN yarn build
 
 ENV PORT 3000
