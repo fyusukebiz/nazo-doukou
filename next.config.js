@@ -9,7 +9,7 @@ const nextConfig = withInterceptStdout(
       return [
         {
           source: "/",
-          destination: "/events",
+          destination: "/event_location_events",
           permanent: true,
         },
       ];
