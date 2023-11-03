@@ -42,7 +42,7 @@ export const CoverImageFileAttachButtonWithLabel = () => {
           fontWeight: "bold",
         }}
       >
-        ファイル
+        ヘッダー画像
       </Box>
       <Box>
         <Button

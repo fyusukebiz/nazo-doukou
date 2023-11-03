@@ -89,6 +89,7 @@ model GameType {
   updatedAt DateTime @updatedAt
 
   userGameTypes UserGameType[]
+  eventGameTypes EventGameType[]
 }
 
 enum LikeOrDislike {
@@ -128,11 +129,25 @@ model Event {
   coverImageFileKey String?
   numberOfPeopleInTeam String?
   timeRequired String?
+  twitterTag String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   eventLocationEvents EventLocationEvent[]
   recruits Recruit[]
+  eventGameTypes EventGameType[]
+}
+
+model EventGameType {
+  id String @id @default(cuid())
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+  gameType GameType @relation(fields: [gameTypeId], references: [id], onDelete: Cascade)
+  gameTypeId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, gameTypeId])
 }
 
 model Prefecture {
@@ -162,28 +177,19 @@ model EventLocation {
 
 model EventLocationEvent {
   id String @id @default(cuid())
-  building String?
-  description String? @db.Text // EventLocation.nameがothersの時や開催日時が不明確の場合に、書き入れる
-  startedAt DateTime? @db.Date // TODO: 臨時
-  endedAt DateTime? @db.Date // TODO: 臨時
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId String
   eventLocation EventLocation @relation(fields: [eventLocationId], references: [id], onDelete: Cascade)
   eventLocationId String
+  building String?
+  description String? @db.Text // EventLocation.nameがothersの時や開催日時が不明確の場合に、書き入れる
+  startedAt DateTime? @db.Date
+  endedAt DateTime? @db.Date 
+  detailedSchedule String? @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  eventDates EventDate[]
   recruits Recruit[]
-}
-
-model EventDate {
-  id String @id @default(cuid())
-  date DateTime @db.Date
-  eventLocationEvent EventLocationEvent @relation(fields: [eventLocationEventId], references: [id], onDelete: Cascade)
-  eventLocationEventId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Recruit {
@@ -203,6 +209,27 @@ model Recruit {
 
   commentToRecruits CommentToRecruit[]
   possibleDates PossibleDate[]
+  recruitTagRecruits RecruitTagRecruit[]
+}
+
+model RecruitTag {
+  id String @id @default(cuid())
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  recruitTagRecruits RecruitTagRecruit[]
+}
+
+model RecruitTagRecruit {
+  id String @id @default(cuid())
+  recruit Recruit @relation(fields: [recruitId], references: [id], onDelete: Cascade)
+  recruitId String
+  recruitTag RecruitTag @relation(fields: [recruitTagId], references: [id], onDelete: Cascade)
+  recruitTagId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([recruitId, recruitTagId])
 }
 
 model PossibleDate {

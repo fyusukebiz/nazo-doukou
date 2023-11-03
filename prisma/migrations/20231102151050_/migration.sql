@@ -105,10 +105,22 @@ CREATE TABLE "Event" (
     "coverImageFileKey" TEXT,
     "numberOfPeopleInTeam" TEXT,
     "timeRequired" TEXT,
+    "twitterTag" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "EventGameType" (
+    "id" TEXT NOT NULL,
+    "eventId" TEXT NOT NULL,
+    "gameTypeId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "EventGameType_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -138,24 +150,17 @@ CREATE TABLE "EventLocation" (
 -- CreateTable
 CREATE TABLE "EventLocationEvent" (
     "id" TEXT NOT NULL,
+    "building" TEXT,
     "description" TEXT,
+    "startedAt" DATE,
+    "endedAt" DATE,
+    "detailedSchedule" TEXT,
     "eventId" TEXT NOT NULL,
     "eventLocationId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "EventLocationEvent_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "EventDate" (
-    "id" TEXT NOT NULL,
-    "date" DATE NOT NULL,
-    "eventLocationEventId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "EventDate_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -172,6 +177,27 @@ CREATE TABLE "Recruit" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Recruit_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RecruitTag" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "RecruitTag_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RecruitTagRecruit" (
+    "id" TEXT NOT NULL,
+    "recruitId" TEXT NOT NULL,
+    "recruitTagId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "RecruitTagRecruit_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -223,6 +249,9 @@ CREATE UNIQUE INDEX "Organization_name_key" ON "Organization"("name");
 CREATE UNIQUE INDEX "Event_name_key" ON "Event"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "EventGameType_eventId_gameTypeId_key" ON "EventGameType"("eventId", "gameTypeId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Prefecture_name_key" ON "Prefecture"("name");
 
 -- CreateIndex
@@ -230,6 +259,9 @@ CREATE UNIQUE INDEX "Prefecture_sort_key" ON "Prefecture"("sort");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "EventLocation_prefectureId_name_key" ON "EventLocation"("prefectureId", "name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RecruitTagRecruit_recruitId_recruitTagId_key" ON "RecruitTagRecruit"("recruitId", "recruitTagId");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -247,6 +279,12 @@ ALTER TABLE "UserGameType" ADD CONSTRAINT "UserGameType_gameTypeId_fkey" FOREIGN
 ALTER TABLE "Event" ADD CONSTRAINT "Event_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "EventGameType" ADD CONSTRAINT "EventGameType_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EventGameType" ADD CONSTRAINT "EventGameType_gameTypeId_fkey" FOREIGN KEY ("gameTypeId") REFERENCES "GameType"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "EventLocation" ADD CONSTRAINT "EventLocation_prefectureId_fkey" FOREIGN KEY ("prefectureId") REFERENCES "Prefecture"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -256,9 +294,6 @@ ALTER TABLE "EventLocationEvent" ADD CONSTRAINT "EventLocationEvent_eventId_fkey
 ALTER TABLE "EventLocationEvent" ADD CONSTRAINT "EventLocationEvent_eventLocationId_fkey" FOREIGN KEY ("eventLocationId") REFERENCES "EventLocation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventDate" ADD CONSTRAINT "EventDate_eventLocationEventId_fkey" FOREIGN KEY ("eventLocationEventId") REFERENCES "EventLocationEvent"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Recruit" ADD CONSTRAINT "Recruit_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -266,6 +301,12 @@ ALTER TABLE "Recruit" ADD CONSTRAINT "Recruit_eventId_fkey" FOREIGN KEY ("eventI
 
 -- AddForeignKey
 ALTER TABLE "Recruit" ADD CONSTRAINT "Recruit_eventLocationEventId_fkey" FOREIGN KEY ("eventLocationEventId") REFERENCES "EventLocationEvent"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RecruitTagRecruit" ADD CONSTRAINT "RecruitTagRecruit_recruitId_fkey" FOREIGN KEY ("recruitId") REFERENCES "Recruit"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RecruitTagRecruit" ADD CONSTRAINT "RecruitTagRecruit_recruitTagId_fkey" FOREIGN KEY ("recruitTagId") REFERENCES "RecruitTag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PossibleDate" ADD CONSTRAINT "PossibleDate_recruitId_fkey" FOREIGN KEY ("recruitId") REFERENCES "Recruit"("id") ON DELETE CASCADE ON UPDATE CASCADE;

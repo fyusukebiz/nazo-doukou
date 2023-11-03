@@ -9,6 +9,7 @@ type GetEventRequest = {
 };
 
 const getEvent = async (req: GetEventRequest) => {
+  console.log("eventId2", req.path.eventId);
   const { data } = await axios.get<GetEventResponseSuccessBody>(
     `/api/events/${req.path.eventId}`
   );
@@ -19,5 +20,6 @@ export const useEventQuery = (req: GetEventRequest) => {
   return useQuery({
     queryKey: ["getEvent", req.path.eventId],
     queryFn: () => getEvent(req),
+    enabled: !!req.path.eventId,
   });
 };

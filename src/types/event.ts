@@ -1,6 +1,8 @@
 export type Event = {
   id: string;
   name: string;
+  detailedSchedule?: string;
+  twitterTag?: string;
   description?: string;
   sourceUrl?: string;
   coverImageFileUrl?: string;
@@ -20,12 +22,13 @@ export type Event = {
       building?: string;
       color?: string;
       bgColor?: string;
-      startedAt?: string; // TODO:臨時
-      endedAt?: string; // TODO:臨時
-      dates: {
-        id: string;
-        date: string;
-      }[];
+      startedAt?: string;
+      endedAt?: string;
+      detailedSchedule?: string;
     }[];
+  }[];
+  gameTypes: {
+    id: string;
+    name: string;
   }[];
 };

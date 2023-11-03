@@ -69,7 +69,6 @@ const getHandler = async (
     .paginate({
       where: {
         eventLocationEvents: {
-          // some: { eventDates: { some: { date: dateCondition } } }, // TODO: 一時的に解除
           ...(eventLocationIds && {
             some: { eventLocationId: { in: eventLocationIds } },
           }),
@@ -77,10 +76,10 @@ const getHandler = async (
       },
       include: {
         organization: true,
+        eventGameTypes: { include: { gameType: true } },
         eventLocationEvents: {
           include: {
             eventLocation: { include: { prefecture: true } },
-            eventDates: true,
           },
         },
       },
@@ -124,12 +123,11 @@ const getHandler = async (
                   ...(loc.bgColor && { bgColor: loc.bgColor }),
                   ...(ele.startedAt && {
                     startedAt: ele.startedAt.toISOString(),
-                  }), // TODO: 一時的
-                  ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }), // TODO: 一時的
-                  dates: ele.eventDates.map((eventDate) => ({
-                    id: eventDate.id,
-                    date: eventDate.date.toISOString(),
-                  })),
+                  }),
+                  ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }),
+                  ...(ele.detailedSchedule && {
+                    detailedSchedule: ele.detailedSchedule,
+                  }),
                 };
               })
               .filter((data) => !!data),
@@ -143,6 +141,11 @@ const getHandler = async (
       return {
         id: event.id,
         name: event.name,
+        gameTypes: event.eventGameTypes.map((egt) => ({
+          id: egt.gameType.id,
+          name: egt.gameType.name,
+        })),
+        ...(event.twitterTag && { twitterTag: event.twitterTag }),
         ...(event.numberOfPeopleInTeam && {
           numberOfPeopleInTeam: event.numberOfPeopleInTeam,
         }),

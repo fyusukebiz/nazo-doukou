@@ -5,7 +5,6 @@ import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
-import { Sex } from "@prisma/client";
 import { paginate } from "prisma-extension-pagination";
 import { generateReadSignedUrl } from "@/libs/cloudStorage";
 
@@ -147,6 +146,7 @@ export type PostRecruitRequestBody = {
     numberOfPeople?: number;
     description?: string;
   };
+  recruitTagIds: string[];
   possibleDats: {
     date: string;
     priority: number;
@@ -171,6 +171,7 @@ const postHandler = async (
         numberOfPeople: z.number().optional(),
         description: z.string().optional(),
       }),
+      recruitTagIds: z.string().array(),
       possibleDates: z
         .object({
           date: z.string().min(1),
@@ -197,6 +198,15 @@ const postHandler = async (
         recruitId: recruit.id,
         date: possibleDate.date,
         priority: possibleDate.priority,
+      },
+    });
+  }
+
+  for (const recruitTagId of validation.data.recruitTagIds) {
+    await prisma.recruitTagRecruit.create({
+      data: {
+        recruitId: recruit.id,
+        recruitTagId: recruitTagId,
       },
     });
   }

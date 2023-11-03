@@ -69,6 +69,16 @@ async function main() {
   for (const gameType of gameTypes) {
     await prisma.gameType.create({ data: { name: gameType } });
   }
+
+  const recruitTags = [
+    "初心者です",
+    "初心者歓迎",
+    "ゆるく楽しみたいです",
+    "本気でクリア目指してます",
+  ];
+  for (const recruitTag of recruitTags) {
+    await prisma.recruitTag.create({ data: { name: recruitTag } });
+  }
 }
 
 console.log("## Start");

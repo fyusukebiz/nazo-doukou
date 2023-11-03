@@ -70,6 +70,7 @@ const patchHandler = async (
   const schema = z.object({
     event: z.object({
       name: z.string().min(1).max(255),
+      twitterTag: z.string().optional(),
       organizationId: z.string().optional(),
       description: z.string().optional(),
       sourceUrl: z.string().optional(),
@@ -91,6 +92,7 @@ const patchHandler = async (
       ...(eventData.organizationId && {
         organizationId: eventData.organizationId,
       }),
+      ...(eventData.twitterTag && { twitterTag: eventData.twitterTag }),
       ...(eventData.description && { description: eventData.description }),
       ...(eventData.sourceUrl && { sourceUrl: eventData.sourceUrl }),
       ...(eventData.coverImageFileKey && {

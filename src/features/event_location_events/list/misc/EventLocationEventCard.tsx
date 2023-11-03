@@ -1,59 +1,38 @@
 import { Box, Chip } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
 import { useRouter } from "next/router";
-import { Event } from "@/types/event";
 import { useMemo } from "react";
 import { format } from "date-fns";
+import { EventLocationEventSimple } from "@/types/eventLocationEvent";
 
 type Props = {
-  event: Event;
+  eventLocationEvent: EventLocationEventSimple;
   saveScrollPosition?: () => void;
 };
 
 // TODO 詳細と一覧でコンポーネントを分けた方が良い
-export const EventCard = (props: Props) => {
-  const { event, saveScrollPosition } = props;
+export const EventLocationEventCard = (props: Props) => {
+  const { eventLocationEvent: ele, saveScrollPosition } = props;
   const router = useRouter();
 
   const handleClickCard = () => {
     if (!saveScrollPosition) return;
     saveScrollPosition();
-    router.push(`/events/${event.id}`);
+    router.push(`/event_location_events/${ele.id}`);
   };
 
   const period = useMemo(() => {
-    // const dateArrayInMsec = event.prefectures
-    //   .map((pref) =>
-    //     pref.eventLocations
-    //       .map((loc) => loc.dates.map((date) => date.date))
-    //       .flat()
-    //   )
-    //   .flat()
-    //   .map((date) => new Date(date).getTime());
-    // if (dateArrayInMsec.length === 0) {
-    //   return "";
-    // }
-
-    // const earliestDate = new Date(Math.min(...dateArrayInMsec));
-    // const latestDate = new Date(Math.max(...dateArrayInMsec));
-    // if (earliestDate === latestDate) return format(earliestDate, "MM/dd");
-
-    // return `${format(earliestDate, "MM/dd")} ~ ${format(latestDate, "MM/dd")}`;
-
-    // TODO: 臨時
-    const ele = event.prefectures.map((pref) => pref.eventLocations).flat()[0];
-    if (!ele) return "";
     if (!ele.startedAt && !ele.endedAt) return "";
     return `${
       ele.startedAt ? format(new Date(ele.startedAt), "MM/dd") : ""
     } ~ ${ele.endedAt ? format(new Date(ele.endedAt), "MM/dd") : ""}`;
-  }, [event.prefectures]);
+  }, [ele]);
 
   return (
     <Box sx={{ border: `1px solid ${grey[300]}`, borderRadius: "10px" }}>
-      {event.coverImageFileUrl ? (
+      {ele.event.coverImageFileUrl ? (
         <img
-          src={event.coverImageFileUrl}
+          src={ele.event.coverImageFileUrl}
           style={{
             objectFit: "cover",
             maxHeight: "220px",
@@ -84,27 +63,24 @@ export const EventCard = (props: Props) => {
         </Box>
       )}
       <Box sx={{ padding: "10px" }}>
-        <Box sx={{ marginBottom: "4px", fontSize: "20px" }}>{event.name}</Box>
+        <Box sx={{ marginBottom: "4px", fontSize: "20px" }}>
+          {ele.event.name}
+        </Box>
         <Box
           sx={{ display: "flex", alignItems: "center", marginBottom: "4px" }}
         >
           {/* 期間 */}
           <Box>{period}</Box>
           {/* 場所 */}
-          {event.prefectures.length > 0 && (
-            <Chip
-              label={event.prefectures
-                .map((p) => p.eventLocations.map((loc) => loc.name))
-                .flat()
-                .join(" ")}
-              sx={{
-                background: lightBlue[200],
-                color: lightBlue[900],
-                marginLeft: "auto",
-              }}
-              size="small"
-            />
-          )}
+          <Chip
+            label={`${ele.eventLocation.prefecture.name} / ${ele.eventLocation.name}`}
+            sx={{
+              background: lightBlue[200],
+              color: lightBlue[900],
+              marginLeft: "auto",
+            }}
+            size="small"
+          />
         </Box>
       </Box>
     </Box>

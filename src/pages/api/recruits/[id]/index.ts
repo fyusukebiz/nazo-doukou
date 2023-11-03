@@ -5,8 +5,6 @@ import prisma from "@/libs/prisma";
 import { SessionUser } from "@/types/next-auth";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
-import { Sex } from "@prisma/client";
-import { paginate } from "prisma-extension-pagination";
 import { generateReadSignedUrl } from "@/libs/cloudStorage";
 
 export default async function handler(
@@ -66,6 +64,7 @@ export type GetRecruitResponseSuccessBody = {
       date: string;
       priority?: number;
     }[];
+    recruitTags: { id: string; name: string }[];
     comments: {
       id: string;
       message: string;
@@ -95,6 +94,7 @@ const getHandler = async (
       eventLocationEvent: { include: { eventLocation: true } },
       possibleDates: true,
       commentToRecruits: { include: { user: true } },
+      recruitTagRecruits: { include: { recruitTag: true } },
     },
   });
   if (!recruit) return res.status(404).json({ error: "募集がありません" });
@@ -123,6 +123,10 @@ const getHandler = async (
     }),
     ...(recruit.numberOfPeople && { numberOfPeople: recruit.numberOfPeople }),
     ...(recruit.description && { description: recruit.description }),
+    recruitTags: recruit.recruitTagRecruits.map((rtr) => ({
+      id: rtr.recruitTag.id,
+      name: rtr.recruitTag.name,
+    })),
     possibleDate: recruit.possibleDates.map((date) => ({
       id: date.id,
       date: date.date.toISOString(),
@@ -190,6 +194,7 @@ const patchHandler = async (
         numberOfPeople: z.number().optional(),
         description: z.string().optional(),
       }),
+      recruitTagIds: z.string().array(),
       possibleDates: z
         .object({
           date: z.string().min(1),
@@ -210,7 +215,7 @@ const patchHandler = async (
   const recruit = await prisma.recruit.update({
     where: { id: recruitId },
     data: recruitData,
-    include: { possibleDates: true },
+    include: { possibleDates: true, recruitTagRecruits: true },
   });
 
   const possibleDatesData = validation.data.possibleDates;
@@ -226,6 +231,22 @@ const patchHandler = async (
         recruitId: recruit.id,
         date: possibleDate.date,
         priority: possibleDate.priority,
+      },
+    });
+  }
+
+  const recruitTagIdsData = validation.data.recruitTagIds;
+  // TODO: 一旦全て消す、後々更新に切り替えること
+  for (const rtr of recruit.recruitTagRecruits) {
+    await prisma.recruitTagRecruit.delete({
+      where: { id: rtr.id },
+    });
+  }
+  for (const recruitTagId of recruitTagIdsData) {
+    await prisma.recruitTagRecruit.create({
+      data: {
+        recruitId: recruit.id,
+        recruitTagId: recruitTagId,
       },
     });
   }

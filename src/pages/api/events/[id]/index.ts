@@ -43,10 +43,10 @@ const getHandler = async (
     where: { id: eventId },
     include: {
       organization: true,
+      eventGameTypes: { include: { gameType: true } },
       eventLocationEvents: {
         include: {
           eventLocation: { include: { prefecture: true } },
-          eventDates: true,
         },
       },
     },
@@ -83,14 +83,11 @@ const getHandler = async (
               ...(ele.description && { description: ele.description }),
               ...(loc.color && { color: loc.color }),
               ...(loc.bgColor && { bgColor: loc.bgColor }),
-              ...(ele.startedAt && {
-                startedAt: ele.startedAt.toISOString(),
-              }), // TODO: 一時的
-              ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }), // TODO: 一時的
-              dates: ele.eventDates.map((eventDate) => ({
-                id: eventDate.id,
-                date: eventDate.date.toISOString(),
-              })),
+              ...(ele.startedAt && { startedAt: ele.startedAt.toISOString() }),
+              ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }),
+              ...(ele.detailedSchedule && {
+                detailedSchedule: ele.detailedSchedule,
+              }),
             };
           })
           .filter((data) => !!data),
@@ -104,6 +101,10 @@ const getHandler = async (
   const eventData = {
     id: event.id,
     name: event.name,
+    gameTypes: event.eventGameTypes.map((egt) => ({
+      id: egt.gameType.id,
+      name: egt.gameType.name,
+    })),
     ...(event.numberOfPeopleInTeam && {
       numberOfPeopleInTeam: event.numberOfPeopleInTeam,
     }),
@@ -114,6 +115,7 @@ const getHandler = async (
         name: event.organization.name,
       },
     }),
+    ...(event.twitterTag && { twitterTag: event.twitterTag }),
     ...(event.description && { description: event.description }),
     ...(event.sourceUrl && { sourceUrl: event.sourceUrl }),
     ...(event.coverImageFileKey && {

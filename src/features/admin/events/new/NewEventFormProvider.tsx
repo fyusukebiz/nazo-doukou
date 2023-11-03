@@ -8,6 +8,8 @@ const schema = z.object({
   organization: z.object({ label: z.string(), value: z.string().nullable() }),
   description: z.string(),
   sourceUrl: z.string(),
+  twitterTag: z.string(),
+  gameTypes: z.object({ label: z.string(), value: z.string() }).array(),
   coverImageFile: z
     .custom<File | null>()
     .refine(
@@ -39,45 +41,11 @@ const schema = z.object({
           }),
         label: z.string(),
       }),
-      startedAt: z
-        .date()
-        .nullable()
-        .transform((value, ctx) => {
-          if (value == null)
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "日付を入力してください",
-            });
-          return value;
-        }),
-      endedAt: z
-        .date()
-        .nullable()
-        .transform((value, ctx) => {
-          if (value == null)
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "日付を入力してください",
-            });
-          return value;
-        }),
+      startedAt: z.date().nullable(),
+      endedAt: z.date().nullable(),
+      detailedSchedule: z.string(),
       building: z.string(),
       description: z.string(),
-      eventDates: z
-        .object({
-          date: z
-            .date()
-            .nullable()
-            .transform((value, ctx) => {
-              if (value == null)
-                ctx.addIssue({
-                  code: z.ZodIssueCode.custom,
-                  message: "日付を入力してください",
-                });
-              return value;
-            }),
-        })
-        .array(),
     })
     .array(),
 });
@@ -91,18 +59,13 @@ type Props = {
   children: ReactNode;
 };
 
-export const defaultEventDate = {
-  date: null,
-};
-
 export const defaultEventLocationEvent = {
   eventLocation: { value: null, label: "" },
   startedAt: null,
   endedAt: null,
   building: "",
+  detailedSchedule: "",
   description: "",
-  // eventDates: [defaultEventDate],
-  eventDates: [],
 };
 
 export const NewEventFormProvider = ({ children }: Props) => {
@@ -112,6 +75,8 @@ export const NewEventFormProvider = ({ children }: Props) => {
     defaultValues: {
       name: "",
       organization: { label: "", value: null },
+      gameTypes: [],
+      twitterTag: "",
       description: "",
       sourceUrl: "",
       coverImageFile: null,

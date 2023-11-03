@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Grid, Box, Button } from "@mui/material";
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { SubmitHandler, useFieldArray } from "react-hook-form";
 import {
   NewEventFormSchema,
@@ -14,7 +14,6 @@ import { useRouter } from "next/router";
 import { InputWithLabelRHF } from "@/components/forms/hook_form/InputWithLabelRHF";
 import { usePrefecturesQuery } from "@/react_queries/prefectures/usePrefecturesQuery";
 import { CoverImageFileAttachButtonWithLabel } from "./CoverImageFileAttachButtonWithLabel";
-import { EventDatesForm } from "./EventDatesForm";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useOrganizationsQuery } from "@/react_queries/organizations/useOrganizationsQuery";
 import { grey } from "@mui/material/colors";
@@ -23,6 +22,8 @@ import { useUploadSignedUrlsQuery } from "@/react_queries/upload_signed_urls";
 import axios from "axios";
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
+import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
+import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
 
 export const NewEventForm = () => {
   const router = useRouter();
@@ -36,6 +37,8 @@ export const NewEventForm = () => {
 
   const { data: prefecturesData, status: prefecturesStatus } =
     usePrefecturesQuery();
+
+  const { data: gameTypesData, status: gameTypesStatus } = useGameTypesQuery();
 
   const {
     fields: eventLocationEventFields,
@@ -58,6 +61,15 @@ export const NewEventForm = () => {
       .flat()
       .map((loc) => ({ value: loc.id, label: loc.name }));
   }, [prefecturesData, prefecturesStatus]);
+
+  const gameTypes = useMemo(
+    () =>
+      gameTypesData?.gameTypes.map((type) => ({
+        value: type.id,
+        label: type.name,
+      })) ?? [],
+    [gameTypesData]
+  );
 
   const organizations = useMemo(() => {
     if (organizationsStatus !== "success") return [];
@@ -116,7 +128,7 @@ export const NewEventForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <SingleSelectWithLabelRHF<
             NewEventFormSchema,
             { label: string; value: string }
@@ -127,7 +139,7 @@ export const NewEventForm = () => {
             placeholder="組織"
             options={organizations}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12}>
           <CoverImageFileAttachButtonWithLabel />
@@ -167,6 +179,29 @@ export const NewEventForm = () => {
             name="timeRequired"
             label="所要時間"
             control={control}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <MultipleSelectWithLabelRHF<
+            NewEventFormSchema,
+            { label: string; value: string }
+          >
+            name="gameTypes"
+            control={control}
+            label="ゲームタイプ"
+            placeholder="ゲームタイプ"
+            options={gameTypes}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <InputWithLabelRHF<NewEventFormSchema>
+            name="twitterTag"
+            label="Xタグ"
+            control={control}
+            placeholder="頭に#は不要"
             fullWidth
           />
         </Grid>
@@ -233,6 +268,14 @@ export const NewEventForm = () => {
                   endIcon={<BiCalendar size={30} />}
                   minDate={new Date()}
                 />
+                <Grid item xs={12}>
+                  <InputWithLabelRHF<NewEventFormSchema>
+                    name={`eventLocationEvents.${index}.detailedSchedule`}
+                    label="スケジュール"
+                    control={control}
+                    fullWidth
+                  />
+                </Grid>
                 <InputWithLabelRHF<NewEventFormSchema>
                   name={`eventLocationEvents.${index}.description`}
                   label="詳細"
@@ -241,10 +284,6 @@ export const NewEventForm = () => {
                   minRows={5}
                   fullWidth
                 />
-                {/* <EventDatesForm
-                  control={control}
-                  eventLocationEventIndex={index}
-                /> */}
               </Box>
             ))}
           </Box>

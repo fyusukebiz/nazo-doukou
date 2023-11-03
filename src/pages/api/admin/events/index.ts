@@ -45,15 +45,15 @@ export type PostEventByAdminRequestBody = {
     coverImageFileKey?: string;
     numberOfPeopleInTeam?: string;
     timeRequired?: string;
+    twitterTag?: string;
+    gameTypeIds: string[];
     eventLocationEvents: {
       description?: string;
       building?: string;
       eventLocationId: string;
       startedAt?: string;
       endedAt?: string;
-      eventDates?: {
-        date: string;
-      }[];
+      detailedSchedule?: string;
     }[];
   };
 };
@@ -75,19 +75,16 @@ const postHandler = async (
       coverImageFileKey: z.string().optional(),
       numberOfPeopleInTeam: z.string().optional(),
       timeRequired: z.string().optional(),
+      twitterTag: z.string().optional(),
+      gameTypeIds: z.string().array(),
       eventLocationEvents: z
         .object({
           eventLocationId: z.string().min(1),
           building: z.string().optional(),
           description: z.string().optional(),
-          startedAt: z.string().optional(), // TODO:臨時
-          endedAt: z.string().optional(), // TODO:臨時
-          eventDates: z
-            .object({
-              date: z.string().min(1), // TODO: Date型でバリデーションをかけるべき
-            })
-            .array()
-            .optional(),
+          startedAt: z.string().optional(),
+          endedAt: z.string().optional(),
+          detailedSchedule: z.string().optional(),
         })
         .array(),
     }),
@@ -99,7 +96,6 @@ const postHandler = async (
 
   const eventData = validation.data.event;
 
-  // TODO: 動作確認必須！！！
   const event = await prisma.event.create({
     data: {
       name: eventData.name,
@@ -108,6 +104,7 @@ const postHandler = async (
       }),
       ...(eventData.description && { description: eventData.description }),
       ...(eventData.sourceUrl && { sourceUrl: eventData.sourceUrl }),
+      ...(eventData.twitterTag && { twitterTag: eventData.twitterTag }),
       ...(eventData.coverImageFileKey && {
         coverImageFileKey: eventData.coverImageFileKey,
       }),
@@ -118,8 +115,14 @@ const postHandler = async (
     },
   });
 
+  for (const gameTypeId of eventData.gameTypeIds) {
+    await prisma.eventGameType.create({
+      data: { gameTypeId, eventId: event.id },
+    });
+  }
+
   for (const eleData of eventData.eventLocationEvents) {
-    const eventLocationEvent = await prisma.eventLocationEvent.create({
+    await prisma.eventLocationEvent.create({
       data: {
         eventId: event.id,
         eventLocationId: eleData.eventLocationId,
@@ -127,19 +130,11 @@ const postHandler = async (
         ...(eleData.endedAt && { endedAt: eleData.endedAt }),
         ...(eleData.building && { building: eleData.building }),
         ...(eleData.description && { description: eleData.description }),
+        ...(eleData.detailedSchedule && {
+          detailedSchedule: eleData.detailedSchedule,
+        }),
       },
     });
-
-    if (eleData.eventDates) {
-      for (const eventDateData of eleData.eventDates) {
-        const eventDate = await prisma.eventDate.create({
-          data: {
-            eventLocationEventId: eventLocationEvent.id,
-            date: eventDateData.date,
-          },
-        });
-      }
-    }
   }
 
   res.status(200).end();
