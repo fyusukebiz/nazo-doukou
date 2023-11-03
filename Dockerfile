@@ -1,4 +1,4 @@
-FROM node:16.18.0-alpine
+FROM node:20.7.0-alpine
 
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -7,6 +7,7 @@ WORKDIR /app
 COPY . .
 
 RUN yarn --frozen-lockfile
+RUN yarn prisma generate
 RUN yarn build
 
 ENV PORT 3000
