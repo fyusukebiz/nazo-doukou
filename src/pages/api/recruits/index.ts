@@ -7,6 +7,7 @@ import { generateReadSignedUrl } from "@/libs/cloudStorage";
 import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 import { User } from "@prisma/client";
+import { RecruitSimple } from "@/types/recruit";
 
 export default async function handler(
   req: NextApiRequest,
@@ -60,26 +61,7 @@ export default async function handler(
 
 // GET request
 export type GetRecruitsResponseSuccessBody = {
-  recruits: {
-    id: string;
-    user: {
-      id?: string;
-      name: string;
-      iconImageUrl?: string;
-      twitter?: string;
-      instagram?: string;
-    };
-    eventName: string;
-    eventLocation?: string;
-    numberOfPeople?: number;
-    description?: string;
-    createdAt: string;
-    possibleDate: {
-      id: string;
-      date: string;
-      priority?: number;
-    }[];
-  }[];
+  recruits: RecruitSimple[];
   totalCount: number;
   totalPages: number;
   currentPage: number;
@@ -100,9 +82,7 @@ const getHandler = async (
   const [recruits, meta] = await prismaWithPaginate.recruit
     .paginate({
       include: {
-        user: true,
-        event: true,
-        eventLocationEvent: { include: { eventLocation: true } },
+        eventLocationEvent: { include: { event: true, eventLocation: true } },
         possibleDates: true,
       },
     })
@@ -115,34 +95,53 @@ const getHandler = async (
   const recruitsData = await Promise.all(
     recruits.map(async (recruit) => ({
       id: recruit.id,
-      ...(recruit.user
-        ? {
-            user: {
-              id: recruit.user.id,
-              name: recruit.user.name || "名無しさん",
-              ...(recruit.user.iconImageFileKey && {
-                iconImageUrl: await generateReadSignedUrl(
-                  recruit.user.iconImageFileKey
-                ),
-              }),
-              ...(recruit.user.twitter && { twitter: recruit.user.twitter }),
-              ...(recruit.user.instagram && {
-                instagram: recruit.user.instagram,
-              }),
-            },
-          }
-        : { user: { name: "名無しさん" } }),
-      eventName: recruit.event ? recruit.event.name : recruit.eventName!, // どちらかは必ずデータがある
+      ...(recruit.manualEventName && {
+        manualEventName: recruit.manualEventName,
+      }),
+      ...(recruit.manualEventLocation && {
+        manualEventLocation: recruit.manualEventLocation,
+      }),
       ...(recruit.eventLocationEvent && {
-        eventLocation: recruit.eventLocationEvent.eventLocation.name,
+        eventLocationEvent: {
+          id: recruit.eventLocationEvent.id,
+          ...(recruit.eventLocationEvent.building && {
+            building: recruit.eventLocationEvent.building,
+          }),
+          event: {
+            id: recruit.eventLocationEvent.event.id,
+            name: recruit.eventLocationEvent.event.name,
+            ...(recruit.eventLocationEvent.event.coverImageFileKey && {
+              coverImageFileUrl: await generateReadSignedUrl(
+                recruit.eventLocationEvent.event.coverImageFileKey
+              ),
+            }),
+          },
+          eventLocation: {
+            id: recruit.eventLocationEvent.eventLocation.id,
+            name: recruit.eventLocationEvent.eventLocation.name,
+          },
+        },
       }),
       ...(recruit.numberOfPeople && { numberOfPeople: recruit.numberOfPeople }),
-      ...(recruit.description && { description: recruit.description }),
-      possibleDate: recruit.possibleDates.map((date) => ({
-        id: date.id,
-        date: date.date.toISOString(),
-        ...(date.priority && { priority: date.priority }),
-      })),
+      possibleDates: recruit.possibleDates
+        .sort((a, b) => {
+          // 数字が小さい方が、配列の頭（左側）の方に配置される, nullは最後
+          if (a.priority === null) {
+            return 1;
+          }
+          if (b.priority === null) {
+            return -1;
+          }
+          if (a.priority === b.priority) {
+            return 0;
+          }
+          return a.priority < b.priority ? -1 : 1;
+        })
+        .map((date) => ({
+          id: date.id,
+          date: date.date.toISOString(),
+          ...(date.priority && { priority: date.priority }),
+        })),
       createdAt: recruit.createdAt.toISOString(),
     }))
   );
@@ -157,18 +156,18 @@ const getHandler = async (
 
 // POST request
 export type PostRecruitRequestBody = {
+  isSelectType: boolean;
   recruit: {
-    eventName?: string;
-    eventLocation?: string;
-    eventId?: string;
+    manualEventName?: string;
+    manualEventLocation?: string;
     eventLocationEventId?: string;
     numberOfPeople?: number;
     description?: string;
   };
   recruitTagIds: string[];
-  possibleDats: {
+  possibleDates: {
     date: string;
-    priority: number;
+    priority?: number;
   }[];
 };
 export type PostRecruitResponseSuccessBody = "";
@@ -182,10 +181,10 @@ const postHandler = async (
 
   const schema = z
     .object({
+      isSelectType: z.boolean(),
       recruit: z.object({
-        eventName: z.string().optional(),
-        eventLocation: z.string().optional(),
-        eventId: z.string().optional(),
+        manualEventName: z.string().optional(),
+        manualEventLocation: z.string().optional(),
         eventLocationEventId: z.string().optional(),
         numberOfPeople: z.number().optional(),
         description: z.string().optional(),
@@ -198,9 +197,30 @@ const postHandler = async (
         })
         .array(),
     })
-    .refine((args) => args.recruit.eventId || args.recruit.eventName, {
-      message: "イベント名を入力してください",
-      path: ["recruit.eventId"],
+    .superRefine((val, ctx) => {
+      if (val.isSelectType && !val.recruit.eventLocationEventId) {
+        ctx.addIssue({
+          path: ["recruit.eventLocationEventId"],
+          code: "custom",
+          message: "イベントが未入力です。",
+        });
+      }
+
+      if (!val.isSelectType && !val.recruit.manualEventLocation) {
+        ctx.addIssue({
+          path: ["recruit.manualEventLocation"],
+          code: "custom",
+          message: "開催場所を記載してください",
+        });
+      }
+
+      if (!val.isSelectType && !val.recruit.manualEventName) {
+        ctx.addIssue({
+          path: ["recruit.manualEventName"],
+          code: "custom",
+          message: "イベント名を記載してください",
+        });
+      }
     });
 
   const validation = schema.safeParse(rawParams);
@@ -208,7 +228,9 @@ const postHandler = async (
     return res.status(400).json({ error: "入力に間違いがあります" });
 
   const recruitData = validation.data.recruit;
-  const recruit = await prisma.recruit.create({ data: recruitData });
+  const recruit = await prisma.recruit.create({
+    data: { ...recruitData, userId: user.id },
+  });
 
   const possibleDatesData = validation.data.possibleDates;
   for (const possibleDate of possibleDatesData) {

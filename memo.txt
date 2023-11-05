@@ -23,3 +23,7 @@ PROJECT_ID=nazo-doukou
   gcloud config set project ${PROJECT_ID}
 gsutil cors set cors_setting_prod.json gs://nazo-doukou-production-bucket
 gsutil cors get gs://nazo-doukou-production-bucket
+
+
+#### カラム名の変更
+https://www.basedash.com/blog/how-to-rename-a-table-or-column-using-prisma-migrations

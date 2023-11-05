@@ -1,19 +1,18 @@
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
-import { useEventLocationEventsQuery } from "@/react_queries/event_location_events/useEventLocationEventsQuery";
+import { useRecruitsQuery } from "@/react_queries/recruits/useRecruitsQuery";
 import { Box, Container, Grid, Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { EventLocationEventCard } from "./misc/EventLocationEventCard";
+import { RecruitCard } from "./misc/RecruitCard";
 import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
 import { blue, grey, teal } from "@mui/material/colors";
 
-export const EventLocationEvents = () => {
+export const Recruits = () => {
   const router = useRouter();
   const [page, setPage] = useState(Number(router.query.page || 1));
-  const { data: eventLocationEventsData, status: eventLocationEventsStatus } =
-    useEventLocationEventsQuery({
-      query: { page },
-    });
+  const { data: recruitsData, status: recruitsStatus } = useRecruitsQuery({
+    query: { page },
+  });
 
   const handleClickPage = (event: ChangeEvent<unknown>, _page: number) => {
     setPage(_page); // ページを切り替え
@@ -25,30 +24,30 @@ export const EventLocationEvents = () => {
 
   // 初期レンダリング時のスクロール
   useEffect(() => {
-    if (eventLocationEventsStatus !== "success") return;
-    if (/^\/event_location_events\//.test(routerHistory[1])) {
+    if (recruitsStatus !== "success") return;
+    if (/^\/recruits\//.test(routerHistory[1])) {
       // イベント詳細から戻ってきた場合、前回のスクロール位置を復元
-      const posY = sessionStorage.getItem("eventLocationEventListPosY");
+      const posY = sessionStorage.getItem("recruitListPosY");
       if (posY) listBoxRef.current?.scroll(0, Number(posY));
     } else {
       // その他の場合、トップにスクロール
       listBoxRef.current?.scroll(0, 0);
     }
-    sessionStorage.removeItem("eventLocationEventListPosY");
-  }, [routerHistory, eventLocationEventsStatus]);
+    sessionStorage.removeItem("recruitListPosY");
+  }, [routerHistory, recruitsStatus]);
 
   const saveScrollPosition = useCallback(() => {
     const posY = listBoxRef.current?.scrollTop;
     if (posY) {
-      sessionStorage.setItem("eventLocationEventListPosY", String(posY));
+      sessionStorage.setItem("recruitListPosY", String(posY));
     }
   }, []);
 
   return (
     <Box ref={listBoxRef} sx={{ height: "100%", overflowY: "scroll" }}>
       <Container sx={{ padding: "16px" }} maxWidth="xl">
-        {eventLocationEventsStatus === "pending" && <LoadingSpinner />}
-        {eventLocationEventsStatus === "success" && (
+        {recruitsStatus === "pending" && <LoadingSpinner />}
+        {recruitsStatus === "success" && (
           <>
             <Box
               sx={{
@@ -61,6 +60,20 @@ export const EventLocationEvents = () => {
               <Box
                 sx={{
                   width: "50%",
+                  color: teal[500],
+                  backgroundColor: teal[100],
+                  borderRadius: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "40px",
+                }}
+              >
+                <Box>募集</Box>
+              </Box>
+              <Box
+                sx={{
+                  width: "50%",
                   backgroundColor: grey[100],
                   borderRadius: "5px",
                   display: "flex",
@@ -69,34 +82,19 @@ export const EventLocationEvents = () => {
                   height: "40px",
                   cursor: "pointer",
                 }}
-                onClick={() => router.push("/recruits")}
-              >
-                <Box>募集</Box>
-              </Box>
-              <Box
-                sx={{
-                  width: "50%",
-                  color: blue[500],
-                  backgroundColor: blue[100],
-                  borderRadius: "5px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "40px",
-                }}
+                onClick={() => router.push("/even_location_events")}
               >
                 <Box>イベント</Box>
               </Box>
             </Box>
             <Box sx={{ marginBottom: "10px" }}>
-              全{eventLocationEventsData.totalCount}中
-              {eventLocationEventsData.currentPage}ページ目
+              全{recruitsData.totalCount}中{recruitsData.currentPage}ページ目
             </Box>
             <Grid container spacing={2}>
-              {eventLocationEventsData.eventLocationEvents.map((ele, index) => (
+              {recruitsData.recruits.map((recruit, index) => (
                 <Grid key={index} item xs={12} sm={6} md={4}>
-                  <EventLocationEventCard
-                    eventLocationEvent={ele}
+                  <RecruitCard
+                    recruit={recruit}
                     saveScrollPosition={saveScrollPosition}
                   />
                 </Grid>
@@ -111,7 +109,7 @@ export const EventLocationEvents = () => {
               }}
             >
               <Pagination
-                count={eventLocationEventsData.totalPages}
+                count={recruitsData.totalPages}
                 page={page}
                 boundaryCount={0}
                 siblingCount={2}

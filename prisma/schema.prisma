@@ -91,7 +91,6 @@ model Event {
   updatedAt DateTime @updatedAt
 
   eventLocationEvents EventLocationEvent[]
-  recruits Recruit[]
   eventGameTypes EventGameType[]
 }
 
@@ -153,13 +152,11 @@ model Recruit {
   id String @id @default(cuid())
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
-  eventName String? // eventIdがない場合に記入、つまりEventと紐づいてない場合
-  eventLocation String? // eventLocationEventIdがない場合に記入
-  event Event? @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId String?
+  manualEventName String? // eventIdがない場合に記入、つまりEventと紐づいてない場合
+  manualEventLocation String? // eventLocationEventIdがない場合に記入
   eventLocationEvent EventLocationEvent? @relation(fields: [eventLocationEventId], references: [id], onDelete: Cascade)
   eventLocationEventId String?
-  numberOfPeople Int?
+  numberOfPeople Int? // 募集人数
   description String? @db.Text 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

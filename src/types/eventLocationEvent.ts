@@ -51,3 +51,9 @@ export type EventLocationEventDetail = {
     };
   };
 };
+
+export type EventLocationEventOption = {
+  id: string;
+  name: string;
+  location: string;
+};

@@ -266,7 +266,6 @@ export const EditEventForm = ({ eventId }: Props) => {
                     position: "end",
                     sx: { marginRight: "30px" },
                   }}
-                  minDate={new Date()}
                 />
                 <DatePickerWithLabelRHF<EditEventFormSchema>
                   name={`eventLocationEvents.${index}.endedAt`}
@@ -278,7 +277,6 @@ export const EditEventForm = ({ eventId }: Props) => {
                     position: "end",
                     sx: { marginRight: "30px" },
                   }}
-                  minDate={new Date()}
                 />
                 <Grid item xs={12}>
                   <InputWithLabelRHF<EditEventFormSchema>

@@ -70,7 +70,7 @@ type Props<T extends FieldValues> = Omit<
   wrapperClassName?: string;
   calendarClassName?: string;
   inputProps?: InputBaseComponentProps;
-  label: string;
+  label?: string;
   labelSxProps?: SxProps;
 };
 
@@ -102,13 +102,15 @@ export const DatePickerWithLabelRHF = <T extends FieldValues>(
       control={control}
       render={({ field: { onChange, onBlur, value, ref }, fieldState }) => (
         <FormControl fullWidth error={fieldState.invalid}>
-          <Box
-            component="label"
-            htmlFor={id}
-            sx={{ marginBottom: "8px", fontWeight: "bold", ...labelSxProps }}
-          >
-            {label}
-          </Box>
+          {label && (
+            <Box
+              component="label"
+              htmlFor={id}
+              sx={{ marginBottom: "8px", fontWeight: "bold", ...labelSxProps }}
+            >
+              {label}
+            </Box>
+          )}
           <DatePicker
             onChange={onChange}
             onBlur={onBlur}

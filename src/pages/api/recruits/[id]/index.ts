@@ -6,6 +6,7 @@ import { generateReadSignedUrl } from "@/libs/cloudStorage";
 import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 import { User } from "@prisma/client";
+import { RecruitDetail } from "@/types/recruit";
 
 export default async function handler(
   req: NextApiRequest,
@@ -91,38 +92,7 @@ export default async function handler(
 
 // GET request
 export type GetRecruitResponseSuccessBody = {
-  recruit: {
-    id: string;
-    user: {
-      id?: string;
-      name: string;
-      iconImageUrl?: string;
-      twitter?: string;
-      instagram?: string;
-    };
-    eventName: string;
-    eventLocation?: string;
-    numberOfPeople?: number;
-    description?: string;
-    createdAt: string;
-    possibleDate: {
-      id: string;
-      date: string;
-      priority?: number;
-    }[];
-    recruitTags: { id: string; name: string }[];
-    comments: {
-      id: string;
-      message: string;
-      createdAt: string;
-      updatedAt: string;
-      user: {
-        id: string;
-        name: string;
-        iconImageUrl?: string;
-      };
-    }[];
-  };
+  recruit: RecruitDetail;
 };
 
 const getHandler = async (
@@ -136,8 +106,7 @@ const getHandler = async (
     where: { id: recruitId },
     include: {
       user: true,
-      event: true,
-      eventLocationEvent: { include: { eventLocation: true } },
+      eventLocationEvent: { include: { event: true, eventLocation: true } },
       possibleDates: true,
       commentToRecruits: { include: { user: true } },
       recruitTagRecruits: { include: { recruitTag: true } },
@@ -163,9 +132,36 @@ const getHandler = async (
           },
         }
       : { user: { name: "名無しさん" } }),
-    eventName: recruit.event ? recruit.event.name : recruit.eventName!, // どちらかは必ずデータがある
+
+    ...(recruit.manualEventName && {
+      manualEventName: recruit.manualEventName,
+    }),
+    ...(recruit.manualEventLocation && {
+      manualEventLocation: recruit.manualEventLocation,
+    }),
     ...(recruit.eventLocationEvent && {
-      eventLocation: recruit.eventLocationEvent.eventLocation.name,
+      eventLocationEvent: {
+        id: recruit.eventLocationEvent.id,
+        ...(recruit.eventLocationEvent.building && {
+          building: recruit.eventLocationEvent.building,
+        }),
+        event: {
+          id: recruit.eventLocationEvent.event.id,
+          name: recruit.eventLocationEvent.event.name,
+          ...(recruit.eventLocationEvent.event?.coverImageFileKey && {
+            coverImageFileUrl: await generateReadSignedUrl(
+              recruit.eventLocationEvent.event.coverImageFileKey
+            ),
+          }),
+          ...(recruit.eventLocationEvent.event.sourceUrl && {
+            sourceUrl: recruit.eventLocationEvent.event.sourceUrl,
+          }),
+        },
+        eventLocation: {
+          id: recruit.eventLocationEvent.eventLocation.id,
+          name: recruit.eventLocationEvent.eventLocation.name,
+        },
+      },
     }),
     ...(recruit.numberOfPeople && { numberOfPeople: recruit.numberOfPeople }),
     ...(recruit.description && { description: recruit.description }),
@@ -173,7 +169,7 @@ const getHandler = async (
       id: rtr.recruitTag.id,
       name: rtr.recruitTag.name,
     })),
-    possibleDate: recruit.possibleDates.map((date) => ({
+    possibleDates: recruit.possibleDates.map((date) => ({
       id: date.id,
       date: date.date.toISOString(),
       ...(date.priority && { priority: date.priority }),

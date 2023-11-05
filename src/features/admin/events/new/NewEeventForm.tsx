@@ -258,14 +258,12 @@ export const NewEventForm = () => {
                   label="開始日"
                   control={control}
                   endIcon={<BiCalendar size={30} />}
-                  minDate={new Date()}
                 />
                 <DatePickerWithLabelRHF<NewEventFormSchema>
                   name={`eventLocationEvents.${index}.endedAt`}
                   label="終了日"
                   control={control}
                   endIcon={<BiCalendar size={30} />}
-                  minDate={new Date()}
                 />
                 <Grid item xs={12}>
                   <InputWithLabelRHF<NewEventFormSchema>

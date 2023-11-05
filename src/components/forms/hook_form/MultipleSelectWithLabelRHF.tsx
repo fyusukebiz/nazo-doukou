@@ -1,8 +1,14 @@
-import React, { ComponentPropsWithoutRef, useId } from 'react';
-import { Control, Controller, FieldPath, FieldValues, useFormContext } from 'react-hook-form';
-import Select, { MultiValue } from 'react-select';
-import { useIsMobileContext } from '@/features/common/IsMobileProvider';
-import { Box, FormControl, SxProps } from '@mui/material';
+import React, { ComponentPropsWithoutRef, useId } from "react";
+import {
+  Control,
+  Controller,
+  FieldPath,
+  FieldValues,
+  useFormContext,
+} from "react-hook-form";
+import Select, { MultiValue } from "react-select";
+import { useIsMobileContext } from "@/features/common/IsMobileProvider";
+import { Box, FormControl, SxProps } from "@mui/material";
 
 // 今後　MUI Autocompoleteは使用しない
 // 理由：モバイル表示の時に、キーボードを非表示にする手段がないため
@@ -14,16 +20,21 @@ type Option = { label: string; value: unknown };
 
 type Props<T extends FieldValues, U extends Option = Option> = Omit<
   ComponentPropsWithoutRef<typeof Select<U, true>>,
-  'name' | 'isMulti'
+  "name" | "isMulti"
 > & {
   name: FieldPath<T>;
   control: Control<T, any>;
   options: MultiValue<U> | undefined;
-  label: string;
+  label?: string;
   labelSxProps?: SxProps;
 };
 
-export const MultipleSelectWithLabelRHF = <T extends FieldValues, U extends Option = Option>(props: Props<T, U>) => {
+export const MultipleSelectWithLabelRHF = <
+  T extends FieldValues,
+  U extends Option = Option
+>(
+  props: Props<T, U>
+) => {
   const { name, control, options, label, labelSxProps, ...attr } = props;
   const id = useId();
   const { isMobileOrTablet } = useIsMobileContext();
@@ -36,11 +47,20 @@ export const MultipleSelectWithLabelRHF = <T extends FieldValues, U extends Opti
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, onBlur, value, name, ref }, fieldState }) => (
+      render={({
+        field: { onChange, onBlur, value, name, ref },
+        fieldState,
+      }) => (
         <FormControl fullWidth error={fieldState.invalid}>
-          <Box component='label' htmlFor={id} sx={{ marginBottom: '8px', fontWeight: 'bold', ...labelSxProps }}>
-            {label}
-          </Box>
+          {label && (
+            <Box
+              component="label"
+              htmlFor={id}
+              sx={{ marginBottom: "8px", fontWeight: "bold", ...labelSxProps }}
+            >
+              {label}
+            </Box>
+          )}
           <Select<U, true>
             ref={ref}
             instanceId={id}
@@ -55,38 +75,38 @@ export const MultipleSelectWithLabelRHF = <T extends FieldValues, U extends Opti
             styles={{
               container: (provided: object) => ({
                 ...provided,
-                width: '100%',
+                width: "100%",
               }),
               control: (provided: object) => ({
                 ...provided,
-                height: '48px',
+                height: "48px",
               }),
               menuPortal: (base) => ({ ...base, zIndex: 5 }),
               valueContainer: (provided: object) => ({
                 ...provided,
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'nowrap',
-                padding: '2px',
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "nowrap",
+                padding: "2px",
               }),
               multiValue: (provided: object) => ({
                 ...provided,
-                fontSize: '18px',
+                fontSize: "18px",
               }),
               multiValueRemove: (provided: object) => ({
                 ...provided,
-                ':hover': {
-                  backgroundColor: 'transparent',
+                ":hover": {
+                  backgroundColor: "transparent",
                 },
               }),
               placeholder: (provided: object) => ({
                 ...provided,
-                marginLeft: '8px',
+                marginLeft: "8px",
               }),
             }}
             isClearable={false}
-            menuPosition={'fixed'}
-            noOptionsMessage={() => '選択肢がありません'}
+            menuPosition={"fixed"}
+            noOptionsMessage={() => "選択肢がありません"}
             getOptionValue={(option) => option.label}
             {...attr}
           />
