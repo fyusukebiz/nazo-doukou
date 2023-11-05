@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { EventLocationEventCard } from "./misc/EventLocationEventCard";
 import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
+import { blue, teal } from "@mui/material/colors";
 
 export const EventLocationEvents = () => {
   const router = useRouter();
@@ -50,6 +51,42 @@ export const EventLocationEvents = () => {
         {eventLocationEventsStatus === "pending" && <LoadingSpinner />}
         {eventLocationEventsStatus === "success" && (
           <>
+            <Box
+              sx={{
+                display: "flex",
+                marginBottom: "10px",
+                textAlign: "center",
+                fontSize: "20px",
+              }}
+            >
+              <Box
+                sx={{
+                  width: "50%",
+                  borderRadius: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "40px",
+                  cursor: "pointer",
+                }}
+              >
+                <Box>募集</Box>
+              </Box>
+              <Box
+                sx={{
+                  width: "50%",
+                  color: blue[500],
+                  backgroundColor: blue[100],
+                  borderRadius: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "40px",
+                }}
+              >
+                <Box>イベント</Box>
+              </Box>
+            </Box>
             <Box sx={{ marginBottom: "10px" }}>
               全{eventLocationEventsData.totalCount}中
               {eventLocationEventsData.currentPage}ページ目
