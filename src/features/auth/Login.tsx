@@ -1,16 +1,58 @@
-import { Box, Divider, TextField, Typography } from "@mui/material";
+import { Box, Button, Divider, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { CustomCard } from "@/components/cards/CustomCard";
-import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { LoadingButton } from "@mui/lab";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { setCookie } from "cookies-next";
+import { cookieOptions } from "@/constants/cookieOptions";
+import { usePostConfirmMyUser } from "@/react_queries/my_user/usePostConfirmMyUser";
+import Link from "next/link";
+import { toast } from "react-toastify";
+import { FirebaseError } from "firebase/app";
+import { firebaseErrors } from "@/constants/firebaseErrors";
 
-type Props = {
-  csrfToken: string | undefined;
-};
+export const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-export const Login = (props: Props) => {
-  const { csrfToken } = props;
+  const { postConfirmMyUser } = usePostConfirmMyUser();
+
+  const handleClickLogin = async () => {
+    setIsLoading(true);
+    try {
+      const auth = getAuth();
+
+      // Firebaseで用意されているメールアドレスとパスワードでログインするための関数
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const fbUser = userCredential.user;
+      const idToken = await fbUser.getIdToken();
+      setCookie("currentFbUserIdToken", idToken, cookieOptions);
+
+      // DBにちゃんとUserが存在しているか確認、存在していなければUserを作成
+      await postConfirmMyUser.mutateAsync();
+
+      router.push("/event_location_events");
+    } catch (error) {
+      console.log(error);
+      if (error instanceof FirebaseError) {
+        console.log(error.code);
+        toast.error(firebaseErrors[error.code]);
+      } else {
+        toast.error("ログインに失敗しました");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Box
@@ -25,48 +67,51 @@ export const Login = (props: Props) => {
     >
       <CustomCard sx={{ maxWidth: "350px" }}>
         <Box
-          component={"form"}
+          component="form"
           sx={{ display: "flex", flexDirection: "column", gap: "20px" }}
-          method="post"
-          action="/api/auth/signin/email"
         >
-          <Box sx={{ margin: "auto" }}>
-            <Image
-              src="/service_logo.png"
-              alt="ロゴ"
-              width={150}
-              height={150}
-              style={{ borderRadius: "10px" }}
-            />
-          </Box>
-          <Typography
-            variant="h5"
-            component="h1"
-            gutterBottom
-            sx={{ mx: "auto" }}
+          <Box
+            sx={{ fontSize: "32px", textAlign: "center", fontWeight: "bold" }}
           >
-            {process.env.NEXT_PUBLIC_SERVICE_NAME}
-          </Typography>
+            ログイン
+          </Box>
           <TextField
             name="email"
-            id="email"
             type="email"
             placeholder="メールアドレス"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+          <TextField
+            name="password"
+            type="password"
+            placeholder="パスワード"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
           <LoadingButton
-            type="submit"
             variant="contained"
             sx={{ height: "50px" }}
+            onClick={handleClickLogin}
+            loading={isLoading}
           >
-            ログイン用のメールを送信
+            ログイン
           </LoadingButton>
         </Box>
 
         <Divider sx={{ my: "20px" }} />
+        <Link
+          href="/auth/forgot_password"
+          style={{ textDecoration: "none" }}
+          passHref
+        >
+          <Button variant="outlined" sx={{ height: "50px" }} fullWidth>
+            パスワードを忘れた場合
+          </Button>
+        </Link>
 
-        <LoadingButton
+        {/* <LoadingButton
           variant="outlined"
           sx={{ borderColor: grey[400], height: 50, width: "100%" }}
           onClick={() =>
@@ -83,7 +128,7 @@ export const Login = (props: Props) => {
             style={{ marginRight: "10px" }}
           />
           <Typography>Googleでログイン</Typography>
-        </LoadingButton>
+        </LoadingButton> */}
       </CustomCard>
     </Box>
   );

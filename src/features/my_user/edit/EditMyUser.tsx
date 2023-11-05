@@ -2,12 +2,12 @@ import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { EditMyUserForm } from "./EditMyUserForm";
 import { EditMyUserFormProvider } from "./EditMyUserFormProvider";
 import { useLogoutAndClearStorage } from "@/hooks/useLogoutAndClearStorage";
-import { useSession } from "next-auth/react";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { PageHeader } from "@/components/layouts/PageHeader";
+import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvider";
 
 export const EditMyUser = () => {
-  const { status } = useSession();
+  const { currentFbUser } = useFirebaseAuthContext();
   const { logoutAndClearStorage } = useLogoutAndClearStorage();
 
   return (

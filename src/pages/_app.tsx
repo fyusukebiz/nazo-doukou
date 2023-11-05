@@ -17,8 +17,9 @@ import translation from "@/libs/zod-i18n-map/ja/zod.json";
 import { z } from "zod";
 import { RouterHistoryProvider } from "@/features/common/RouterHistoryProvider";
 import { Roboto } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
-import { Session } from "next-auth";
+import { initializeFirebaseApp } from "@/libs/firebaseClient";
+import { getApp } from "firebase/app";
+import { FirebaseAuthProvider } from "@/components/providers/FirebaseAuthProvider";
 
 const roboto = Roboto({
   weight: ["400", "700"],
@@ -43,16 +44,16 @@ type AppPropsWithLayout<P = {}> = AppProps<P> & {
   Component: NextPageWithLayout<P>;
 };
 
-export default function App({
-  Component,
-  pageProps,
-}: AppPropsWithLayout<{ session: Session }>) {
+// firebaseクライアントの初期化
+initializeFirebaseApp();
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
   const customQueryClient = useCustomQueryClient();
 
   return (
     <ThemeProvider theme={MuiTheme}>
-      <SessionProvider session={pageProps.session}>
+      <FirebaseAuthProvider>
         <QueryClientProvider client={customQueryClient}>
           <IsMobileProvider>
             <RouterHistoryProvider>
@@ -74,7 +75,7 @@ export default function App({
             </RouterHistoryProvider>
           </IsMobileProvider>
         </QueryClientProvider>
-      </SessionProvider>
+      </FirebaseAuthProvider>
     </ThemeProvider>
   );
 }

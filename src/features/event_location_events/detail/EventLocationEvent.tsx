@@ -72,7 +72,7 @@ export const EventLocationEvent = () => {
                 marginTop: "10px",
               }}
             >
-              <Box sx={{ fontSize: "20px", marginTop: "10px" }}>
+              <Box sx={{ fontSize: "20px" }}>
                 {eleData.eventLocationEvent.event.name}
               </Box>
 

@@ -17,17 +17,6 @@ export const NewEvent = () => {
     >
       <SubPageHeader title="新規イベント作成" />
       <Container maxWidth="sm" sx={{ paddingY: "24px", background: "white" }}>
-        <Box sx={{ display: "flex" }}>
-          <Link
-            href="/admin/events/new"
-            style={{ textDecoration: "none" }}
-            passHref
-          >
-            <Button variant="outlined" sx={{ marginLeft: "auto" }}>
-              新規作成
-            </Button>
-          </Link>
-        </Box>
         <NewEventFormProvider>
           <NewEventForm />
         </NewEventFormProvider>

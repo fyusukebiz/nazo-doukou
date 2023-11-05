@@ -1,12 +1,12 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
-import { SessionUser } from "@/types/next-auth";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 import { paginate } from "prisma-extension-pagination";
 import { generateReadSignedUrl } from "@/libs/cloudStorage";
+import { getCookie } from "cookies-next";
+import { verifyIdToken } from "@/libs/firebaseClient";
+import { User } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,12 +19,31 @@ export default async function handler(
         break;
 
       case "POST":
-        const session = await getServerSession(req, res, authOptions);
+        const currentFbUserIdToken = getCookie("currentFbUserIdToken", {
+          req,
+          res,
+        });
 
-        if (!session)
+        if (!currentFbUserIdToken) {
           return res.status(401).json({ error: "ログインしてください" });
+        }
 
-        const user = session.user;
+        const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
+        if (!fbAuthRes.ok) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
+        const data = await fbAuthRes.json();
+        const fbUser = data.users[0];
+        const fbUid = fbUser.localId;
+
+        if (!fbUser.emailVerified) {
+          return res.status(401).json({ error: "メール認証が未完了です" });
+        }
+
+        const user = await prisma.user.findUnique({ where: { fbUid } });
+        if (!user) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
 
         await postHandler(req, res, user);
         break;
@@ -157,7 +176,7 @@ export type PostRecruitResponseSuccessBody = "";
 const postHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<PostRecruitResponseSuccessBody | ResponseErrorBody>,
-  sessionUser: SessionUser
+  user: User
 ) => {
   const rawParams: PostRecruitRequestBody = req.body;
 

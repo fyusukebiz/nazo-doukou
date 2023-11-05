@@ -1,26 +1,43 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
-import { SessionUser } from "@/types/next-auth";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
-import { Event } from "@prisma/client";
+import { Event, User } from "@prisma/client";
 import { EventDetail } from "@/types/event";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
+import { getCookie } from "cookies-next";
+import { verifyIdToken } from "@/libs/firebaseClient";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const currentFbUserIdToken = getCookie("currentFbUserIdToken", { req, res });
 
-  if (!session) return res.status(401).json({ error: "ログインしてください" });
+  if (!currentFbUserIdToken) {
+    return res.status(401).json({ error: "ログインしてください" });
+  }
 
-  const user = session.user;
+  const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
+  if (!fbAuthRes.ok) {
+    return res.status(401).json({ error: "再ログインしてください。" });
+  }
+  const data = await fbAuthRes.json();
+  const fbUser = data.users[0];
+  const fbUid = fbUser.localId;
 
-  if (user.role !== "ADMIN")
+  if (!fbUser.emailVerified) {
+    return res.status(401).json({ error: "メール認証が未完了です" });
+  }
+
+  const user = await prisma.user.findUnique({ where: { fbUid } });
+  if (!user) {
+    return res.status(401).json({ error: "再ログインしてください。" });
+  }
+
+  if (user.role !== "ADMIN") {
     return res.status(403).json({ error: "権限がありません" });
+  }
 
   const eventId = req.query.id as string | undefined;
   if (!eventId)
@@ -59,7 +76,7 @@ export type GetEventByAdminResponseSuccessBody = {
 const getHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<GetEventByAdminResponseSuccessBody | ResponseErrorBody>,
-  sessionUser: SessionUser,
+  user: User,
   eventId: string
 ) => {
   const event = await prisma.event.findUnique({
@@ -147,7 +164,7 @@ const patchHandler = async (
   res: NextApiResponse<
     PatchEventByAdminResponseSuccessBody | ResponseErrorBody
   >,
-  sessionUser: SessionUser,
+  user: User,
   eventId: string
 ) => {
   const rawParams: PatchEventByAdminRequestBody = req.body;
@@ -257,7 +274,7 @@ const deleteHandler = async (
   res: NextApiResponse<
     DeleteEventByAdminResponseSuccessBody | ResponseErrorBody
   >,
-  sessionUser: SessionUser,
+  user: User,
   event: Event
 ) => {
   if (event.coverImageFileKey) await deleteFile(event.coverImageFileKey);

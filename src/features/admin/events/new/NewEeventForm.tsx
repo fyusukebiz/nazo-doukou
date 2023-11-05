@@ -85,7 +85,6 @@ export const NewEventForm = () => {
     // 画像データがあれば事前にアップロード
     let coverImageFileKey: string | undefined;
     if (rawData.coverImageFile) {
-      console.log("画像データがあれば事前にアップロード");
       const urlData = await refetchUploadSignedUrls();
       const upload = urlData.data?.uploads?.[0];
       if (upload) {
@@ -145,7 +144,7 @@ export const NewEventForm = () => {
           <CoverImageFileAttachButtonWithLabel />
         </Grid>
 
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <InputWithLabelRHF<NewEventFormSchema>
             name="description"
             label="詳細"
@@ -154,7 +153,7 @@ export const NewEventForm = () => {
             minRows={5}
             fullWidth
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12}>
           <InputWithLabelRHF<NewEventFormSchema>

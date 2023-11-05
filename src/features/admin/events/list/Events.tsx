@@ -1,10 +1,11 @@
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useEventsQueryByAdmin } from "@/react_queries/admin/events/useEventsQueryByAdmin";
-import { Box, Container, Grid, Pagination } from "@mui/material";
+import { Box, Button, Container, Grid, Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { EventCard } from "./misc/EventCard";
 import { useRouterHistoryContext } from "@/features/common/RouterHistoryProvider";
+import Link from "next/link";
 
 export const Events = () => {
   const router = useRouter();
@@ -49,6 +50,17 @@ export const Events = () => {
         {eventsStatus === "pending" && <LoadingSpinner />}
         {eventsStatus === "success" && (
           <>
+            <Box sx={{ display: "flex" }}>
+              <Link
+                href="/admin/events/new"
+                style={{ textDecoration: "none", marginLeft: "auto" }}
+                passHref
+              >
+                <Button variant="outlined" size="large">
+                  新規作成
+                </Button>
+              </Link>
+            </Box>
             <Box sx={{ marginBottom: "10px" }}>
               全{eventsData.totalCount}中{eventsData.currentPage}ページ目
             </Box>

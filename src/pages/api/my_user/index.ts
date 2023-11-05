@@ -1,33 +1,58 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { z } from "zod";
-import { SessionUser } from "@/types/next-auth";
 import { Sex } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
+import { User } from "@prisma/client";
+import { getCookie } from "cookies-next";
+import { verifyIdToken } from "@/libs/firebaseClient";
+import { getZodFormattedErrors } from "@/utils/getZodFormattedErrors";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const currentFbUserIdToken = getCookie("currentFbUserIdToken", { req, res });
 
-  if (!session) return res.status(401).json({ error: "ログインしてください" });
+  if (!currentFbUserIdToken) {
+    return res.status(401).json({ error: "ログインしてください" });
+  }
 
-  const user = session.user;
+  const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
+  if (!fbAuthRes.ok) {
+    return res.status(401).json({ error: "再ログインしてください。" });
+  }
+  const data = await fbAuthRes.json();
+  const fbUser = data.users[0];
+  const fbUid = fbUser.localId;
 
   try {
     switch (req.method) {
-      case "GET":
-        await getHandler(req, res, user);
+      case "GET": {
+        const user = await prisma.user.findUnique({ where: { fbUid } });
+        if (!user) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
+
+        await getHandler(req, res, user.id);
+        break;
+      }
+      case "POST":
+        await postHandler(req, res, fbUid);
         break;
 
-      case "PATCH":
+      case "PATCH": {
+        const user = await prisma.user.findUnique({
+          where: { fbUid: fbUid },
+        });
+        if (!user) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
+
         await patchHandler(req, res, user);
         break;
+      }
 
       default:
         res.status(405).end(`Not Allowed`);
@@ -58,15 +83,12 @@ export type GetMyUserResponseSuccessBody = {
 const getHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<GetMyUserResponseSuccessBody | ResponseErrorBody>,
-  sessionUser: SessionUser
+  userId: string
 ) => {
-  const user = await prisma.user.findUnique({
-    where: { id: sessionUser.id },
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
     include: { userGameTypes: true },
   });
-  if (!user) return res.status(404).json({ error: "ユーザーがいません" });
-
-  const fileKey = uuidv4();
 
   res.status(200).json({
     name: user.name || "名無しさん",
@@ -84,6 +106,43 @@ const getHandler = async (
       likeOrDislike: ugt.likeOrDislike,
     })),
   });
+};
+
+// POST request
+export type PostMyUserRequestBody = {
+  user: {
+    name: string;
+  };
+};
+export type PostMyUserResponseSuccessBody = "";
+
+const postHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<PostMyUserResponseSuccessBody | ResponseErrorBody>,
+  fbUid: string
+) => {
+  const rawParams: PostMyUserResponseSuccessBody = req.body;
+
+  // 重複チェック
+  const duplicated = await prisma.user.findUnique({ where: { fbUid } });
+  if (!!duplicated) return res.status(409).json({ error: "登録ずみです" });
+
+  const schema = z.object({
+    user: z.object({
+      name: z.string().min(1).max(255),
+    }),
+  });
+
+  const validation = schema.safeParse(rawParams);
+  if (!validation.success)
+    return res.status(422).json({ errors: getZodFormattedErrors(validation) });
+
+  const user = validation.data.user;
+  await prisma.user.create({
+    data: { ...user, fbUid },
+  });
+
+  res.status(200).end();
 };
 
 // PATCH request
@@ -109,7 +168,7 @@ export type PatchMyUserResponseSuccessBody = "";
 const patchHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<PatchMyUserResponseSuccessBody | ResponseErrorBody>,
-  sessionUser: SessionUser
+  user: User
 ) => {
   const rawParams: PatchMyUserRequestBody = req.body;
 
@@ -140,14 +199,14 @@ const patchHandler = async (
   // requrestにiconImageFileKeyが存在して、DBにuser.iconImageFileKeyが存在する時、古いiconImageFileを削除
   if (validation.data.user.iconImageFileKey) {
     const userIdDb = await prisma.user.findUniqueOrThrow({
-      where: { id: sessionUser.id },
+      where: { id: user.id },
     });
     if (userIdDb.iconImageFileKey) await deleteFile(userIdDb.iconImageFileKey);
   }
 
   // 更新
   await prisma.user.update({
-    where: { id: sessionUser.id },
+    where: { id: user.id },
     data: validation.data.user, // TODO startedAtはDate型にしなくても大丈夫？
   });
 
@@ -155,7 +214,7 @@ const patchHandler = async (
     await prisma.userGameType.upsert({
       where: {
         userId_gameTypeId: {
-          userId: sessionUser.id,
+          userId: user.id,
           gameTypeId: userGameType.gameTypeId,
         },
       },
@@ -163,7 +222,7 @@ const patchHandler = async (
         likeOrDislike: userGameType.likeOrDislike,
       },
       create: {
-        userId: sessionUser.id,
+        userId: user.id,
         gameTypeId: userGameType.gameTypeId,
         likeOrDislike: userGameType.likeOrDislike,
       },

@@ -112,7 +112,7 @@ export const EditEventForm = ({ eventId }: Props) => {
       { path: { eventId }, body: dataToPatch },
       {
         onSuccess: async (res) => {
-          toast.success("作成しました");
+          toast.success("更新しました");
         },
       }
     );
@@ -147,7 +147,7 @@ export const EditEventForm = ({ eventId }: Props) => {
           <CoverImageFileAttachButtonWithLabel />
         </Grid>
 
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <InputWithLabelRHF<EditEventFormSchema>
             name="description"
             label="詳細"
@@ -156,7 +156,7 @@ export const EditEventForm = ({ eventId }: Props) => {
             minRows={5}
             fullWidth
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12}>
           <InputWithLabelRHF<EditEventFormSchema>

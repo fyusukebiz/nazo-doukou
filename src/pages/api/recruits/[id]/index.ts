@@ -1,37 +1,83 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
-import { SessionUser } from "@/types/next-auth";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
 import { generateReadSignedUrl } from "@/libs/cloudStorage";
+import { getCookie } from "cookies-next";
+import { verifyIdToken } from "@/libs/firebaseClient";
+import { User } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
-
   try {
     switch (req.method) {
       case "GET":
         await getHandler(req, res);
         break;
 
-      case "PATCH":
-        if (!session)
+      case "PATCH": {
+        const currentFbUserIdToken = getCookie("currentFbUserIdToken", {
+          req,
+          res,
+        });
+
+        if (!currentFbUserIdToken) {
           return res.status(401).json({ error: "ログインしてください" });
+        }
 
-        await patchHandler(req, res, session.user);
+        const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
+        if (!fbAuthRes.ok) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
+        const data = await fbAuthRes.json();
+        const fbUser = data.users[0];
+        const fbUid = fbUser.localId;
+
+        if (!fbUser.emailVerified) {
+          return res.status(401).json({ error: "メール認証が未完了です" });
+        }
+
+        const user = await prisma.user.findUnique({ where: { fbUid } });
+        if (!user) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
+
+        await patchHandler(req, res, user);
         break;
+      }
 
-      case "DELETE":
-        if (!session)
+      case "DELETE": {
+        const currentFbUserIdToken = getCookie("currentFbUserIdToken", {
+          req,
+          res,
+        });
+
+        if (!currentFbUserIdToken) {
           return res.status(401).json({ error: "ログインしてください" });
+        }
 
-        await deleteHandler(req, res, session.user);
+        const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
+        if (!fbAuthRes.ok) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
+        const data = await fbAuthRes.json();
+        const fbUser = data.users[0];
+        const fbUid = fbUser.localId;
+
+        if (!fbUser.emailVerified) {
+          return res.status(401).json({ error: "メール認証が未完了です" });
+        }
+
+        const user = await prisma.user.findUnique({ where: { fbUid } });
+        if (!user) {
+          return res.status(401).json({ error: "再ログインしてください。" });
+        }
+
+        await deleteHandler(req, res, user);
         break;
+      }
 
       default:
         res.status(405).end(`Not Allowed`);
@@ -177,10 +223,21 @@ export type PatchRecruitResponseSuccessBody = "";
 const patchHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<PatchRecruitResponseSuccessBody | ResponseErrorBody>,
-  sessionUser: SessionUser
+  user: User
 ) => {
   const recruitId = req.query.id as string | undefined;
   if (!recruitId) return res.status(404).json({ error: "募集がありません" });
+
+  const recruit = await prisma.recruit.findUnique({
+    where: { id: recruitId },
+    include: { user: true },
+  });
+  if (!recruit) return res.status(404).json({ error: "募集がありません" });
+
+  // 投稿者しか更新できない
+  if (!recruit.user || recruit.user.id !== user.id) {
+    return res.status(403).json({ error: "権限がありません" });
+  }
 
   const rawParams: PatchRecruitRequestBody = req.body;
 
@@ -212,7 +269,7 @@ const patchHandler = async (
     return res.status(400).json({ error: "入力に間違いがあります" });
 
   const recruitData = validation.data.recruit;
-  const recruit = await prisma.recruit.update({
+  const updatedRecruit = await prisma.recruit.update({
     where: { id: recruitId },
     data: recruitData,
     include: { possibleDates: true, recruitTagRecruits: true },
@@ -220,7 +277,7 @@ const patchHandler = async (
 
   const possibleDatesData = validation.data.possibleDates;
   // TODO: 一旦全て消す、後々更新に切り替えること
-  for (const possibleDate of recruit.possibleDates) {
+  for (const possibleDate of updatedRecruit.possibleDates) {
     await prisma.possibleDate.delete({
       where: { id: possibleDate.id },
     });
@@ -228,7 +285,7 @@ const patchHandler = async (
   for (const possibleDate of possibleDatesData) {
     await prisma.possibleDate.create({
       data: {
-        recruitId: recruit.id,
+        recruitId: recruitId,
         date: possibleDate.date,
         priority: possibleDate.priority,
       },
@@ -236,7 +293,7 @@ const patchHandler = async (
   }
 
   // TODO: 一旦全て消す、後々更新に切り替えること
-  for (const rtr of recruit.recruitTagRecruits) {
+  for (const rtr of updatedRecruit.recruitTagRecruits) {
     await prisma.recruitTagRecruit.delete({
       where: { id: rtr.id },
     });
@@ -245,7 +302,7 @@ const patchHandler = async (
   for (const recruitTagId of recruitTagIdsData) {
     await prisma.recruitTagRecruit.create({
       data: {
-        recruitId: recruit.id,
+        recruitId: recruitId,
         recruitTagId: recruitTagId,
       },
     });
@@ -260,9 +317,21 @@ export type DeleteRecruitResponseSuccessBody = "";
 const deleteHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<DeleteRecruitResponseSuccessBody | ResponseErrorBody>,
-  sessionUser: SessionUser
+  user: User
 ) => {
   const recruitId = req.query.id as string | undefined;
+  if (!recruitId) return res.status(404).json({ error: "募集がありません" });
+
+  const recruit = await prisma.recruit.findUnique({
+    where: { id: recruitId },
+    include: { user: true },
+  });
+  if (!recruit) return res.status(404).json({ error: "募集がありません" });
+
+  // 投稿者しか削除できない
+  if (!recruit.user || recruit.user.id !== user.id) {
+    return res.status(403).json({ error: "権限がありません" });
+  }
 
   await prisma.recruit.delete({
     where: { id: recruitId },

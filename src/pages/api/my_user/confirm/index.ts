@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
+import { v4 as uuidv4 } from "uuid";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
-import { z } from "zod";
-import { User } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 
@@ -28,16 +27,12 @@ export default async function handler(
     return res.status(401).json({ error: "メール認証が未完了です" });
   }
 
-  const user = await prisma.user.findUnique({ where: { fbUid } });
-  if (!user) {
-    return res.status(401).json({ error: "再ログインしてください。" });
-  }
-
   try {
     switch (req.method) {
-      case "POST":
-        await postHandler(req, res, user);
+      case "POST": {
+        await postHandler(req, res, fbUid);
         break;
+      }
 
       default:
         res.status(405).end(`Not Allowed`);
@@ -49,39 +44,27 @@ export default async function handler(
   }
 }
 
+// TODO: GET? POST?
 // POST request
-export type PostCommentToRecruitRequestBody = {
-  commentToRecruit: {
-    recruitId: string;
-    message: string;
-  };
-};
-export type PostCommentToRecruitResponseSuccessBody = "";
+export type PostConfirmMyUserResponseSuccessBody = "";
 
 const postHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<
-    PostCommentToRecruitResponseSuccessBody | ResponseErrorBody
+    PostConfirmMyUserResponseSuccessBody | ResponseErrorBody
   >,
-  user: User
+  fbUid: string
 ) => {
-  const rawParams: PostCommentToRecruitRequestBody = req.body;
-
-  const schema = z.object({
-    commentToRecruit: z.object({
-      recruitId: z.string(),
-      message: z.string(),
-    }),
+  const user = await prisma.user.findUnique({
+    where: { fbUid: fbUid },
   });
 
-  const validation = schema.safeParse(rawParams);
-  if (!validation.success)
-    return res.status(400).json({ error: "入力に間違いがあります" });
+  // 万が一、fbUifに紐づくuserがなければ作成
+  if (!user) {
+    await prisma.user.create({
+      data: { fbUid: fbUid, name: uuidv4() },
+    });
+  }
 
-  const commentData = validation.data.commentToRecruit;
-  await prisma.commentToRecruit.create({
-    data: { ...commentData, userId: user.id },
-  });
-
-  res.status(200).end();
+  return res.status(200).end();
 };
