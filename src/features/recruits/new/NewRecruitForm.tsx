@@ -79,8 +79,8 @@ export const NewRecruitForm = () => {
       { body: dataToPost },
       {
         onSuccess: async (res) => {
-          router.push("/recruits");
           toast.success("作成しました");
+          setTimeout(() => router.push("/recruits"), 2000);
         },
       }
     );
@@ -164,15 +164,13 @@ export const NewRecruitForm = () => {
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             {possibleDateFields.map((field, index) => (
-              <Box
-                key={field.id}
-                sx={{ display: "flex", alignItems: "center" }}
-              >
+              <Box key={field.id} sx={{ display: "flex", alignItems: "start" }}>
                 <Box sx={{ marginRight: "15px" }}>
                   <DatePickerWithLabelRHF<NewRecruitFormSchema>
                     name={`possibleDates.${index}.date`}
                     control={control}
                     endIcon={<BiCalendar size={30} />}
+                    isClearable
                   />
                 </Box>
                 <Box sx={{ width: "100px", marginRight: "15px" }}>
@@ -188,12 +186,18 @@ export const NewRecruitForm = () => {
                     control={control}
                   />
                 </Box>
-                <IconButton
-                  sx={{ marginLeft: "auto" }}
-                  onClick={() => removePossibleDate(index)}
-                >
-                  <FaTrash />
-                </IconButton>
+                {index !== 0 ? (
+                  <IconButton
+                    sx={{ marginLeft: "auto" }}
+                    onClick={() => removePossibleDate(index)}
+                  >
+                    <FaTrash />
+                  </IconButton>
+                ) : (
+                  <Box
+                    sx={{ width: "40px", height: "40px", flexShrink: 0 }}
+                  ></Box>
+                )}
               </Box>
             ))}
           </Box>
@@ -227,6 +231,7 @@ export const NewRecruitForm = () => {
           <InputWithLabelRHF<NewRecruitFormSchema>
             name="description"
             label="詳細"
+            placeholder="募集時のメンバー構成、謎解き歴、性別、年齢層、など"
             control={control}
             multiline
             minRows={5}

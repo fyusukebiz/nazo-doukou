@@ -62,7 +62,7 @@ export const Events = () => {
               </Link>
             </Box>
             <Box sx={{ marginBottom: "10px" }}>
-              全{eventsData.totalCount}中{eventsData.currentPage}ページ目
+              全{eventsData.totalCount}個中{eventsData.currentPage}ページ目
             </Box>
             <Grid container spacing={2}>
               {eventsData.events.map((event, index) => (

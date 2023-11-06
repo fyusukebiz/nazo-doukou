@@ -262,10 +262,6 @@ export const EditEventForm = ({ eventId }: Props) => {
                   control={control}
                   endIcon={<BiCalendar size={30} />}
                   isClearable={true}
-                  endIconProps={{
-                    position: "end",
-                    sx: { marginRight: "30px" },
-                  }}
                 />
                 <DatePickerWithLabelRHF<EditEventFormSchema>
                   name={`eventLocations.${index}.endedAt`}
@@ -273,10 +269,6 @@ export const EditEventForm = ({ eventId }: Props) => {
                   control={control}
                   endIcon={<BiCalendar size={30} />}
                   isClearable={true}
-                  endIconProps={{
-                    position: "end",
-                    sx: { marginRight: "30px" },
-                  }}
                 />
                 <Grid item xs={12}>
                   <InputWithLabelRHF<EditEventFormSchema>

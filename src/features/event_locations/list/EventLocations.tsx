@@ -55,14 +55,15 @@ export const EventLocations = () => {
                 display: "flex",
                 marginBottom: "15px",
                 textAlign: "center",
-                fontSize: "20px",
+                fontSize: "18px",
               }}
             >
               <Box
                 sx={{
                   width: "50%",
                   backgroundColor: grey[100],
-                  borderRadius: "5px",
+                  color: grey[500],
+                  borderRadius: "5px 0px 0px 5px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -78,7 +79,7 @@ export const EventLocations = () => {
                   width: "50%",
                   color: blue[500],
                   backgroundColor: blue[100],
-                  borderRadius: "5px",
+                  borderRadius: "0px 5px 5px 0px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -89,7 +90,7 @@ export const EventLocations = () => {
               </Box>
             </Box>
             <Box sx={{ marginBottom: "10px" }}>
-              全{eventLocationsData.totalCount}中
+              全{eventLocationsData.totalCount}個中
               {eventLocationsData.currentPage}ページ目
             </Box>
             <Grid container spacing={2}>

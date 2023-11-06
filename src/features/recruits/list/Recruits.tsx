@@ -1,11 +1,13 @@
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useRecruitsQuery } from "@/react_queries/recruits/useRecruitsQuery";
-import { Box, Container, Grid, Pagination } from "@mui/material";
+import { Box, Button, Container, Grid, Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { RecruitCard } from "./misc/RecruitCard";
 import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
-import { blue, grey, teal } from "@mui/material/colors";
+import { grey, teal } from "@mui/material/colors";
+import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvider";
+import Link from "next/link";
 
 export const Recruits = () => {
   const router = useRouter();
@@ -13,6 +15,7 @@ export const Recruits = () => {
   const { data: recruitsData, status: recruitsStatus } = useRecruitsQuery({
     query: { page },
   });
+  const { currentFbUser } = useFirebaseAuthContext();
 
   const handleClickPage = (event: ChangeEvent<unknown>, _page: number) => {
     setPage(_page); // ページを切り替え
@@ -54,7 +57,7 @@ export const Recruits = () => {
                 display: "flex",
                 marginBottom: "15px",
                 textAlign: "center",
-                fontSize: "20px",
+                fontSize: "18px",
               }}
             >
               <Box
@@ -62,7 +65,7 @@ export const Recruits = () => {
                   width: "50%",
                   color: teal[500],
                   backgroundColor: teal[100],
-                  borderRadius: "5px",
+                  borderRadius: "5px 0px 0px 5px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -75,7 +78,8 @@ export const Recruits = () => {
                 sx={{
                   width: "50%",
                   backgroundColor: grey[100],
-                  borderRadius: "5px",
+                  color: grey[500],
+                  borderRadius: "0px 5px 5px 0px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -87,8 +91,21 @@ export const Recruits = () => {
                 <Box>イベント</Box>
               </Box>
             </Box>
+
+            <Box sx={{ display: "flex", marginY: "10px" }}>
+              <Link
+                href="/recruits/new"
+                style={{ textDecoration: "none", marginLeft: "auto" }}
+                passHref
+              >
+                <Button variant="outlined" size="large">
+                  新規募集
+                </Button>
+              </Link>
+            </Box>
+
             <Box sx={{ marginBottom: "10px" }}>
-              全{recruitsData.totalCount}中{recruitsData.currentPage}ページ目
+              全{recruitsData.totalCount}個中{recruitsData.currentPage}ページ目
             </Box>
             <Grid container spacing={2}>
               {recruitsData.recruits.map((recruit, index) => (

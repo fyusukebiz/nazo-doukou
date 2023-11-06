@@ -10,7 +10,7 @@ const schema = z.object({
   description: z.string(),
   sourceUrl: z.string(),
   numberOfPeopleInTeam: z.string().refine((v) => {
-    return !!v || !isNaN(Number(v)); // TODO: ロジックがおかしくない？
+    return !v || !isNaN(Number(v));
   }, "数値を入力してください"),
   timeRequired: z.string(),
   coverImageFileUrl: z.string(),

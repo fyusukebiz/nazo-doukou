@@ -100,7 +100,7 @@ export const RecruitCard = (props: Props) => {
         <Box sx={{ display: "flex" }}>
           <Box sx={{ marginLeft: "auto", color: grey[500], fontSize: "12px" }}>
             {formatDateTimeFlex({
-              rawDate: new Date().toISOString(),
+              rawDate: recruit.createdAt,
               hideYear: true,
             })}
           </Box>

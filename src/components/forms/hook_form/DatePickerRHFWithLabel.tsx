@@ -152,6 +152,11 @@ export const DatePickerWithLabelRHF = <T extends FieldValues>(
                     position="end"
                     className="react-datepicker-rigth-icon"
                     color={grey[100]}
+                    {...(isClearable &&
+                      endIcon && {
+                        position: "end",
+                        sx: { marginRight: "30px" },
+                      })}
                     {...endIconProps}
                   >
                     {endIcon}

@@ -13,9 +13,9 @@ const schema = z
       value: z.string().nullable(),
     }),
     numberOfPeople: z.string().refine((v) => {
-      return !!v || !isNaN(Number(v)); // TODO: ロジックがおかしくない？
+      return !v || !isNaN(Number(v));
     }, "数値を入力してください"),
-    description: z.string(),
+    description: z.string().min(10).max(1000),
     possibleDates: z
       .object({
         date: z
@@ -30,7 +30,7 @@ const schema = z
             return value;
           }),
         priority: z.string().refine((v) => {
-          return !!v || !isNaN(Number(v)); // TODO: ロジックがおかしくない？
+          return !v || !isNaN(Number(v));
         }, "数値を入力してください"),
       })
       .array()

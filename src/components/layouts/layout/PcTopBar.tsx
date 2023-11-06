@@ -25,11 +25,20 @@ export const PcTopBar = () => {
         paddingX: "20px",
       }}
     >
-      <Box component="h1" sx={{ fontSize: "20px" }}>
-        {/^\/admin/.test(pathname)
-          ? "【管理画面】" + process.env.NEXT_PUBLIC_SERVICE_NAME
-          : process.env.NEXT_PUBLIC_SERVICE_NAME}
-      </Box>
+      <Link
+        href={/^\/admin/.test(pathname) ? "/admin/events" : "/recruits"}
+        style={{ textDecoration: "none" }}
+        passHref
+      >
+        <Button
+          component="h1"
+          sx={{ fontSize: "24px", color: "black", fontWeight: "bold" }}
+        >
+          {/^\/admin/.test(pathname)
+            ? "【管理画面】" + process.env.NEXT_PUBLIC_SERVICE_NAME
+            : process.env.NEXT_PUBLIC_SERVICE_NAME}
+        </Button>
+      </Link>
 
       {currentFbUser ? (
         currentFbUser.emailVerified ? (
@@ -61,7 +70,11 @@ export const PcTopBar = () => {
             style={{ textDecoration: "none", marginLeft: "auto" }}
             passHref
           >
-            <Button variant="outlined" size="large" sx={{ width: "110px" }}>
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{ width: "80px", paddingX: "0px" }}
+            >
               ログイン
             </Button>
           </Link>
@@ -76,12 +89,20 @@ export const PcTopBar = () => {
           }}
         >
           <Link href="/auth/signup" style={{ textDecoration: "none" }} passHref>
-            <Button variant="contained" size="large" sx={{ width: "110px" }}>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ width: "80px", paddingX: "0px" }}
+            >
               登録
             </Button>
           </Link>
           <Link href="/auth/login" style={{ textDecoration: "none" }} passHref>
-            <Button variant="outlined" size="large" sx={{ width: "110px" }}>
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{ width: "80px", paddingX: "0px" }}
+            >
               ログイン
             </Button>
           </Link>
