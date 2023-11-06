@@ -1,7 +1,7 @@
 export type RecruitSimple = {
   id: string;
   manualEventName?: string;
-  manualEventLocation?: string;
+  manualLocation?: string;
   eventLocation?: {
     id: string;
     building?: string;
@@ -34,7 +34,7 @@ export type RecruitDetail = {
     instagram?: string;
   };
   manualEventName?: string;
-  manualEventLocation?: string;
+  manualLocation?: string;
   eventLocation?: {
     id: string;
     building?: string;

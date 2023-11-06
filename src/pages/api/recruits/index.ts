@@ -98,8 +98,8 @@ const getHandler = async (
       ...(recruit.manualEventName && {
         manualEventName: recruit.manualEventName,
       }),
-      ...(recruit.manualEventLocation && {
-        manualEventLocation: recruit.manualEventLocation,
+      ...(recruit.manualLocation && {
+        manualLocation: recruit.manualLocation,
       }),
       ...(recruit.eventLocation && {
         eventLocation: {
@@ -159,7 +159,7 @@ export type PostRecruitRequestBody = {
   isSelectType: boolean;
   recruit: {
     manualEventName?: string;
-    manualEventLocation?: string;
+    manualLocation?: string;
     eventLocationId?: string;
     numberOfPeople?: number;
     description?: string;
@@ -184,7 +184,7 @@ const postHandler = async (
       isSelectType: z.boolean(),
       recruit: z.object({
         manualEventName: z.string().optional(),
-        manualEventLocation: z.string().optional(),
+        manualLocation: z.string().optional(),
         eventLocationId: z.string().optional(),
         numberOfPeople: z.number().optional(),
         description: z.string().optional(),
@@ -206,9 +206,9 @@ const postHandler = async (
         });
       }
 
-      if (!val.isSelectType && !val.recruit.manualEventLocation) {
+      if (!val.isSelectType && !val.recruit.manualLocation) {
         ctx.addIssue({
-          path: ["recruit.manualEventLocation"],
+          path: ["recruit.manualLocation"],
           code: "custom",
           message: "開催場所を記載してください",
         });

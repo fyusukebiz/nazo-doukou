@@ -7,7 +7,7 @@ const schema = z
   .object({
     isSelectType: z.boolean(),
     manualEventName: z.string(),
-    manualEventLocation: z.string(),
+    manualLocation: z.string(),
     eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
@@ -46,9 +46,9 @@ const schema = z
       });
     }
 
-    if (!val.isSelectType && !val.manualEventLocation) {
+    if (!val.isSelectType && !val.manualLocation) {
       ctx.addIssue({
-        path: ["manualEventLocation"],
+        path: ["manualLocation"],
         code: "custom",
         message: "開催場所を記載してください",
       });
@@ -84,7 +84,7 @@ export const NewRecruitFormProvider = ({ children }: Props) => {
     defaultValues: {
       isSelectType: true,
       manualEventName: "",
-      manualEventLocation: "",
+      manualLocation: "",
       eventLocation: { value: null, label: "" },
       numberOfPeople: "",
       description: "",

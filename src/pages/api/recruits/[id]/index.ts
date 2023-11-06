@@ -136,8 +136,8 @@ const getHandler = async (
     ...(recruit.manualEventName && {
       manualEventName: recruit.manualEventName,
     }),
-    ...(recruit.manualEventLocation && {
-      manualEventLocation: recruit.manualEventLocation,
+    ...(recruit.manualLocation && {
+      manualLocation: recruit.manualLocation,
     }),
     ...(recruit.eventLocation && {
       eventLocation: {

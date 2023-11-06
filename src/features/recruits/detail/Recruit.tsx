@@ -18,8 +18,8 @@ export const Recruit = () => {
 
   const location = useMemo(() => {
     if (recruitStatus !== "success") return "";
-    if (recruitData.recruit.manualEventLocation) {
-      return recruitData.recruit.manualEventLocation;
+    if (recruitData.recruit.manualLocation) {
+      return recruitData.recruit.manualLocation;
     } else {
       return (
         recruitData.recruit.eventLocation!.location.name +

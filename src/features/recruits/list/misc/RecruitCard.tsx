@@ -22,8 +22,8 @@ export const RecruitCard = (props: Props) => {
   };
 
   const location = useMemo(() => {
-    if (recruit.manualEventLocation) {
-      return recruit.manualEventLocation;
+    if (recruit.manualLocation) {
+      return recruit.manualLocation;
     } else {
       return (
         recruit.eventLocation!.location.name +

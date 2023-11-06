@@ -136,7 +136,7 @@ export const NewRecruitForm = () => {
             </Grid>
             <Grid item xs={12}>
               <InputWithLabelRHF<NewRecruitFormSchema>
-                name="manualEventLocation"
+                name="manualLocation"
                 label="開催場所"
                 control={control}
                 fullWidth
