@@ -58,7 +58,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   if (user.role !== "ADMIN") {
     return {
       redirect: {
-        destination: "/event_location_events",
+        destination: "/event_locations",
         permanent: false,
       },
     };

@@ -90,7 +90,7 @@ model Event {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  eventLocationEvents EventLocationEvent[]
+  eventLocations EventLocation[]
   eventGameTypes EventGameType[]
 }
 
@@ -113,10 +113,10 @@ model Prefecture {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  eventLocations EventLocation[]
+  locations Location[]
 }
 
-model EventLocation {
+model Location {
   id String @id @default(cuid())
   name String
   prefecture Prefecture @relation(fields: [prefectureId], references: [id], onDelete: Cascade)
@@ -126,19 +126,19 @@ model EventLocation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  eventLocationEvents EventLocationEvent[]
+  eventLocations EventLocation[]
 
   @@unique([prefectureId, name])
 }
 
-model EventLocationEvent {
+model EventLocation {
   id String @id @default(cuid())
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId String
-  eventLocation EventLocation @relation(fields: [eventLocationId], references: [id], onDelete: Cascade)
-  eventLocationId String
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId String
   building String?
-  description String? @db.Text // EventLocation.nameがothersの時や開催日時が不明確の場合に、書き入れる
+  description String? @db.Text // location.nameがothersの時や開催日時が不明確の場合に、書き入れる
   startedAt DateTime? @db.Date
   endedAt DateTime? @db.Date 
   detailedSchedule String? @db.Text
@@ -152,10 +152,10 @@ model Recruit {
   id String @id @default(cuid())
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
-  manualEventName String? // eventIdがない場合に記入、つまりEventと紐づいてない場合
-  manualEventLocation String? // eventLocationEventIdがない場合に記入
-  eventLocationEvent EventLocationEvent? @relation(fields: [eventLocationEventId], references: [id], onDelete: Cascade)
-  eventLocationEventId String?
+  manualEventName String? // eventLocationIdがない場合に記入
+  manualLocation String? // eventLocationIdがない場合に記入
+  eventLocation EventLocation? @relation(fields: [eventLocationId], references: [id], onDelete: Cascade)
+  eventLocationId String?
   numberOfPeople Int? // 募集人数
   description String? @db.Text 
   createdAt DateTime @default(now())

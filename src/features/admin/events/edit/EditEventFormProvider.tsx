@@ -28,9 +28,9 @@ const schema = z.object({
 
   organization: z.object({ label: z.string(), value: z.string().nullable() }),
   gameTypes: z.object({ label: z.string(), value: z.string() }).array(),
-  eventLocationEvents: z
+  eventLocations: z
     .object({
-      eventLocation: z.object({
+      location: z.object({
         value: z
           .string()
           .nullable()
@@ -63,8 +63,8 @@ type Props = {
   event: EventDetail;
 };
 
-export const defaultEventLocationEvent = {
-  eventLocation: { value: null, label: "" },
+export const defaultEventLocation = {
+  location: { value: null, label: "" },
   startedAt: null,
   endedAt: null,
   building: "",
@@ -88,16 +88,16 @@ export const EditEventFormProvider = ({ children, event }: Props) => {
       organization: event.organization
         ? { label: event.organization.name, value: event.organization.id }
         : { label: "未選択", value: null },
-      eventLocationEvents: event.eventLocationEvents.map((ele) => ({
-        eventLocation: {
-          value: ele.eventLocation.id,
-          label: ele.eventLocation.name,
+      eventLocations: event.eventLocations.map((el) => ({
+        location: {
+          value: el.location.id,
+          label: el.location.name,
         },
-        building: ele.building ?? "",
-        description: ele.description ?? "",
-        startedAt: ele.startedAt ? new Date(ele.startedAt) : null,
-        endedAt: ele.endedAt ? new Date(ele.endedAt) : null,
-        detailedSchedule: ele.detailedSchedule ?? "",
+        building: el.building ?? "",
+        description: el.description ?? "",
+        startedAt: el.startedAt ? new Date(el.startedAt) : null,
+        endedAt: el.endedAt ? new Date(el.endedAt) : null,
+        detailedSchedule: el.detailedSchedule ?? "",
       })),
       gameTypes: event.gameTypes.map((type) => ({
         label: type.name,

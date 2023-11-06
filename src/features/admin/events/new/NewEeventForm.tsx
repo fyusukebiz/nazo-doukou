@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { SubmitHandler, useFieldArray } from "react-hook-form";
 import {
   NewEventFormSchema,
-  defaultEventLocationEvent,
+  defaultEventLocation,
   useNewEventFormContext,
 } from "./NewEventFormProvider";
 import { convertNewEventDataForPost } from "./convertNewEventDataForPost";
@@ -41,12 +41,12 @@ export const NewEventForm = () => {
   const { data: gameTypesData, status: gameTypesStatus } = useGameTypesQuery();
 
   const {
-    fields: eventLocationEventFields,
-    append: appendEventLocationEvent,
-    remove: removeEventLocationEvent,
+    fields: eventLocationFields,
+    append: appendEventLocation,
+    remove: removeEventLocation,
   } = useFieldArray({
     control,
-    name: "eventLocationEvents",
+    name: "eventLocations",
   });
 
   const { data: organizationsData, status: organizationsStatus } =
@@ -57,7 +57,7 @@ export const NewEventForm = () => {
   const locations = useMemo(() => {
     if (prefecturesStatus !== "success") return [];
     return prefecturesData.prefectures
-      .map((pref) => pref.eventLocations)
+      .map((pref) => pref.locations)
       .flat()
       .map((loc) => ({ value: loc.id, label: loc.name }));
   }, [prefecturesData, prefecturesStatus]);
@@ -110,6 +110,7 @@ export const NewEventForm = () => {
       {
         onSuccess: async (res) => {
           toast.success("作成しました");
+          router.push("/admin/events");
         },
       }
     );
@@ -212,7 +213,7 @@ export const NewEventForm = () => {
             </Box>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-            {eventLocationEventFields.map((field, index) => (
+            {eventLocationFields.map((field, index) => (
               <Box
                 key={field.id}
                 sx={{
@@ -230,7 +231,7 @@ export const NewEventForm = () => {
                     color="primary"
                     size="small"
                     sx={{ marginLeft: "auto" }}
-                    onClick={() => removeEventLocationEvent(index)}
+                    onClick={() => removeEventLocation(index)}
                   >
                     開催地を削除する
                   </Button>
@@ -240,7 +241,7 @@ export const NewEventForm = () => {
                     NewEventFormSchema,
                     { label: string; value: string }
                   >
-                    name={`eventLocationEvents.${index}.eventLocation`}
+                    name={`eventLocations.${index}.location`}
                     control={control}
                     label="開催地"
                     placeholder="開催地"
@@ -248,33 +249,33 @@ export const NewEventForm = () => {
                   />
                 </Box>
                 <InputWithLabelRHF<NewEventFormSchema>
-                  name={`eventLocationEvents.${index}.building`}
+                  name={`eventLocations.${index}.building`}
                   label="建物名"
                   control={control}
                   fullWidth
                 />
                 <DatePickerWithLabelRHF<NewEventFormSchema>
-                  name={`eventLocationEvents.${index}.startedAt`}
+                  name={`eventLocations.${index}.startedAt`}
                   label="開始日"
                   control={control}
                   endIcon={<BiCalendar size={30} />}
                 />
                 <DatePickerWithLabelRHF<NewEventFormSchema>
-                  name={`eventLocationEvents.${index}.endedAt`}
+                  name={`eventLocations.${index}.endedAt`}
                   label="終了日"
                   control={control}
                   endIcon={<BiCalendar size={30} />}
                 />
                 <Grid item xs={12}>
                   <InputWithLabelRHF<NewEventFormSchema>
-                    name={`eventLocationEvents.${index}.detailedSchedule`}
+                    name={`eventLocations.${index}.detailedSchedule`}
                     label="スケジュール"
                     control={control}
                     fullWidth
                   />
                 </Grid>
                 <InputWithLabelRHF<NewEventFormSchema>
-                  name={`eventLocationEvents.${index}.description`}
+                  name={`eventLocations.${index}.description`}
                   label="詳細"
                   control={control}
                   multiline
@@ -290,9 +291,7 @@ export const NewEventForm = () => {
               color="primary"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
-              onClick={() =>
-                appendEventLocationEvent(defaultEventLocationEvent)
-              }
+              onClick={() => appendEventLocation(defaultEventLocation)}
             >
               開催地を追加する
             </Button>

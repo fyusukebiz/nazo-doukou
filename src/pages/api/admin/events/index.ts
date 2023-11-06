@@ -119,10 +119,10 @@ export type PostEventByAdminRequestBody = {
     timeRequired?: string;
     twitterTag?: string;
     gameTypeIds: string[];
-    eventLocationEvents: {
+    eventLocations: {
       description?: string;
       building?: string;
-      eventLocationId: string;
+      locationId: string;
       startedAt?: string;
       endedAt?: string;
       detailedSchedule?: string;
@@ -149,9 +149,9 @@ const postHandler = async (
       timeRequired: z.string().optional(),
       twitterTag: z.string().optional(),
       gameTypeIds: z.string().array(),
-      eventLocationEvents: z
+      eventLocations: z
         .object({
-          eventLocationId: z.string().min(1),
+          locationId: z.string().min(1),
           building: z.string().optional(),
           description: z.string().optional(),
           startedAt: z.string().optional(),
@@ -193,11 +193,11 @@ const postHandler = async (
     });
   }
 
-  for (const eleData of eventData.eventLocationEvents) {
-    await prisma.eventLocationEvent.create({
+  for (const eleData of eventData.eventLocations) {
+    await prisma.eventLocation.create({
       data: {
         eventId: event.id,
-        eventLocationId: eleData.eventLocationId,
+        locationId: eleData.locationId,
         ...(eleData.startedAt && { startedAt: eleData.startedAt }),
         ...(eleData.endedAt && { endedAt: eleData.endedAt }),
         ...(eleData.building && { building: eleData.building }),

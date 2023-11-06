@@ -40,7 +40,7 @@ export const Login = () => {
       // DBにちゃんとUserが存在しているか確認、存在していなければUserを作成
       await postConfirmMyUser.mutateAsync();
 
-      router.push("/event_location_events");
+      router.push("/recruits");
     } catch (error) {
       console.log(error);
       if (error instanceof FirebaseError) {

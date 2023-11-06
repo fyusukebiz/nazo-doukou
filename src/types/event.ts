@@ -17,9 +17,9 @@ export type EventDetail = {
     id: string;
     name: string;
   };
-  eventLocationEvents: {
+  eventLocations: {
     id: string;
-    eventLocation: {
+    location: {
       id: string;
       name: string;
     };

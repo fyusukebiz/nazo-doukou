@@ -56,7 +56,11 @@ export const PcTopBar = () => {
             </MenuButton>
           </Box>
         ) : (
-          <Link href="/auth/login" style={{ textDecoration: "none" }} passHref>
+          <Link
+            href="/auth/login"
+            style={{ textDecoration: "none", marginLeft: "auto" }}
+            passHref
+          >
             <Button variant="outlined" size="large" sx={{ width: "110px" }}>
               ログイン
             </Button>

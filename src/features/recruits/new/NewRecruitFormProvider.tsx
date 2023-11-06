@@ -8,7 +8,7 @@ const schema = z
     isSelectType: z.boolean(),
     manualEventName: z.string(),
     manualEventLocation: z.string(),
-    eventLocationEvent: z.object({
+    eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
     }),
@@ -38,9 +38,9 @@ const schema = z
     recruitTags: z.object({ label: z.string(), value: z.string() }).array(),
   })
   .superRefine((val, ctx) => {
-    if (val.isSelectType && !val.eventLocationEvent.value) {
+    if (val.isSelectType && !val.eventLocation.value) {
       ctx.addIssue({
-        path: ["eventLocationEvent"],
+        path: ["eventLocation"],
         code: "custom",
         message: "イベントが未入力です。",
       });
@@ -85,7 +85,7 @@ export const NewRecruitFormProvider = ({ children }: Props) => {
       isSelectType: true,
       manualEventName: "",
       manualEventLocation: "",
-      eventLocationEvent: { value: null, label: "" },
+      eventLocation: { value: null, label: "" },
       numberOfPeople: "",
       description: "",
       possibleDates: [defaultPossibleDate],

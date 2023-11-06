@@ -106,7 +106,7 @@ const getHandler = async (
     where: { id: recruitId },
     include: {
       user: true,
-      eventLocationEvent: { include: { event: true, eventLocation: true } },
+      eventLocation: { include: { event: true, location: true } },
       possibleDates: true,
       commentToRecruits: { include: { user: true } },
       recruitTagRecruits: { include: { recruitTag: true } },
@@ -139,27 +139,27 @@ const getHandler = async (
     ...(recruit.manualEventLocation && {
       manualEventLocation: recruit.manualEventLocation,
     }),
-    ...(recruit.eventLocationEvent && {
-      eventLocationEvent: {
-        id: recruit.eventLocationEvent.id,
-        ...(recruit.eventLocationEvent.building && {
-          building: recruit.eventLocationEvent.building,
+    ...(recruit.eventLocation && {
+      eventLocation: {
+        id: recruit.eventLocation.id,
+        ...(recruit.eventLocation.building && {
+          building: recruit.eventLocation.building,
         }),
         event: {
-          id: recruit.eventLocationEvent.event.id,
-          name: recruit.eventLocationEvent.event.name,
-          ...(recruit.eventLocationEvent.event?.coverImageFileKey && {
+          id: recruit.eventLocation.event.id,
+          name: recruit.eventLocation.event.name,
+          ...(recruit.eventLocation.event?.coverImageFileKey && {
             coverImageFileUrl: await generateReadSignedUrl(
-              recruit.eventLocationEvent.event.coverImageFileKey
+              recruit.eventLocation.event.coverImageFileKey
             ),
           }),
-          ...(recruit.eventLocationEvent.event.sourceUrl && {
-            sourceUrl: recruit.eventLocationEvent.event.sourceUrl,
+          ...(recruit.eventLocation.event.sourceUrl && {
+            sourceUrl: recruit.eventLocation.event.sourceUrl,
           }),
         },
-        eventLocation: {
-          id: recruit.eventLocationEvent.eventLocation.id,
-          name: recruit.eventLocationEvent.eventLocation.name,
+        location: {
+          id: recruit.eventLocation.location.id,
+          name: recruit.eventLocation.location.name,
         },
       },
     }),
@@ -203,9 +203,9 @@ const getHandler = async (
 export type PatchRecruitRequestBody = {
   recruit: {
     eventName?: string;
-    eventLocation?: string;
+    location?: string;
     eventId?: string;
-    eventLocationEventId?: string;
+    eventLocationId?: string;
     numberOfPeople?: number;
     description?: string;
   };
@@ -241,9 +241,9 @@ const patchHandler = async (
     .object({
       recruit: z.object({
         eventName: z.string().optional(),
-        eventLocation: z.string().optional(),
+        location: z.string().optional(),
         eventId: z.string().optional(),
-        eventLocationEventId: z.string().optional(),
+        eventLocationId: z.string().optional(),
         numberOfPeople: z.number().optional(),
         description: z.string().optional(),
       }),

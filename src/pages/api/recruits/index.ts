@@ -82,7 +82,7 @@ const getHandler = async (
   const [recruits, meta] = await prismaWithPaginate.recruit
     .paginate({
       include: {
-        eventLocationEvent: { include: { event: true, eventLocation: true } },
+        eventLocation: { include: { event: true, location: true } },
         possibleDates: true,
       },
     })
@@ -101,24 +101,24 @@ const getHandler = async (
       ...(recruit.manualEventLocation && {
         manualEventLocation: recruit.manualEventLocation,
       }),
-      ...(recruit.eventLocationEvent && {
-        eventLocationEvent: {
-          id: recruit.eventLocationEvent.id,
-          ...(recruit.eventLocationEvent.building && {
-            building: recruit.eventLocationEvent.building,
+      ...(recruit.eventLocation && {
+        eventLocation: {
+          id: recruit.eventLocation.id,
+          ...(recruit.eventLocation.building && {
+            building: recruit.eventLocation.building,
           }),
           event: {
-            id: recruit.eventLocationEvent.event.id,
-            name: recruit.eventLocationEvent.event.name,
-            ...(recruit.eventLocationEvent.event.coverImageFileKey && {
+            id: recruit.eventLocation.event.id,
+            name: recruit.eventLocation.event.name,
+            ...(recruit.eventLocation.event.coverImageFileKey && {
               coverImageFileUrl: await generateReadSignedUrl(
-                recruit.eventLocationEvent.event.coverImageFileKey
+                recruit.eventLocation.event.coverImageFileKey
               ),
             }),
           },
-          eventLocation: {
-            id: recruit.eventLocationEvent.eventLocation.id,
-            name: recruit.eventLocationEvent.eventLocation.name,
+          location: {
+            id: recruit.eventLocation.location.id,
+            name: recruit.eventLocation.location.name,
           },
         },
       }),
@@ -160,7 +160,7 @@ export type PostRecruitRequestBody = {
   recruit: {
     manualEventName?: string;
     manualEventLocation?: string;
-    eventLocationEventId?: string;
+    eventLocationId?: string;
     numberOfPeople?: number;
     description?: string;
   };
@@ -185,7 +185,7 @@ const postHandler = async (
       recruit: z.object({
         manualEventName: z.string().optional(),
         manualEventLocation: z.string().optional(),
-        eventLocationEventId: z.string().optional(),
+        eventLocationId: z.string().optional(),
         numberOfPeople: z.number().optional(),
         description: z.string().optional(),
       }),
@@ -198,9 +198,9 @@ const postHandler = async (
         .array(),
     })
     .superRefine((val, ctx) => {
-      if (val.isSelectType && !val.recruit.eventLocationEventId) {
+      if (val.isSelectType && !val.recruit.eventLocationId) {
         ctx.addIssue({
-          path: ["recruit.eventLocationEventId"],
+          path: ["recruit.eventLocationId"],
           code: "custom",
           message: "イベントが未入力です。",
         });

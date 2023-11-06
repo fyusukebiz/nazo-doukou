@@ -25,9 +25,9 @@ const schema = z.object({
     return !!v || !isNaN(Number(v));
   }, "数値を入力してください"),
   timeRequired: z.string(),
-  eventLocationEvents: z
+  eventLocations: z
     .object({
-      eventLocation: z.object({
+      location: z.object({
         value: z
           .string()
           .nullable()
@@ -59,8 +59,8 @@ type Props = {
   children: ReactNode;
 };
 
-export const defaultEventLocationEvent = {
-  eventLocation: { value: null, label: "" },
+export const defaultEventLocation = {
+  location: { value: null, label: "" },
   startedAt: null,
   endedAt: null,
   building: "",
@@ -82,7 +82,7 @@ export const NewEventFormProvider = ({ children }: Props) => {
       coverImageFile: null,
       numberOfPeopleInTeam: "",
       timeRequired: "",
-      eventLocationEvents: [defaultEventLocationEvent],
+      eventLocations: [defaultEventLocation],
     },
   });
 

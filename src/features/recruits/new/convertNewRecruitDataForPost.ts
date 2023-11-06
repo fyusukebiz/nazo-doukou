@@ -14,8 +14,8 @@ export const convertNewRecruitDataForPost = ({
       ...(data.manualEventLocation && {
         manualEventLocation: data.manualEventLocation,
       }),
-      ...(data.eventLocationEvent.value && {
-        eventLocationEventId: data.eventLocationEvent.value,
+      ...(data.eventLocation.value && {
+        eventLocationId: data.eventLocation.value,
       }),
       ...(data.numberOfPeople && {
         numberOfPeople: Number(data.numberOfPeople) as number,

@@ -84,9 +84,9 @@ const getHandler = async (
     include: {
       organization: true,
       eventGameTypes: { include: { gameType: true } },
-      eventLocationEvents: {
+      eventLocations: {
         include: {
-          eventLocation: { include: { prefecture: true } },
+          location: { include: { prefecture: true } },
         },
       },
     },
@@ -112,17 +112,17 @@ const getHandler = async (
         name: event.organization.name,
       },
     }),
-    eventLocationEvents: event.eventLocationEvents.map((ele) => ({
-      id: ele.id,
-      eventLocation: {
-        id: ele.eventLocation.id,
-        name: ele.eventLocation.name,
+    eventLocations: event.eventLocations.map((el) => ({
+      id: el.id,
+      location: {
+        id: el.location.id,
+        name: el.location.name,
       },
-      ...(ele.building && { building: ele.building }),
-      ...(ele.description && { description: ele.description }),
-      ...(ele.startedAt && { startedAt: ele.startedAt.toISOString() }),
-      ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }),
-      ...(ele.detailedSchedule && { detailedSchedule: ele.detailedSchedule }),
+      ...(el.building && { building: el.building }),
+      ...(el.description && { description: el.description }),
+      ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
+      ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
+      ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
     })),
     gameTypes: event.eventGameTypes.map((egt) => ({
       id: egt.gameType.id,
@@ -147,8 +147,8 @@ export type PatchEventByAdminRequestBody = {
     timeRequired?: string;
     twitterTag?: string;
     gameTypeIds: string[];
-    eventLocationEvents: {
-      eventLocationId: string;
+    eventLocations: {
+      locationId: string;
       description?: string;
       building?: string;
       startedAt?: string;
@@ -180,9 +180,9 @@ const patchHandler = async (
       numberOfPeopleInTeam: z.string().optional(),
       timeRequired: z.string().optional(),
       gameTypeIds: z.string().array(),
-      eventLocationEvents: z
+      eventLocations: z
         .object({
-          eventLocationId: z.string().min(1),
+          locationId: z.string().min(1),
           description: z.string().optional(),
           building: z.string().optional(),
           startedAt: z.string().optional(),
@@ -201,7 +201,7 @@ const patchHandler = async (
 
   const eventInDb = await prisma.event.findUniqueOrThrow({
     where: { id: eventId },
-    include: { eventGameTypes: true, eventLocationEvents: true },
+    include: { eventGameTypes: true, eventLocations: true },
   });
 
   // 既に画像が設定されているなら事前に消す
@@ -243,22 +243,22 @@ const patchHandler = async (
     });
   }
 
-  for (const eleId of eventInDb.eventLocationEvents.map((ele) => ele.id)) {
-    await prisma.eventLocationEvent.delete({
+  for (const eleId of eventInDb.eventLocations.map((el) => el.id)) {
+    await prisma.eventLocation.delete({
       where: { id: eleId },
     });
   }
-  const eventLocationEvents = validation.data.event.eventLocationEvents;
-  for (const ele of eventLocationEvents) {
-    await prisma.eventLocationEvent.create({
+  const eventLocations = validation.data.event.eventLocations;
+  for (const el of eventLocations) {
+    await prisma.eventLocation.create({
       data: {
         eventId: eventId,
-        eventLocationId: ele.eventLocationId,
-        ...(ele.description && { description: ele.description }),
-        ...(ele.building && { building: ele.building }),
-        ...(ele.startedAt && { startedAt: ele.startedAt }),
-        ...(ele.endedAt && { endedAt: ele.endedAt }),
-        ...(ele.detailedSchedule && { detailedSchedule: ele.detailedSchedule }),
+        locationId: el.locationId,
+        ...(el.description && { description: el.description }),
+        ...(el.building && { building: el.building }),
+        ...(el.startedAt && { startedAt: el.startedAt }),
+        ...(el.endedAt && { endedAt: el.endedAt }),
+        ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
       },
     });
   }

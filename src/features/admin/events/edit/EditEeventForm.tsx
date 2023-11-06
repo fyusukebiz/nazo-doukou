@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { SubmitHandler, useFieldArray } from "react-hook-form";
 import {
   EditEventFormSchema,
-  defaultEventLocationEvent,
+  defaultEventLocation,
   useEditEventFormContext,
 } from "./EditEventFormProvider";
 import { convertEditEventDataForPatch } from "./convertEditEventDataForPatch";
@@ -44,12 +44,12 @@ export const EditEventForm = ({ eventId }: Props) => {
   const { data: gameTypesData, status: gameTypesStatus } = useGameTypesQuery();
 
   const {
-    fields: eventLocationEventFields,
-    append: appendEventLocationEvent,
-    remove: removeEventLocationEvent,
+    fields: eventLocationFields,
+    append: appendEventLocation,
+    remove: removeEventLocation,
   } = useFieldArray({
     control,
-    name: "eventLocationEvents",
+    name: "eventLocations",
   });
 
   const { data: organizationsData, status: organizationsStatus } =
@@ -60,7 +60,7 @@ export const EditEventForm = ({ eventId }: Props) => {
   const locations = useMemo(() => {
     if (prefecturesStatus !== "success") return [];
     return prefecturesData.prefectures
-      .map((pref) => pref.eventLocations)
+      .map((pref) => pref.locations)
       .flat()
       .map((loc) => ({ value: loc.id, label: loc.name }));
   }, [prefecturesData, prefecturesStatus]);
@@ -215,7 +215,7 @@ export const EditEventForm = ({ eventId }: Props) => {
             </Box>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-            {eventLocationEventFields.map((field, index) => (
+            {eventLocationFields.map((field, index) => (
               <Box
                 key={field.id}
                 sx={{
@@ -233,7 +233,7 @@ export const EditEventForm = ({ eventId }: Props) => {
                     color="primary"
                     size="small"
                     sx={{ marginLeft: "auto" }}
-                    onClick={() => removeEventLocationEvent(index)}
+                    onClick={() => removeEventLocation(index)}
                   >
                     開催地を削除する
                   </Button>
@@ -243,7 +243,7 @@ export const EditEventForm = ({ eventId }: Props) => {
                     EditEventFormSchema,
                     { label: string; value: string }
                   >
-                    name={`eventLocationEvents.${index}.eventLocation`}
+                    name={`eventLocations.${index}.location`}
                     control={control}
                     label="開催地"
                     placeholder="開催地"
@@ -251,13 +251,13 @@ export const EditEventForm = ({ eventId }: Props) => {
                   />
                 </Box>
                 <InputWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocationEvents.${index}.building`}
+                  name={`eventLocations.${index}.building`}
                   label="建物名"
                   control={control}
                   fullWidth
                 />
                 <DatePickerWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocationEvents.${index}.startedAt`}
+                  name={`eventLocations.${index}.startedAt`}
                   label="開始日"
                   control={control}
                   endIcon={<BiCalendar size={30} />}
@@ -268,7 +268,7 @@ export const EditEventForm = ({ eventId }: Props) => {
                   }}
                 />
                 <DatePickerWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocationEvents.${index}.endedAt`}
+                  name={`eventLocations.${index}.endedAt`}
                   label="終了日"
                   control={control}
                   endIcon={<BiCalendar size={30} />}
@@ -280,14 +280,14 @@ export const EditEventForm = ({ eventId }: Props) => {
                 />
                 <Grid item xs={12}>
                   <InputWithLabelRHF<EditEventFormSchema>
-                    name={`eventLocationEvents.${index}.detailedSchedule`}
+                    name={`eventLocations.${index}.detailedSchedule`}
                     label="スケジュール"
                     control={control}
                     fullWidth
                   />
                 </Grid>
                 <InputWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocationEvents.${index}.description`}
+                  name={`eventLocations.${index}.description`}
                   label="詳細"
                   control={control}
                   multiline
@@ -303,9 +303,7 @@ export const EditEventForm = ({ eventId }: Props) => {
               color="primary"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
-              onClick={() =>
-                appendEventLocationEvent(defaultEventLocationEvent)
-              }
+              onClick={() => appendEventLocation(defaultEventLocation)}
             >
               開催地を追加する
             </Button>

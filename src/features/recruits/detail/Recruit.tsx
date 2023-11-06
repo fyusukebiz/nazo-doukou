@@ -22,9 +22,9 @@ export const Recruit = () => {
       return recruitData.recruit.manualEventLocation;
     } else {
       return (
-        recruitData.recruit.eventLocationEvent!.eventLocation.name +
-        (recruitData.recruit.eventLocationEvent!.building
-          ? " / " + recruitData.recruit.eventLocationEvent!.building
+        recruitData.recruit.eventLocation!.location.name +
+        (recruitData.recruit.eventLocation!.building
+          ? " / " + recruitData.recruit.eventLocation!.building
           : "")
       );
     }
@@ -37,11 +37,10 @@ export const Recruit = () => {
         <Box sx={{ height: "100%", overflowY: "scroll" }}>
           <Container maxWidth="sm" sx={{ padding: "24px" }}>
             <Box>
-              {recruitData.recruit.eventLocationEvent ? (
+              {recruitData.recruit.eventLocation ? (
                 <img
                   src={
-                    recruitData.recruit.eventLocationEvent.event
-                      .coverImageFileUrl
+                    recruitData.recruit.eventLocation.event.coverImageFileUrl
                   }
                   style={{
                     objectFit: "cover",
@@ -85,15 +84,15 @@ export const Recruit = () => {
               <Box sx={{ fontSize: "20px" }}>
                 {recruitData.recruit.manualEventName
                   ? recruitData.recruit.manualEventName
-                  : recruitData.recruit.eventLocationEvent!.event.name}
+                  : recruitData.recruit.eventLocation!.event.name}
               </Box>
 
-              {recruitData.recruit.eventLocationEvent?.id && (
+              {recruitData.recruit.eventLocation?.id && (
                 <Row
                   item="イベント"
                   content={
                     <Link
-                      href={`/event_location_events/${recruitData.recruit.eventLocationEvent.id}`}
+                      href={`/event_locations/${recruitData.recruit.eventLocation.id}`}
                     >
                       リンク
                     </Link>
@@ -106,7 +105,7 @@ export const Recruit = () => {
               <Row
                 item="候補日"
                 content={recruitData.recruit.possibleDates
-                  .map((date) => format(new Date(date.date), "MM/dd"))
+                  .map((date) => format(new Date(date.date), "MM/d"))
                   .join(", ")}
               />
 

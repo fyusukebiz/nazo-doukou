@@ -22,13 +22,13 @@ export const convertNewEventDataForPost = ({
       }),
       gameTypeIds: data.gameTypes.map((gameType) => gameType.value),
       ...(data.timeRequired && { timeRequired: data.timeRequired }),
-      eventLocationEvents: data.eventLocationEvents.map((ele) => ({
-        eventLocationId: ele.eventLocation.value!, // バリデーションでnullではない
-        ...(ele.building && { building: ele.building }),
-        ...(ele.startedAt && { startedAt: ele.startedAt.toISOString() }),
-        ...(ele.endedAt && { endedAt: ele.endedAt.toISOString() }),
-        ...(ele.detailedSchedule && { detailedSchedule: ele.detailedSchedule }),
-        ...(ele.description && { description: ele.description }),
+      eventLocations: data.eventLocations.map((el) => ({
+        locationId: el.location.value!, // バリデーションでnullではない
+        ...(el.building && { building: el.building }),
+        ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
+        ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
+        ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
+        ...(el.description && { description: el.description }),
       })),
     },
   };

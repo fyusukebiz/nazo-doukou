@@ -1,44 +1,43 @@
 import { Box, Chip } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
 import { useRouter } from "next/router";
-import { format } from "date-fns";
-import { RecruitSimple } from "@/types/recruit";
-import { formatDateTimeFlex } from "@/utils/formatDateTimeFlex";
 import { useMemo } from "react";
+import { format } from "date-fns";
+import { EventLocationSimple } from "@/types/eventLocation";
 
 type Props = {
-  recruit: RecruitSimple;
+  eventLocation: EventLocationSimple;
   saveScrollPosition?: () => void;
 };
 
-export const RecruitCard = (props: Props) => {
-  const { recruit, saveScrollPosition } = props;
+export const EventLocationCard = (props: Props) => {
+  const { eventLocation, saveScrollPosition } = props;
   const router = useRouter();
 
   const handleClickCard = () => {
     if (!saveScrollPosition) return;
     saveScrollPosition();
-    router.push(`/recruits/${recruit.id}`);
+    router.push(`/event_locations/${eventLocation.id}`);
   };
 
-  const location = useMemo(() => {
-    if (recruit.manualEventLocation) {
-      return recruit.manualEventLocation;
-    } else {
-      return (
-        recruit.eventLocation!.location.name +
-        (recruit.eventLocation!.building
-          ? " / " + recruit.eventLocation!.building
-          : "")
-      );
-    }
-  }, [recruit]);
+  const period = useMemo(() => {
+    if (!eventLocation.startedAt && !eventLocation.endedAt) return "";
+    return `${
+      eventLocation.startedAt
+        ? format(new Date(eventLocation.startedAt), "MM/d")
+        : ""
+    } ~ ${
+      eventLocation.endedAt
+        ? format(new Date(eventLocation.endedAt), "MM/d")
+        : ""
+    }`;
+  }, [eventLocation]);
 
   return (
     <Box sx={{ border: `1px solid ${grey[300]}`, borderRadius: "10px" }}>
-      {recruit.eventLocation ? (
+      {eventLocation.event.coverImageFileUrl ? (
         <img
-          src={recruit.eventLocation.event.coverImageFileUrl}
+          src={eventLocation.event.coverImageFileUrl}
           style={{
             objectFit: "cover",
             maxHeight: "220px",
@@ -68,22 +67,16 @@ export const RecruitCard = (props: Props) => {
       )}
       <Box sx={{ padding: "10px" }}>
         <Box sx={{ marginBottom: "10px", fontSize: "20px" }}>
-          {recruit.manualEventName
-            ? recruit.manualEventName
-            : recruit.eventLocation!.event.name}
+          {eventLocation.event.name}
         </Box>
         <Box
           sx={{ display: "flex", alignItems: "center", marginBottom: "4px" }}
         >
-          {/* 日付 */}
-          <Box sx={{ marginRight: "10px" }}>
-            {recruit.possibleDates
-              .map((date) => format(new Date(date.date), "MM/d"))
-              .join(", ")}
-          </Box>
+          {/* 期間 */}
+          <Box>{period}</Box>
           {/* 場所 */}
           <Chip
-            label={location}
+            label={`${eventLocation.location.prefecture.name} / ${eventLocation.location.name}`}
             sx={{
               background: lightBlue[200],
               color: lightBlue[900],
@@ -91,19 +84,6 @@ export const RecruitCard = (props: Props) => {
             }}
             size="small"
           />
-        </Box>
-
-        {recruit.numberOfPeople && (
-          <Box>募集人数：{recruit.numberOfPeople}</Box>
-        )}
-
-        <Box sx={{ display: "flex" }}>
-          <Box sx={{ marginLeft: "auto", color: grey[500], fontSize: "12px" }}>
-            {formatDateTimeFlex({
-              rawDate: new Date().toISOString(),
-              hideYear: true,
-            })}
-          </Box>
         </Box>
       </Box>
     </Box>

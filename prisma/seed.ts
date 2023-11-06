@@ -18,41 +18,41 @@ async function main() {
     where: { name: "神奈川県" },
   });
 
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "秋葉原" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "浅草" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "上野" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "渋谷" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "新宿" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "下北沢" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "吉祥寺" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "町田" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "お台場" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "その他" },
   });
 
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: kanagawa.id, name: "横浜" },
   });
-  await prisma.eventLocation.create({
+  await prisma.location.create({
     data: { prefectureId: kanagawa.id, name: "その他" },
   });
 

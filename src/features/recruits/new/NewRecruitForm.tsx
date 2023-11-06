@@ -18,7 +18,7 @@ import { BiCalendar } from "react-icons/bi";
 import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
 import { usePostRecruit } from "@/react_queries/recruits/usePostRecruit";
 import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTagsQuery";
-import { useEventLocationEventOptionsQuery } from "@/react_queries/event_location_events/useEventLocationEventOptionsQuery";
+import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
 import { grey } from "@mui/material/colors";
 
@@ -36,10 +36,8 @@ export const NewRecruitForm = () => {
   const { postRecruit } = usePostRecruit();
   console.log(errors);
 
-  const {
-    data: eventLocationEventOptsData,
-    status: eventLocationEventOptsStatus,
-  } = useEventLocationEventOptionsQuery();
+  const { data: eventLocationOptsData, status: eventLocationOptsStatus } =
+    useEventLocationOptionsQuery();
 
   const { data: recruitTagsData, status: recruitTagsStatus } =
     useRecruitTagsQuery();
@@ -53,13 +51,13 @@ export const NewRecruitForm = () => {
     name: "possibleDates",
   });
 
-  const eventLocationEvents = useMemo(() => {
-    if (eventLocationEventOptsStatus !== "success") return [];
-    return eventLocationEventOptsData.eventLocationEventOptions.map((opt) => ({
+  const eventLocations = useMemo(() => {
+    if (eventLocationOptsStatus !== "success") return [];
+    return eventLocationOptsData.eventLocationOptions.map((opt) => ({
       value: opt.id,
       label: `${opt.name}(${opt.location})`,
     }));
-  }, [eventLocationEventOptsData, eventLocationEventOptsStatus]);
+  }, [eventLocationOptsData, eventLocationOptsStatus]);
 
   const recruitTags = useMemo(
     () =>
@@ -119,11 +117,11 @@ export const NewRecruitForm = () => {
               NewRecruitFormSchema,
               { label: string; value: string }
             >
-              name="eventLocationEvent"
+              name="eventLocation"
               control={control}
               label="イベント"
               placeholder="イベント"
-              options={eventLocationEvents}
+              options={eventLocations}
             />
           </Grid>
         ) : (

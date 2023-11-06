@@ -2,7 +2,7 @@ export type RecruitSimple = {
   id: string;
   manualEventName?: string;
   manualEventLocation?: string;
-  eventLocationEvent?: {
+  eventLocation?: {
     id: string;
     building?: string;
     event: {
@@ -10,7 +10,7 @@ export type RecruitSimple = {
       name: string;
       coverImageFileUrl?: string;
     };
-    eventLocation: {
+    location: {
       id: string;
       name: string;
     };
@@ -35,7 +35,7 @@ export type RecruitDetail = {
   };
   manualEventName?: string;
   manualEventLocation?: string;
-  eventLocationEvent?: {
+  eventLocation?: {
     id: string;
     building?: string;
     event: {
@@ -44,7 +44,7 @@ export type RecruitDetail = {
       coverImageFileUrl?: string;
       sourceUrl?: string; // 不要？
     };
-    eventLocation: {
+    location: {
       id: string;
       name: string;
     };
