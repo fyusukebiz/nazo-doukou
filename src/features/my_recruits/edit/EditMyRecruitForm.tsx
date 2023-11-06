@@ -69,7 +69,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
 
   const recruitTags = useMemo(() => {
     if (recruitTagsStatus !== "success") return [];
-    recruitTagsData?.recruitTags.map((tag) => ({
+    return recruitTagsData.recruitTags.map((tag) => ({
       value: tag.id,
       label: tag.name,
     }));

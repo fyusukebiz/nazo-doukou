@@ -1,6 +1,14 @@
 import { LoadingButton } from "@mui/lab";
-import { Grid, Box, Button, Stack, Switch, IconButton } from "@mui/material";
-import { useMemo } from "react";
+import {
+  Grid,
+  Box,
+  Button,
+  Stack,
+  Switch,
+  IconButton,
+  Checkbox,
+} from "@mui/material";
+import { useMemo, useState } from "react";
 import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
   NewRecruitFormSchema,
@@ -21,6 +29,8 @@ import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTags
 import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
 import { grey } from "@mui/material/colors";
+import { format } from "date-fns";
+import { makeTwitterText } from "./makeTwitterText";
 
 export const NewRecruitForm = () => {
   const router = useRouter();
@@ -32,6 +42,7 @@ export const NewRecruitForm = () => {
   } = useNewRecruitFormContext();
 
   const isSelectType = useWatch({ control, name: "isSelectType" });
+  const [willPostToTwitter, setWillPostToTwitter] = useState(true);
 
   const { postRecruit } = usePostRecruit();
   console.log(errors);
@@ -61,7 +72,7 @@ export const NewRecruitForm = () => {
 
   const recruitTags = useMemo(() => {
     if (recruitTagsStatus !== "success") return [];
-    recruitTagsData.recruitTags.map((tag) => ({
+    return recruitTagsData.recruitTags.map((tag) => ({
       value: tag.id,
       label: tag.name,
     }));
@@ -70,7 +81,7 @@ export const NewRecruitForm = () => {
   const onSubmit: SubmitHandler<NewRecruitFormSchema> = async (rawData) => {
     console.log("data", rawData);
 
-    // // 送信用にデータを加工
+    // 送信用にデータを加工
     const dataToPost = convertNewRecruitDataForPost({
       data: rawData,
     });
@@ -79,7 +90,19 @@ export const NewRecruitForm = () => {
       {
         onSuccess: async (res) => {
           toast.success("作成しました");
-          setTimeout(() => router.push("/recruits"), 2000);
+          router.push("/recruits");
+          if (willPostToTwitter) {
+            const url = `${process.env.NEXT_PUBLIC_HOST}/recruits/${res.recruitId}`;
+            const text = makeTwitterText({ isSelectType, rawData, url });
+            const urlSearchParam = new URLSearchParams();
+            urlSearchParam.set("hashtags", "謎解き同行者募集,謎同行");
+            urlSearchParam.set("text", text);
+
+            window.open(
+              `https://twitter.com/intent/tweet?${urlSearchParam.toString()}`,
+              "_blank"
+            );
+          }
         },
       }
     );
@@ -236,6 +259,18 @@ export const NewRecruitForm = () => {
             minRows={5}
             fullWidth
           />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Checkbox
+              checked={willPostToTwitter}
+              onChange={(e) => setWillPostToTwitter(e.target.checked)}
+            />
+            <Box component="label" sx={{ fontWeight: "bold" }}>
+              X（旧Twitter）に投稿する
+            </Box>
+          </Box>
         </Grid>
       </Grid>
 

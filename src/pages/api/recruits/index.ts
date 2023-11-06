@@ -204,7 +204,7 @@ export type PostRecruitRequestBody = {
     priority?: number;
   }[];
 };
-export type PostRecruitResponseSuccessBody = "";
+export type PostRecruitResponseSuccessBody = { recruitId: string };
 
 const postHandler = async (
   req: NextApiRequest,
@@ -286,5 +286,5 @@ const postHandler = async (
     });
   }
 
-  res.status(200).end();
+  res.status(200).json({ recruitId: recruit.id });
 };
