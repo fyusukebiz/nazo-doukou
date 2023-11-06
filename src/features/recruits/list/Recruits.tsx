@@ -1,13 +1,22 @@
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useRecruitsQuery } from "@/react_queries/recruits/useRecruitsQuery";
-import { Box, Button, Container, Grid, Pagination } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  Grid,
+  InputAdornment,
+  OutlinedInput,
+  Pagination,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { RecruitCard } from "./misc/RecruitCard";
 import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
 import { grey, teal } from "@mui/material/colors";
 import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvider";
-import Link from "next/link";
+import { FaSearch } from "react-icons/fa";
 
 export const Recruits = () => {
   const router = useRouter();
@@ -91,19 +100,32 @@ export const Recruits = () => {
                 <Box>イベント</Box>
               </Box>
             </Box>
-
-            <Box sx={{ display: "flex", marginY: "10px" }}>
-              <Link
-                href="/recruits/new"
-                style={{ textDecoration: "none", marginLeft: "auto" }}
-                passHref
-              >
-                <Button variant="outlined" size="large">
-                  新規募集
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginY: "20px",
+              }}
+            >
+              <OutlinedInput
+                size="small"
+                sx={{ maxWidth: "500px", width: "400px" }}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <FaSearch size={20} />
+                  </InputAdornment>
+                }
+              />
+              <ButtonGroup sx={{ height: "40px" }}>
+                <Button size="medium" sx={{ width: "70px", padding: "0px" }}>
+                  作成日順
                 </Button>
-              </Link>
+                <Button size="medium" sx={{ width: "70px", padding: "0px" }}>
+                  希望日順
+                </Button>
+              </ButtonGroup>
             </Box>
-
             <Box sx={{ marginBottom: "10px" }}>
               全{recruitsData.totalCount}個中{recruitsData.currentPage}ページ目
             </Box>

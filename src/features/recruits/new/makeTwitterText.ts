@@ -17,13 +17,13 @@ export const makeTwitterText = ({ isSelectType, rawData, url }: Props) => {
   text += "募集人数: ";
   text += `${rawData.numberOfPeople}人`;
   text += "\n";
-  text += "候補日: ";
+  text += "希望日: ";
   text += rawData.possibleDates
     .map((date) => format(date.date!, "MM/d"))
     .join(", ");
   text += "\n";
   text += "詳細: ";
-  text += url;
+  text += url; // TODO: twitter上でリンクになってるかを確認する
   text += "\n";
 
   return text;

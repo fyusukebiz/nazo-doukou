@@ -1,12 +1,5 @@
-import { NextPageWithLayout } from "@/pages/_app";
-import { Layout } from "@/components/layouts/layout/Layout";
+import { Recruit } from "@/features/recruits/detail/Recruit";
 
-const RecruitPage: NextPageWithLayout = () => {
-  return <div>test</div>;
-};
-
-RecruitPage.getLayout = (page) => {
-  return <Layout>{page}</Layout>;
-};
-
-export default RecruitPage;
+export default function RecruitPage() {
+  return <Recruit />;
+}

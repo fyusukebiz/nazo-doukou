@@ -40,10 +40,19 @@ export const MobileTopBar = () => {
         </Button>
       </Link>
 
-      {currentFbUser ? (
+      {typeof currentFbUser === "undefined" ? null : currentFbUser ? (
         currentFbUser.emailVerified ? (
           <Box sx={{ marginLeft: "auto" }}>
             <MenuButton ref={menuRef}>
+              <MenuItem
+                sx={{ fontSize: "20px" }}
+                onClick={() => {
+                  router.push("/recruits/new");
+                  menuRef.current?.closeMenu();
+                }}
+              >
+                新規募集
+              </MenuItem>
               <MenuItem
                 sx={{ fontSize: "20px" }}
                 onClick={() => {

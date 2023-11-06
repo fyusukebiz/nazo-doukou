@@ -192,8 +192,8 @@ export const EditEventForm = ({ eventId }: Props) => {
           >
             name="gameTypes"
             control={control}
-            label="ゲームタイプ"
-            placeholder="ゲームタイプ"
+            label="種類"
+            placeholder="種類"
             options={gameTypes}
           />
         </Grid>

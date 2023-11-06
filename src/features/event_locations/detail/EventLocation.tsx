@@ -1,8 +1,9 @@
+import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
 import { useEventLocationQuery } from "@/react_queries/event_locations/useEventLocationQuery";
 import { Box, Container } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import { blue, grey } from "@mui/material/colors";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import { ReactNode, useMemo } from "react";
@@ -24,149 +25,143 @@ export const EventLocation = () => {
   }, [eleData]);
 
   return (
-    <Box sx={{ height: "100%" }}>
+    <Box sx={{ height: "100%", overflowY: "scroll" }}>
+      <SubPageHeader title="イベント詳細" />
       {eventLocationStatus === "pending" && <LoadingSpinner />}
       {eventLocationStatus === "success" && (
-        <Box sx={{ height: "100%", overflowY: "scroll" }}>
-          <Container maxWidth="sm" sx={{ padding: "24px" }}>
-            <Box>
-              {eleData.eventLocation.event.coverImageFileUrl ? (
-                <img
-                  src={eleData.eventLocation.event.coverImageFileUrl}
-                  style={{
-                    objectFit: "cover",
-                    maxHeight: "220px",
-                    width: "100%",
-                    marginBottom: "8px",
-                    cursor: "pointer",
-                    borderRadius: "10px",
-                  }}
-                  alt="image"
-                />
-              ) : (
-                <Box
-                  sx={{
-                    height: "220px",
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: "8px",
-                    cursor: "pointer",
-                    borderRadius: "10px",
-                    backgroundColor: grey[400],
-                  }}
-                >
-                  <Box sx={{ color: grey[600], fontSize: "36px" }}>
-                    NO IMAGE
-                  </Box>
-                </Box>
-              )}
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "15px",
-                marginTop: "10px",
-              }}
-            >
-              <Box sx={{ fontSize: "20px" }}>
-                {eleData.eventLocation.event.name}
+        <Container maxWidth="sm" sx={{ padding: "24px" }}>
+          <Box>
+            {eleData.eventLocation.event.coverImageFileUrl ? (
+              <img
+                src={eleData.eventLocation.event.coverImageFileUrl}
+                style={{
+                  objectFit: "cover",
+                  maxHeight: "220px",
+                  width: "100%",
+                  marginBottom: "8px",
+                  cursor: "pointer",
+                  borderRadius: "10px",
+                }}
+                alt="image"
+              />
+            ) : (
+              <Box
+                sx={{
+                  height: "220px",
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "8px",
+                  cursor: "pointer",
+                  borderRadius: "10px",
+                  backgroundColor: grey[400],
+                }}
+              >
+                <Box sx={{ color: grey[600], fontSize: "36px" }}>NO IMAGE</Box>
               </Box>
-
-              {eleData.eventLocation.event.sourceUrl && (
-                <Row
-                  item="公式ページ"
-                  content={
-                    <a href={eleData.eventLocation.event.sourceUrl}>リンク</a>
-                  }
-                />
-              )}
-
-              {eleData.eventLocation.event.gameTypes.length > 0 && (
-                <Row
-                  item="ゲームタイプ"
-                  content={eleData.eventLocation.event.gameTypes
-                    .map((type) => type.name)
-                    .join(", ")}
-                />
-              )}
-
-              {eleData.eventLocation.event.twitterTag && (
-                <Row
-                  item="Xタグ"
-                  content={
-                    <a
-                      href={`https://twitter.com/hashtag/${eleData.eventLocation.event.twitterTag}`}
-                      target="_blank"
-                    >
-                      {eleData.eventLocation.event.twitterTag}
-                    </a>
-                  }
-                />
-              )}
-
-              {eleData.eventLocation.event.organization && (
-                <Row
-                  item="主催団体"
-                  content={eleData.eventLocation.event.organization.name}
-                />
-              )}
-
-              {eleData.eventLocation.event.numberOfPeopleInTeam && (
-                <Row
-                  item="チーム人数"
-                  content={eleData.eventLocation.event.numberOfPeopleInTeam}
-                />
-              )}
-
-              {eleData.eventLocation.event.timeRequired && (
-                <Row
-                  item="所要時間"
-                  content={eleData.eventLocation.event.timeRequired}
-                />
-              )}
-
-              {location && <Row item="場所" content={location} />}
-
-              {(eleData.eventLocation.startedAt ||
-                eleData.eventLocation.endedAt) && (
-                <Row
-                  item="開催期間"
-                  content={
-                    <Box>
-                      {eleData.eventLocation.startedAt
-                        ? format(
-                            new Date(eleData.eventLocation.startedAt),
-                            "MM/d"
-                          )
-                        : ""}
-                      {" ~ "}
-                      {eleData.eventLocation.endedAt
-                        ? format(
-                            new Date(eleData.eventLocation.endedAt),
-                            "MM/d"
-                          )
-                        : ""}
-                    </Box>
-                  }
-                />
-              )}
-
-              {eleData.eventLocation.detailedSchedule && (
-                <Row
-                  item="スケジュール"
-                  content={eleData.eventLocation.detailedSchedule}
-                />
-              )}
-
-              {eleData.eventLocation.description && (
-                <Row item="詳細" content={eleData.eventLocation.description} />
-              )}
+            )}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "15px",
+              marginTop: "10px",
+            }}
+          >
+            <Box sx={{ fontSize: "20px" }}>
+              {eleData.eventLocation.event.name}
             </Box>
-          </Container>
-        </Box>
+
+            {eleData.eventLocation.event.sourceUrl && (
+              <Row
+                item="公式ページ"
+                content={
+                  <a href={eleData.eventLocation.event.sourceUrl}>リンク</a>
+                }
+              />
+            )}
+
+            {eleData.eventLocation.event.gameTypes.length > 0 && (
+              <Row
+                item="種類"
+                content={eleData.eventLocation.event.gameTypes
+                  .map((type) => type.name)
+                  .join(", ")}
+              />
+            )}
+
+            {eleData.eventLocation.event.twitterTag && (
+              <Row
+                item="Xタグ"
+                content={
+                  <a
+                    href={`https://twitter.com/hashtag/${eleData.eventLocation.event.twitterTag}`}
+                    target="_blank"
+                  >
+                    {eleData.eventLocation.event.twitterTag}
+                  </a>
+                }
+              />
+            )}
+
+            {eleData.eventLocation.event.organization && (
+              <Row
+                item="主催団体"
+                content={eleData.eventLocation.event.organization.name}
+              />
+            )}
+
+            {eleData.eventLocation.event.numberOfPeopleInTeam && (
+              <Row
+                item="チーム人数"
+                content={eleData.eventLocation.event.numberOfPeopleInTeam}
+              />
+            )}
+
+            {eleData.eventLocation.event.timeRequired && (
+              <Row
+                item="所要時間"
+                content={eleData.eventLocation.event.timeRequired}
+              />
+            )}
+
+            {location && <Row item="場所" content={location} />}
+
+            {(eleData.eventLocation.startedAt ||
+              eleData.eventLocation.endedAt) && (
+              <Row
+                item="開催期間"
+                content={
+                  <Box>
+                    {eleData.eventLocation.startedAt
+                      ? format(
+                          new Date(eleData.eventLocation.startedAt),
+                          "MM/d"
+                        )
+                      : ""}
+                    {" ~ "}
+                    {eleData.eventLocation.endedAt
+                      ? format(new Date(eleData.eventLocation.endedAt), "MM/d")
+                      : ""}
+                  </Box>
+                }
+              />
+            )}
+
+            {eleData.eventLocation.detailedSchedule && (
+              <Row
+                item="スケジュール"
+                content={eleData.eventLocation.detailedSchedule}
+              />
+            )}
+
+            {eleData.eventLocation.description && (
+              <Row item="詳細" content={eleData.eventLocation.description} />
+            )}
+          </Box>
+        </Container>
       )}
     </Box>
   );
@@ -189,14 +184,14 @@ const Row = ({ item, content }: { item: string; content: ReactNode }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: "90px",
-            backgroundColor: grey[200],
+            width: "80px",
+            backgroundColor: blue[100],
             height: "25px",
             borderRadius: "4px",
             flexShrink: 0,
           }}
         >
-          <Box sx={{ color: grey[600], fontSize: "14px" }}>{item}</Box>
+          <Box sx={{ color: blue[700], fontSize: "14px" }}>{item}</Box>
         </Box>
       </Box>
       <Box sx={{ flexGrow: 1, lineHeight: "25px" }} className="word-wrap">

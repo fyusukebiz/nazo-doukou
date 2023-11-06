@@ -25,14 +25,14 @@ export const EditMyRecruit = () => {
     >
       <SubPageHeader title="マイ募集の編集" />
 
-      <Container sx={{ padding: "16px" }} maxWidth="xl">
-        {recruitStatus === "pending" && <LoadingSpinner />}
-        {recruitStatus === "success" && (
+      {recruitStatus === "pending" && <LoadingSpinner />}
+      {recruitStatus === "success" && (
+        <Container sx={{ padding: "16px" }} maxWidth="xl">
           <EditMyRecruitFormProvider recruit={recruitData.recruit}>
             <EditMyRecruitForm recruit={recruitData.recruit} />
           </EditMyRecruitFormProvider>
-        )}
-      </Container>
+        </Container>
+      )}
     </Box>
   );
 };
