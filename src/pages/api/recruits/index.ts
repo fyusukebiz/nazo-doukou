@@ -15,11 +15,42 @@ export default async function handler(
 ) {
   try {
     switch (req.method) {
-      case "GET":
-        await getHandler(req, res);
-        break;
+      case "GET": {
+        if (req.query.only_mine) {
+          const currentFbUserIdToken = getCookie("currentFbUserIdToken", {
+            req,
+            res,
+          });
 
-      case "POST":
+          if (!currentFbUserIdToken) {
+            return res.status(401).json({ error: "ログインしてください" });
+          }
+
+          const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
+          if (!fbAuthRes.ok) {
+            return res.status(401).json({ error: "再ログインしてください。" });
+          }
+          const data = await fbAuthRes.json();
+          const fbUser = data.users[0];
+          const fbUid = fbUser.localId;
+
+          if (!fbUser.emailVerified) {
+            return res.status(401).json({ error: "メール認証が未完了です" });
+          }
+
+          const user = await prisma.user.findUnique({ where: { fbUid } });
+          if (!user) {
+            return res.status(401).json({ error: "再ログインしてください。" });
+          }
+
+          await getHandler(req, res, user);
+        } else {
+          await getHandler(req, res);
+        }
+        break;
+      }
+
+      case "POST": {
         const currentFbUserIdToken = getCookie("currentFbUserIdToken", {
           req,
           res,
@@ -48,7 +79,7 @@ export default async function handler(
 
         await postHandler(req, res, user);
         break;
-
+      }
       default:
         res.status(405).end(`Not Allowed`);
         break;
@@ -69,7 +100,8 @@ export type GetRecruitsResponseSuccessBody = {
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<GetRecruitsResponseSuccessBody | ResponseErrorBody>
+  res: NextApiResponse<GetRecruitsResponseSuccessBody | ResponseErrorBody>,
+  user?: User
 ) => {
   const page = Number(req.query.page || 1);
 
@@ -81,6 +113,7 @@ const getHandler = async (
 
   const [recruits, meta] = await prismaWithPaginate.recruit
     .paginate({
+      ...(user && { where: { userId: user.id } }),
       include: {
         eventLocation: { include: { event: true, location: true } },
         possibleDates: true,

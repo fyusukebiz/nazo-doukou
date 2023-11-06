@@ -201,17 +201,18 @@ const getHandler = async (
 
 // PATCH request
 export type PatchRecruitRequestBody = {
+  isSelectType: boolean;
   recruit: {
-    eventName?: string;
-    location?: string;
-    eventId?: string;
+    manualEventName?: string;
+    manualLocation?: string;
     eventLocationId?: string;
     numberOfPeople?: number;
     description?: string;
   };
-  possibleDats: {
+  recruitTagIds: string[];
+  possibleDates: {
     date: string;
-    priority: number;
+    priority?: number;
   }[];
 };
 export type PatchRecruitResponseSuccessBody = "";
@@ -239,10 +240,10 @@ const patchHandler = async (
 
   const schema = z
     .object({
+      isSelectType: z.boolean(),
       recruit: z.object({
-        eventName: z.string().optional(),
-        location: z.string().optional(),
-        eventId: z.string().optional(),
+        manualEventName: z.string().optional(),
+        manualLocation: z.string().optional(),
         eventLocationId: z.string().optional(),
         numberOfPeople: z.number().optional(),
         description: z.string().optional(),
@@ -255,9 +256,30 @@ const patchHandler = async (
         })
         .array(),
     })
-    .refine((args) => args.recruit.eventId || args.recruit.eventName, {
-      message: "イベント名を入力してください",
-      path: ["recruit.eventId"],
+    .superRefine((val, ctx) => {
+      if (val.isSelectType && !val.recruit.eventLocationId) {
+        ctx.addIssue({
+          path: ["recruit.eventLocationId"],
+          code: "custom",
+          message: "イベントが未入力です。",
+        });
+      }
+
+      if (!val.isSelectType && !val.recruit.manualLocation) {
+        ctx.addIssue({
+          path: ["recruit.manualLocation"],
+          code: "custom",
+          message: "開催場所を記載してください",
+        });
+      }
+
+      if (!val.isSelectType && !val.recruit.manualEventName) {
+        ctx.addIssue({
+          path: ["recruit.manualEventName"],
+          code: "custom",
+          message: "イベント名を記載してください",
+        });
+      }
     });
 
   const validation = schema.safeParse(rawParams);
@@ -265,9 +287,27 @@ const patchHandler = async (
     return res.status(400).json({ error: "入力に間違いがあります" });
 
   const recruitData = validation.data.recruit;
+  const recruitPrams = {
+    ...(validation.data.isSelectType
+      ? {
+          eventLocationId: recruitData.eventLocationId!,
+          manualEventName: null,
+          manualLocation: null,
+        }
+      : {
+          eventLocationId: null,
+          manualEventName: recruitData.manualEventName!,
+          manualLocation: recruitData.manualLocation!,
+        }),
+    numberOfPeople: recruitData.numberOfPeople
+      ? recruitData.numberOfPeople
+      : null,
+    description: recruitData.description ? recruitData.description : null,
+  };
+
   const updatedRecruit = await prisma.recruit.update({
     where: { id: recruitId },
-    data: recruitData,
+    data: recruitPrams,
     include: { possibleDates: true, recruitTagRecruits: true },
   });
 

@@ -3,11 +3,11 @@ import { Grid, Box, Button, Stack, Switch, IconButton } from "@mui/material";
 import { useMemo } from "react";
 import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
-  NewRecruitFormSchema,
+  EditMyRecruitFormSchema,
   defaultPossibleDate,
-  useNewRecruitFormContext,
-} from "./NewRecruitFormProvider";
-import { convertNewRecruitDataForPost } from "./convertNewRecruitDataForPost";
+  useEditMyRecruitFormContext,
+} from "./EditMyRecruitFormProvider";
+import { convertMyRecruitDataForPatch } from "./convertMyRecruitDataForPatch";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { InputWithLabelRHF } from "@/components/forms/hook_form/InputWithLabelRHF";
@@ -16,25 +16,33 @@ import { SingleSelectWithLabelRHF } from "@/components/forms/hook_form/SingleSel
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
 import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
-import { usePostRecruit } from "@/react_queries/recruits/usePostRecruit";
 import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTagsQuery";
 import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
 import { grey } from "@mui/material/colors";
+import { RecruitDetail } from "@/types/recruit";
+import { usePatchRecruit } from "@/react_queries/recruits/usePatchRecruit";
+import { useDeleteRecruit } from "@/react_queries/recruits/useDeleteRecruit";
 
-export const NewRecruitForm = () => {
+type Props = {
+  recruit: RecruitDetail;
+};
+
+export const EditMyRecruitForm = ({ recruit }: Props) => {
   const router = useRouter();
   const {
     handleSubmit,
     control,
     setValue,
     formState: { errors },
-  } = useNewRecruitFormContext();
+  } = useEditMyRecruitFormContext();
 
   const isSelectType = useWatch({ control, name: "isSelectType" });
 
-  const { postRecruit } = usePostRecruit();
+  const { patchRecruit } = usePatchRecruit();
   console.log(errors);
+
+  const { deleteRecruit } = useDeleteRecruit();
 
   const { data: eventLocationOptsData, status: eventLocationOptsStatus } =
     useEventLocationOptionsQuery();
@@ -61,25 +69,39 @@ export const NewRecruitForm = () => {
 
   const recruitTags = useMemo(() => {
     if (recruitTagsStatus !== "success") return [];
-    recruitTagsData.recruitTags.map((tag) => ({
+    recruitTagsData?.recruitTags.map((tag) => ({
       value: tag.id,
       label: tag.name,
     }));
   }, [recruitTagsData, recruitTagsStatus]);
 
-  const onSubmit: SubmitHandler<NewRecruitFormSchema> = async (rawData) => {
+  const onSubmit: SubmitHandler<EditMyRecruitFormSchema> = async (rawData) => {
     console.log("data", rawData);
 
     // // 送信用にデータを加工
-    const dataToPost = convertNewRecruitDataForPost({
+    const dataToPatch = convertMyRecruitDataForPatch({
       data: rawData,
     });
-    postRecruit.mutate(
-      { body: dataToPost },
+    patchRecruit.mutate(
+      { path: { recruitId: recruit.id }, body: dataToPatch },
       {
         onSuccess: async (res) => {
-          toast.success("作成しました");
-          setTimeout(() => router.push("/recruits"), 2000);
+          toast.success("更新しました");
+          router.push("/my_recruits");
+        },
+      }
+    );
+  };
+
+  const handleClickDelete = () => {
+    const result = window.confirm("募集を削除しますか？");
+    if (!result) return;
+
+    deleteRecruit.mutate(
+      { path: { recruitId: recruit.id } },
+      {
+        onSuccess: () => {
+          router.push("/my_recruits");
         },
       }
     );
@@ -113,7 +135,7 @@ export const NewRecruitForm = () => {
         {isSelectType ? (
           <Grid item xs={12}>
             <SingleSelectWithLabelRHF<
-              NewRecruitFormSchema,
+              EditMyRecruitFormSchema,
               { label: string; value: string }
             >
               name="eventLocation"
@@ -126,7 +148,7 @@ export const NewRecruitForm = () => {
         ) : (
           <>
             <Grid item xs={12}>
-              <InputWithLabelRHF<NewRecruitFormSchema>
+              <InputWithLabelRHF<EditMyRecruitFormSchema>
                 name="manualEventName"
                 label="イベント名"
                 control={control}
@@ -134,7 +156,7 @@ export const NewRecruitForm = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <InputWithLabelRHF<NewRecruitFormSchema>
+              <InputWithLabelRHF<EditMyRecruitFormSchema>
                 name="manualLocation"
                 label="開催場所"
                 control={control}
@@ -145,7 +167,7 @@ export const NewRecruitForm = () => {
         )}
 
         <Grid item xs={12}>
-          <InputWithLabelRHF<NewRecruitFormSchema>
+          <InputWithLabelRHF<EditMyRecruitFormSchema>
             // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
             type="number"
             name="numberOfPeople"
@@ -165,7 +187,7 @@ export const NewRecruitForm = () => {
             {possibleDateFields.map((field, index) => (
               <Box key={field.id} sx={{ display: "flex", alignItems: "start" }}>
                 <Box sx={{ marginRight: "15px" }}>
-                  <DatePickerWithLabelRHF<NewRecruitFormSchema>
+                  <DatePickerWithLabelRHF<EditMyRecruitFormSchema>
                     name={`possibleDates.${index}.date`}
                     control={control}
                     endIcon={<BiCalendar size={30} />}
@@ -173,7 +195,7 @@ export const NewRecruitForm = () => {
                   />
                 </Box>
                 <Box sx={{ width: "100px", marginRight: "15px" }}>
-                  <InputWithLabelRHF<NewRecruitFormSchema>
+                  <InputWithLabelRHF<EditMyRecruitFormSchema>
                     type="number"
                     inputProps={{
                       // inputMode: "numeric",
@@ -215,7 +237,7 @@ export const NewRecruitForm = () => {
 
         <Grid item xs={12}>
           <MultipleSelectWithLabelRHF<
-            NewRecruitFormSchema,
+            EditMyRecruitFormSchema,
             { label: string; value: string }
           >
             name="recruitTags"
@@ -227,7 +249,7 @@ export const NewRecruitForm = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <InputWithLabelRHF<NewRecruitFormSchema>
+          <InputWithLabelRHF<EditMyRecruitFormSchema>
             name="description"
             label="詳細"
             placeholder="募集時のメンバー構成、謎解き歴、性別、年齢層、など"
@@ -246,10 +268,20 @@ export const NewRecruitForm = () => {
           color="primary"
           size="large"
           sx={{ width: "100%" }}
-          loading={postRecruit.isPending}
+          loading={patchRecruit.isPending}
         >
           保存
         </LoadingButton>
+      </Box>
+
+      <Box sx={{ display: "flex", marginTop: "10px" }}>
+        <Button
+          sx={{ marginLeft: "auto", color: grey[300] }}
+          size="small"
+          onClick={handleClickDelete}
+        >
+          削除
+        </Button>
       </Box>
     </Box>
   );

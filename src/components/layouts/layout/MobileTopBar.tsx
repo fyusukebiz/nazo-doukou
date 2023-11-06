@@ -47,6 +47,15 @@ export const MobileTopBar = () => {
               <MenuItem
                 sx={{ fontSize: "20px" }}
                 onClick={() => {
+                  router.push("/my_recruits");
+                  menuRef.current?.closeMenu();
+                }}
+              >
+                マイ募集
+              </MenuItem>
+              <MenuItem
+                sx={{ fontSize: "20px" }}
+                onClick={() => {
                   router.push("/admin/events");
                   menuRef.current?.closeMenu();
                 }}

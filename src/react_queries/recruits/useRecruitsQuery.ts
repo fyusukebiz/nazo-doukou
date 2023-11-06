@@ -5,6 +5,7 @@ import axios from "axios";
 type GetRecruitsRequest = {
   query: {
     page: number;
+    onlyMine?: boolean;
   };
 };
 
@@ -13,6 +14,7 @@ const getRecruits = async (req: GetRecruitsRequest) => {
 
   const urlSearchParam = new URLSearchParams();
   urlSearchParam.set("page", page.toString());
+  if (req.query.onlyMine) urlSearchParam.set("only_mine", true.toString());
 
   const { data } = await axios.get<GetRecruitsResponseSuccessBody>(
     `/api/recruits?${urlSearchParam.toString()}`
