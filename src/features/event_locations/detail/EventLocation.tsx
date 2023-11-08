@@ -184,9 +184,9 @@ const Row = ({ item, content }: { item: string; content: ReactNode }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: "80px",
+            width: "90px",
             backgroundColor: blue[100],
-            height: "25px",
+            height: "30px",
             borderRadius: "4px",
             flexShrink: 0,
           }}
@@ -194,7 +194,7 @@ const Row = ({ item, content }: { item: string; content: ReactNode }) => {
           <Box sx={{ color: blue[700], fontSize: "14px" }}>{item}</Box>
         </Box>
       </Box>
-      <Box sx={{ flexGrow: 1, lineHeight: "25px" }} className="word-wrap">
+      <Box sx={{ flexGrow: 1, lineHeight: "30px" }} className="word-wrap">
         {content}
       </Box>
     </Box>

@@ -7,11 +7,10 @@ import {
   useEditMyUserFormContext,
 } from "./EditMyUserFormProvider";
 import { usePatchMyUser } from "@/react_queries/my_user/usePatchMyUser";
-import { User } from "@/types/user";
+import { UserDetail } from "@/types/user";
 import { InputWithLabelRHF } from "@/components/forms/hook_form/InputWithLabelRHF";
 import { SingleSelectWithLabelRHF } from "@/components/forms/hook_form/SingleSelectWithLabelRHF";
 import { sexOptions } from "@/constants/sexOptions";
-import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
 import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
 import { LikeOrDislike } from "@prisma/client";
@@ -24,7 +23,7 @@ import { convertEditMyUserDataForPatch } from "./convertEditMyUserDataForPatch";
 import { MonthYearPickerWithLabelRHF } from "@/components/forms/hook_form/MonthYearPickerRHFWithLabel";
 
 type Props = {
-  myUser: User;
+  myUser: UserDetail;
 };
 
 export const EditMyUserForm = ({ myUser }: Props) => {

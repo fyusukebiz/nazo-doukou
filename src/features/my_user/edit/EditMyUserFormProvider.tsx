@@ -1,5 +1,5 @@
 import { sexOptions } from "@/constants/sexOptions";
-import { User } from "@/types/user";
+import { UserDetail } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sex, LikeOrDislike } from "@prisma/client";
 import { ReactNode } from "react";
@@ -7,7 +7,7 @@ import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1).max(20),
   iconImageFile: z
     .custom<File | null>()
     .refine(
@@ -40,7 +40,7 @@ export const useEditMyUserFormContext = () =>
 
 type Props = {
   children: ReactNode;
-  myUser: User;
+  myUser: UserDetail;
 };
 
 export const EditMyUserFormProvider = ({ children, myUser }: Props) => {

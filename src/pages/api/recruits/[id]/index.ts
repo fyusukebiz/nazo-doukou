@@ -188,6 +188,8 @@ const getHandler = async (
               comment.user.iconImageFileKey
             ),
           }),
+          ...(comment.user.twitter && { twitter: comment.user.twitter }),
+          ...(comment.user.instagram && { instagram: comment.user.instagram }),
         },
       }))
     ),

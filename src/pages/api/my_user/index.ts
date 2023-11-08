@@ -5,7 +5,7 @@ import { LikeOrDislike, Sex, UserGameType } from "@prisma/client";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
 import { User as UserInDb } from "@prisma/client";
-import { User } from "@/types/user";
+import { UserDetail } from "@/types/user";
 import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 import { getZodFormattedErrors } from "@/utils/getZodFormattedErrors";
@@ -68,7 +68,7 @@ export default async function handler(
 
 // GET request
 export type GetMyUserResponseSuccessBody = {
-  myUser: User;
+  myUser: UserDetail;
 };
 
 const getHandler = async (
@@ -168,7 +168,7 @@ const patchHandler = async (
   // バリデーション
   const schema = z.object({
     user: z.object({
-      name: z.string().min(1).max(255),
+      name: z.string().min(1).max(20),
       iconImageFileKey: z.string().optional(),
       sex: z.nativeEnum(Sex).optional(),
       age: z.number().optional(),

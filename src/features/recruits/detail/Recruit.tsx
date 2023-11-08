@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/avatars/UserAvatar";
 import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
@@ -7,6 +8,7 @@ import { grey, teal } from "@mui/material/colors";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { userAgent } from "next/server";
 import { ReactNode, useMemo } from "react";
 
 export const Recruit = () => {
@@ -108,7 +110,17 @@ export const Recruit = () => {
 
             {/* TODO: アイコンとtwitterリンクを設置すること */}
             {recruitData.recruit.user && (
-              <Row item="募集者" content={recruitData.recruit.user.name} />
+              <Row
+                item="募集者"
+                content={
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", gap: "10px" }}
+                  >
+                    <UserAvatar user={recruitData.recruit.user} size={30} />
+                    <Box>{recruitData.recruit.user.name}</Box>
+                  </Box>
+                }
+              />
             )}
 
             {recruitData.recruit.user?.twitter && (
@@ -129,9 +141,20 @@ export const Recruit = () => {
               <Row
                 item="タグ"
                 content={
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "5px",
+                    }}
+                  >
                     {recruitData.recruit.recruitTags.map((tag, index) => (
-                      <Chip key={index} label={tag.name} size="small" />
+                      <Chip
+                        key={index}
+                        label={tag.name}
+                        size="small"
+                        sx={{ height: "30px" }}
+                      />
                     ))}
                   </Box>
                 }
@@ -165,9 +188,9 @@ const Row = ({ item, content }: { item: string; content: ReactNode }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: "80px",
+            width: "90px",
             backgroundColor: teal[100],
-            height: "25px",
+            height: "30px",
             borderRadius: "4px",
             flexShrink: 0,
           }}
@@ -175,7 +198,7 @@ const Row = ({ item, content }: { item: string; content: ReactNode }) => {
           <Box sx={{ color: teal[700], fontSize: "14px" }}>{item}</Box>
         </Box>
       </Box>
-      <Box sx={{ flexGrow: 1, lineHeight: "25px" }}>{content}</Box>
+      <Box sx={{ flexGrow: 1, lineHeight: "30px" }}>{content}</Box>
     </Box>
   );
 };

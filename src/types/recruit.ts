@@ -1,3 +1,5 @@
+import { UserSimple } from "./user";
+
 export type RecruitSimple = {
   id: string;
   manualEventName?: string;
@@ -26,13 +28,7 @@ export type RecruitSimple = {
 
 export type RecruitDetail = {
   id: string;
-  user: {
-    id?: string;
-    name: string;
-    iconImageUrl?: string;
-    twitter?: string;
-    instagram?: string;
-  };
+  user: UserSimple;
   manualEventName?: string;
   manualLocation?: string;
   eventLocation?: {
@@ -63,10 +59,6 @@ export type RecruitDetail = {
     message: string;
     createdAt: string;
     updatedAt: string;
-    user: {
-      id: string;
-      name: string;
-      iconImageUrl?: string;
-    };
+    user: UserSimple;
   }[];
 };
