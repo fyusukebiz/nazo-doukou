@@ -2,7 +2,6 @@ import {
   Box,
   FormControl,
   FormHelperText,
-  IconButton,
   InputAdornment,
   InputAdornmentProps,
   InputBaseComponentProps,
@@ -10,54 +9,13 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { SxProps } from "@mui/system";
-// eslint-disable-next-line import/no-duplicates
-import { getMonth, getYear } from "date-fns";
-// eslint-disable-next-line import/no-duplicates
 import ja from "date-fns/locale/ja";
 import React, { ComponentPropsWithoutRef, ReactNode, useId } from "react";
-import DatePicker, {
-  ReactDatePickerCustomHeaderProps,
-  registerLocale,
-} from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
 import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { ReactDatepickerCustomHeader } from "./DatePickerRHFWithLabel";
 
 registerLocale("ja", ja);
-
-/* CustomHeader */
-export const ReactDatepickerCustomHeader = ({
-  date,
-  decreaseMonth,
-  increaseMonth,
-}: ReactDatePickerCustomHeaderProps) => (
-  <Box
-    className="datepicker__header"
-    sx={{
-      fontSize: "16px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    <IconButton className="datepicker__button-prev" onClick={decreaseMonth}>
-      <AiOutlineLeft />
-    </IconButton>
-    <Box
-      className="datepicker__header-date"
-      sx={{ fontSize: "16px", marginX: "10px" }}
-    >
-      <Box component="span" className="datepicker__header-date__year">
-        {getYear(date)}年
-      </Box>
-      <Box component="span" className="datepicker__header-date__month">
-        {getMonth(date) + 1}月
-      </Box>
-    </Box>
-    <IconButton className="datepicker__button-prev" onClick={increaseMonth}>
-      <AiOutlineRight />
-    </IconButton>
-  </Box>
-);
 
 type Props<T extends FieldValues> = Omit<
   ComponentPropsWithoutRef<typeof DatePicker>,
@@ -79,7 +37,7 @@ type Props<T extends FieldValues> = Omit<
   labelSxProps?: SxProps;
 };
 
-export const DatePickerWithLabelRHF = <T extends FieldValues>(
+export const MonthYearPickerWithLabelRHF = <T extends FieldValues>(
   props: Props<T>
 ) => {
   const {
@@ -120,7 +78,8 @@ export const DatePickerWithLabelRHF = <T extends FieldValues>(
             onChange={onChange}
             onBlur={onBlur}
             onFocus={(e) => e.target.blur()}
-            dateFormat="yyyy/MM/dd"
+            showMonthYearPicker
+            dateFormat="yyyy年M月"
             selected={value}
             isClearable={isClearable}
             wrapperClassName={wrapperClassName}

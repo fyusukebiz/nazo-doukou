@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { z } from "zod";
-import { Sex } from "@prisma/client";
+import { LikeOrDislike, Sex, UserGameType } from "@prisma/client";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
-import { User } from "@prisma/client";
+import { User as UserInDb } from "@prisma/client";
+import { User } from "@/types/user";
 import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 import { getZodFormattedErrors } from "@/utils/getZodFormattedErrors";
@@ -45,6 +46,7 @@ export default async function handler(
       case "PATCH": {
         const user = await prisma.user.findUnique({
           where: { fbUid: fbUid },
+          include: { userGameTypes: true },
         });
         if (!user) {
           return res.status(401).json({ error: "再ログインしてください。" });
@@ -66,18 +68,7 @@ export default async function handler(
 
 // GET request
 export type GetMyUserResponseSuccessBody = {
-  name: string;
-  iconImageUrl?: string;
-  sex?: Sex;
-  age?: number;
-  startedAt?: string;
-  description?: string;
-  twitter?: string;
-  instagram?: string;
-  userGameTypes: {
-    gameTypeId: string;
-    likeOrDislike: "LIKE" | "DISLIKE";
-  }[];
+  myUser: User;
 };
 
 const getHandler = async (
@@ -91,20 +82,22 @@ const getHandler = async (
   });
 
   res.status(200).json({
-    name: user.name || "名無しさん",
-    ...(user.iconImageFileKey && {
-      iconImageUrl: await generateReadSignedUrl(user.iconImageFileKey),
-    }),
-    ...(user.sex && { sex: user.sex }),
-    ...(user.age && { age: user.age }),
-    ...(user.startedAt && { startedAt: user.startedAt.toISOString() }),
-    ...(user.description && { description: user.description }),
-    ...(user.twitter && { twitter: user.twitter }),
-    ...(user.instagram && { instagram: user.instagram }),
-    userGameTypes: user.userGameTypes.map((ugt) => ({
-      gameTypeId: ugt.gameTypeId,
-      likeOrDislike: ugt.likeOrDislike,
-    })),
+    myUser: {
+      name: user.name || "名無しさん",
+      ...(user.iconImageFileKey && {
+        iconImageUrl: await generateReadSignedUrl(user.iconImageFileKey),
+      }),
+      ...(user.sex && { sex: user.sex }),
+      ...(user.age && { age: user.age }),
+      ...(user.startedAt && { startedAt: user.startedAt.toISOString() }),
+      ...(user.description && { description: user.description }),
+      ...(user.twitter && { twitter: user.twitter }),
+      ...(user.instagram && { instagram: user.instagram }),
+      userGameTypes: user.userGameTypes.map((ugt) => ({
+        gameTypeId: ugt.gameTypeId,
+        likeOrDislike: ugt.likeOrDislike,
+      })),
+    },
   });
 };
 
@@ -168,7 +161,7 @@ export type PatchMyUserResponseSuccessBody = "";
 const patchHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<PatchMyUserResponseSuccessBody | ResponseErrorBody>,
-  user: User
+  user: UserInDb & { userGameTypes: UserGameType[] }
 ) => {
   const rawParams: PatchMyUserRequestBody = req.body;
 
@@ -177,9 +170,9 @@ const patchHandler = async (
     user: z.object({
       name: z.string().min(1).max(255),
       iconImageFileKey: z.string().optional(),
-      sex: z.union([z.literal("MALE"), z.literal("FEMALE")]).optional(),
+      sex: z.nativeEnum(Sex).optional(),
       age: z.number().optional(),
-      startedAt: z.date().optional(),
+      startedAt: z.string().optional(), // TODO: date型にすること
       description: z.string().optional(),
       twitter: z.string().optional(),
       instagram: z.string().optional(),
@@ -187,14 +180,14 @@ const patchHandler = async (
     userGameTypes: z
       .object({
         gameTypeId: z.string(),
-        likeOrDislike: z.union([z.literal("LIKE"), z.literal("DISLIKE")]),
+        likeOrDislike: z.nativeEnum(LikeOrDislike),
       })
       .array(),
   });
 
   const validation = schema.safeParse(rawParams);
   if (!validation.success)
-    return res.status(400).json({ error: "入力に間違いがあります" });
+    return res.status(422).json({ errors: getZodFormattedErrors(validation) });
 
   // requrestにiconImageFileKeyが存在して、DBにuser.iconImageFileKeyが存在する時、古いiconImageFileを削除
   if (validation.data.user.iconImageFileKey) {
@@ -205,23 +198,30 @@ const patchHandler = async (
   }
 
   // 更新
+  const userData = validation.data.user;
   await prisma.user.update({
     where: { id: user.id },
-    data: validation.data.user, // TODO startedAtはDate型にしなくても大丈夫？
+    data: {
+      name: userData.name,
+      sex: userData.sex ?? null,
+      age: userData.age ?? null,
+      startedAt: userData.startedAt ? userData.startedAt : null,
+      description: userData.description || null,
+      twitter: userData.twitter || null,
+      instagram: userData.instagram || null,
+    },
   });
 
-  for (const userGameType of validation.data.userGameTypes) {
-    await prisma.userGameType.upsert({
-      where: {
-        userId_gameTypeId: {
-          userId: user.id,
-          gameTypeId: userGameType.gameTypeId,
-        },
-      },
-      update: {
-        likeOrDislike: userGameType.likeOrDislike,
-      },
-      create: {
+  // TODO: 一旦全て消す、後々更新に切り替えること
+  for (const egtId of user.userGameTypes.map((ugt) => ugt.id)) {
+    await prisma.userGameType.delete({
+      where: { id: egtId },
+    });
+  }
+  const userGameTypes = validation.data.userGameTypes;
+  for (const userGameType of userGameTypes) {
+    await prisma.userGameType.create({
+      data: {
         userId: user.id,
         gameTypeId: userGameType.gameTypeId,
         likeOrDislike: userGameType.likeOrDislike,

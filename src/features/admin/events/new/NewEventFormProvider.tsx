@@ -21,9 +21,7 @@ const schema = z.object({
         message: `ファイルサイズは最大${process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB}MBです`,
       }
     ),
-  numberOfPeopleInTeam: z.string().refine((v) => {
-    return !!v || !isNaN(Number(v));
-  }, "数値を入力してください"),
+  numberOfPeopleInTeam: z.string(), // 自由記述
   timeRequired: z.string(),
   eventLocations: z
     .object({

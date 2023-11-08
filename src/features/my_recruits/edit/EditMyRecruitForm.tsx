@@ -252,7 +252,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
           <InputWithLabelRHF<EditMyRecruitFormSchema>
             name="description"
             label="詳細"
-            placeholder="募集時のメンバー構成、謎解き歴、性別、年齢層、など"
+            placeholder="募集開始時のメンバー構成、など"
             control={control}
             multiline
             minRows={5}

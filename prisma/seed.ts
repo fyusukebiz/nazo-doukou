@@ -34,6 +34,9 @@ async function main() {
     data: { prefectureId: tokyo.id, name: "新宿" },
   });
   await prisma.location.create({
+    data: { prefectureId: tokyo.id, name: "原宿" },
+  });
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "下北沢" },
   });
   await prisma.location.create({
@@ -65,6 +68,7 @@ async function main() {
     "ホール型",
     "スタジアム",
     "推理系",
+    "館内周遊型",
   ];
   for (const gameType of gameTypes) {
     await prisma.gameType.create({ data: { name: gameType } });

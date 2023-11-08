@@ -15,16 +15,8 @@ export const EditMyRecruit = () => {
   });
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        overflowY: "scroll",
-      }}
-    >
+    <Box sx={{ height: "100%", overflowY: "scroll" }}>
       <SubPageHeader title="マイ募集の編集" />
-
       {recruitStatus === "pending" && <LoadingSpinner />}
       {recruitStatus === "success" && (
         <Container sx={{ padding: "16px" }} maxWidth="xl">

@@ -44,15 +44,7 @@ export const MyRecruits = () => {
   }, []);
 
   return (
-    <Box
-      ref={listBoxRef}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        overflowY: "scroll",
-      }}
-    >
+    <Box ref={listBoxRef} sx={{ height: "100%", overflowY: "scroll" }}>
       <SubPageHeader title="マイ募集一覧" />
       {recruitsStatus === "pending" && <LoadingSpinner />}
       {recruitsStatus === "success" && (

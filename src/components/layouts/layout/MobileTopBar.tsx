@@ -74,6 +74,15 @@ export const MobileTopBar = () => {
               <MenuItem
                 sx={{ fontSize: "20px" }}
                 onClick={() => {
+                  router.push("/my_user");
+                  menuRef.current?.closeMenu();
+                }}
+              >
+                プロフィール
+              </MenuItem>
+              <MenuItem
+                sx={{ fontSize: "20px" }}
+                onClick={() => {
                   logoutAndClearStorage();
                   menuRef.current?.closeMenu();
                 }}

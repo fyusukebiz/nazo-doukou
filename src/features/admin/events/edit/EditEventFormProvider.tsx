@@ -9,9 +9,7 @@ const schema = z.object({
   twitterTag: z.string(),
   description: z.string(),
   sourceUrl: z.string(),
-  numberOfPeopleInTeam: z.string().refine((v) => {
-    return !v || !isNaN(Number(v));
-  }, "数値を入力してください"),
+  numberOfPeopleInTeam: z.string(), // 自由記述
   timeRequired: z.string(),
   coverImageFileUrl: z.string(),
   coverImageFile: z

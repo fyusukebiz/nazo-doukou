@@ -6,7 +6,14 @@ import { paginate } from "prisma-extension-pagination";
 import { generateReadSignedUrl } from "@/libs/cloudStorage";
 import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
-import { User } from "@prisma/client";
+import {
+  EventLocation,
+  Location,
+  PossibleDate,
+  Recruit,
+  User,
+  Event as EventInDb,
+} from "@prisma/client";
 import { RecruitSimple } from "@/types/recruit";
 
 export default async function handler(
@@ -16,7 +23,7 @@ export default async function handler(
   try {
     switch (req.method) {
       case "GET": {
-        if (req.query.only_mine) {
+        if (req.query.onlyMine) {
           const currentFbUserIdToken = getCookie("currentFbUserIdToken", {
             req,
             res,
@@ -104,27 +111,93 @@ const getHandler = async (
   user?: User
 ) => {
   const page = Number(req.query.page || 1);
+  const freeWord = req.query.freeWord as string | undefined;
+  const orderBy = req.query.orderBy as string | undefined; // createdAt | possibleDate
 
-  const prismaWithPaginate = prisma.$extends({
-    model: { recruit: { paginate } },
-  });
+  let recruits = [] as (Recruit & {
+    eventLocation:
+      | (EventLocation & { event: EventInDb; location: Location })
+      | null;
+    possibleDates: PossibleDate[];
+  })[];
+  let totalCount: number;
+  let totalPages: number;
+  let currentPage: number;
 
-  // TODO: 場所と日付とイベント名検索をあとでつけること
+  if (orderBy === "possibleDate") {
+    const recruitIdsData = await prisma.possibleDate.groupBy({
+      by: ["recruitId"],
+      where: {
+        ...(user && { userId: user.id }),
+        ...(freeWord && {
+          recruit: {
+            OR: [
+              { eventLocation: { event: { name: { contains: freeWord } } } },
+              { manualEventName: { contains: freeWord } },
+            ],
+          },
+        }),
+      },
+      orderBy: { _min: { date: "desc" } },
+      take: 30,
+      skip: (page - 1) * 30,
+    });
 
-  const [recruits, meta] = await prismaWithPaginate.recruit
-    .paginate({
-      ...(user && { where: { userId: user.id } }),
+    const recruitIds = recruitIdsData.map((r) => r.recruitId);
+
+    // 取得した配列通りに並ばせる
+    // prismaはorderby fieldに対応してない
+    // https://github.com/prisma/prisma/issues/9708
+    const _recruits = await prisma.recruit.findMany({
+      where: { id: { in: recruitIds } },
       include: {
         eventLocation: { include: { event: true, location: true } },
         possibleDates: true,
       },
-      orderBy: { createdAt: "desc" },
-    })
-    .withPages({
-      limit: 30, // 1ページあたりの最大数
-      page: page,
-      includePageCount: true,
     });
+    // 取得した配列通りに並ばせる
+    recruitIds.forEach((id) => {
+      const recruit = _recruits.find((r) => r.id === id)!;
+      recruits.push(recruit);
+    });
+
+    totalCount = await prisma.recruit.count();
+    totalPages = Math.round(totalCount / 30);
+    currentPage = page;
+  } else {
+    const prismaWithPaginate = prisma.$extends({
+      model: { recruit: { paginate } },
+    });
+
+    const result = await prismaWithPaginate.recruit
+      .paginate({
+        ...(user && { where: { userId: user.id } }),
+        ...(freeWord && {
+          where: {
+            ...(user && { userId: user.id }),
+            OR: [
+              { eventLocation: { event: { name: { contains: freeWord } } } },
+              { manualEventName: { contains: freeWord } },
+            ],
+          },
+        }),
+        include: {
+          eventLocation: { include: { event: true, location: true } },
+          possibleDates: true,
+        },
+        orderBy: { createdAt: "desc" },
+      })
+      .withPages({
+        limit: 30, // 1ページあたりの最大数
+        page: page,
+        includePageCount: true,
+      });
+    recruits = result[0];
+    const meta = result[1];
+    totalCount = meta.totalCount;
+    totalPages = meta.pageCount;
+    currentPage = meta.currentPage;
+  }
 
   const recruitsData = await Promise.all(
     recruits.map(async (recruit) => ({
@@ -181,9 +254,9 @@ const getHandler = async (
   );
 
   res.status(200).json({
-    totalCount: meta.totalCount,
-    totalPages: meta.pageCount,
-    currentPage: meta.currentPage,
+    totalCount: totalCount, // 全ての募集の数
+    totalPages: totalPages, // 全ページ数
+    currentPage: currentPage, // 現在のページ
     recruits: recruitsData,
   });
 };
