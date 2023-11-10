@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, FormGroup, Input, TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import {
   getAuth,
   createUserWithEmailAndPassword,

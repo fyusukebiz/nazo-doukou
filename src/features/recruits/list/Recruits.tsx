@@ -12,13 +12,16 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { RecruitCard } from "./misc/RecruitCard";
+import { MobileRecruitCard } from "./misc/MobileRecruitCard";
 import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
 import { grey, teal } from "@mui/material/colors";
 import { FaSearch } from "react-icons/fa";
+import { PcRecruitCard } from "./misc/PcRecruitCard";
+import { useIsMobileContext } from "@/features/common/IsMobileProvider";
 
 export const Recruits = () => {
   const router = useRouter();
+  const { isMobile } = useIsMobileContext();
   const [page, setPage] = useState(Number(router.query.page || 1));
   const [freeWord, setFreeWord] = useState("");
   const [orderBy, setOrderBy] = useState<"createdAt" | "possibleDate">(
@@ -156,10 +159,17 @@ export const Recruits = () => {
             <Grid container spacing={2}>
               {recruitsData.recruits.map((recruit, index) => (
                 <Grid key={index} item xs={12} sm={6} md={4}>
-                  <RecruitCard
-                    recruit={recruit}
-                    saveScrollPosition={saveScrollPosition}
-                  />
+                  {isMobile ? (
+                    <MobileRecruitCard
+                      recruit={recruit}
+                      saveScrollPosition={saveScrollPosition}
+                    />
+                  ) : (
+                    <PcRecruitCard
+                      recruit={recruit}
+                      saveScrollPosition={saveScrollPosition}
+                    />
+                  )}
                 </Grid>
               ))}
             </Grid>

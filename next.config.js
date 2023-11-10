@@ -5,6 +5,7 @@ const nextConfig = withInterceptStdout(
   {
     reactStrictMode: false,
     swcMinify: true,
+    output: "standalone",
     async redirects() {
       return [
         {

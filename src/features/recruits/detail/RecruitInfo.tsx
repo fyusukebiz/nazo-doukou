@@ -89,7 +89,6 @@ export const RecruitInfo = (props: Props) => {
                 }}
               >
                 <UserAvatarWithName user={recruit.user} size={30} />
-                <Box>{recruit.user.name}</Box>
                 {haveInfo && (
                   <Button
                     variant="text"

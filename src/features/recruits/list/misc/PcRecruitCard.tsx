@@ -11,7 +11,7 @@ type Props = {
   saveScrollPosition?: () => void;
 };
 
-export const RecruitCard = (props: Props) => {
+export const PcRecruitCard = (props: Props) => {
   const { recruit, saveScrollPosition } = props;
   const router = useRouter();
 
