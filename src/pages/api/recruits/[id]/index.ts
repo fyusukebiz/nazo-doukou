@@ -7,6 +7,7 @@ import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 import { User } from "@prisma/client";
 import { RecruitDetail } from "@/types/recruit";
+import { userAgent } from "next/server";
 
 export default async function handler(
   req: NextApiRequest,
@@ -105,30 +106,48 @@ const getHandler = async (
   const recruit = await prisma.recruit.findUnique({
     where: { id: recruitId },
     include: {
-      user: true,
+      user: { include: { userGameTypes: { include: { gameType: true } } } },
       eventLocation: { include: { event: true, location: true } },
       possibleDates: true,
-      commentToRecruits: { include: { user: true } },
+      commentToRecruits: {
+        include: {
+          user: { include: { userGameTypes: { include: { gameType: true } } } },
+        },
+      },
       recruitTagRecruits: { include: { recruitTag: true } },
     },
   });
   if (!recruit) return res.status(404).json({ error: "募集がありません" });
 
+  console.log("recruit.user", recruit.user);
   const recruitData = {
     id: recruit.id,
     ...(recruit.user
       ? {
           user: {
+            id: recruit.user.id,
             name: recruit.user.name || "名無しさん",
             ...(recruit.user.iconImageFileKey && {
               iconImageUrl: await generateReadSignedUrl(
                 recruit.user.iconImageFileKey
               ),
             }),
+            ...(recruit.user.sex && { sex: recruit.user.sex }),
+            ...(recruit.user.age && { age: recruit.user.age }),
+            ...(recruit.user.startedAt && {
+              startedAt: recruit.user.startedAt.toISOString(),
+            }),
+            ...(recruit.user.description && {
+              description: recruit.user.description,
+            }),
             ...(recruit.user.twitter && { twitter: recruit.user.twitter }),
             ...(recruit.user.instagram && {
               instagram: recruit.user.instagram,
             }),
+            userGameTypes: recruit.user.userGameTypes.map((ugt) => ({
+              gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
+              likeOrDislike: ugt.likeOrDislike,
+            })),
           },
         }
       : { user: { name: "名無しさん" } }),
@@ -188,8 +207,20 @@ const getHandler = async (
               comment.user.iconImageFileKey
             ),
           }),
+          ...(comment.user.sex && { sex: comment.user.sex }),
+          ...(comment.user.age && { age: comment.user.age }),
+          ...(comment.user.startedAt && {
+            startedAt: comment.user.startedAt.toISOString(),
+          }),
+          ...(comment.user.description && {
+            description: comment.user.description,
+          }),
           ...(comment.user.twitter && { twitter: comment.user.twitter }),
           ...(comment.user.instagram && { instagram: comment.user.instagram }),
+          userGameTypes: comment.user.userGameTypes.map((ugt) => ({
+            gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
+            likeOrDislike: ugt.likeOrDislike,
+          })),
         },
       }))
     ),

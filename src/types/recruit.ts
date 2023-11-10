@@ -1,4 +1,4 @@
-import { UserSimple } from "./user";
+import { UserDetail } from "./user";
 
 export type RecruitSimple = {
   id: string;
@@ -28,7 +28,7 @@ export type RecruitSimple = {
 
 export type RecruitDetail = {
   id: string;
-  user: UserSimple;
+  user: UserDetail;
   manualEventName?: string;
   manualLocation?: string;
   eventLocation?: {
@@ -59,6 +59,6 @@ export type RecruitDetail = {
     message: string;
     createdAt: string;
     updatedAt: string;
-    user: UserSimple;
+    user: UserDetail;
   }[];
 };

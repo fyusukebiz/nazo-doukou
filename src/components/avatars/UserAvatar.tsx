@@ -1,12 +1,12 @@
 import { Avatar, Tooltip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { memo } from "react";
-import { UserSimple } from "@/types/user";
+import { UserDetail } from "@/types/user";
 import { grey } from "@mui/material/colors";
 
 type Props = {
   sx?: object;
-  user?: UserSimple;
+  user?: UserDetail;
   size?: number;
 };
 

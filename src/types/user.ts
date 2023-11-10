@@ -1,6 +1,7 @@
 import { Sex, LikeOrDislike } from "@prisma/client";
 
 export type UserDetail = {
+  id?: string;
   name: string;
   iconImageUrl?: string;
   sex?: Sex;
@@ -9,16 +10,11 @@ export type UserDetail = {
   description?: string;
   twitter?: string;
   instagram?: string;
-  userGameTypes: {
-    gameTypeId: string;
+  userGameTypes?: {
+    gameType: {
+      id: string;
+      name: string;
+    };
     likeOrDislike: LikeOrDislike;
   }[];
-};
-
-export type UserSimple = {
-  id?: string;
-  name: string;
-  iconImageUrl?: string;
-  twitter?: string;
-  instagram?: string;
 };

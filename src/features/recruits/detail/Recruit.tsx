@@ -2,13 +2,13 @@ import { UserAvatar } from "@/components/avatars/UserAvatar";
 import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
+import { useDisclosure } from "@/hooks/useDisclosure";
 import { useRecruitQuery } from "@/react_queries/recruits/useRecruitQuery";
-import { Box, Chip, Container } from "@mui/material";
+import { Box, Button, Chip, Container } from "@mui/material";
 import { grey, teal } from "@mui/material/colors";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { userAgent } from "next/server";
 import { ReactNode, useMemo } from "react";
 
 export const Recruit = () => {
@@ -18,6 +18,9 @@ export const Recruit = () => {
   const { data: recruitData, status: recruitStatus } = useRecruitQuery({
     path: { recruitId },
   });
+
+  const { isOpen: isUserDetailOpen, onToggle: onToggleUserDetail } =
+    useDisclosure();
 
   const location = useMemo(() => {
     if (recruitStatus !== "success") return "";
@@ -32,6 +35,21 @@ export const Recruit = () => {
       );
     }
   }, [recruitData, recruitStatus]);
+
+  const haveInfo = useMemo(() => {
+    const user = recruitData?.recruit.user;
+    if (!user) return false;
+
+    return (
+      !!user.age ||
+      !!user.description ||
+      !!user.instagram ||
+      !!user.sex ||
+      !!user.startedAt ||
+      !!user.twitter ||
+      (user.userGameTypes && user.userGameTypes.length > 0)
+    );
+  }, [recruitData?.recruit.user]);
 
   return (
     <Box sx={{ height: "100%", overflowY: "scroll" }}>
@@ -87,7 +105,7 @@ export const Recruit = () => {
             </Box>
 
             {recruitData.recruit.eventLocation?.id && (
-              <Row
+              <RecruitItem
                 item="イベント"
                 content={
                   <Link
@@ -99,9 +117,9 @@ export const Recruit = () => {
               />
             )}
 
-            {location && <Row item="場所" content={location} />}
+            {location && <RecruitItem item="場所" content={location} />}
 
-            <Row
+            <RecruitItem
               item="候補日"
               content={recruitData.recruit.possibleDates
                 .map((date) => format(new Date(date.date), "MM/d"))
@@ -110,35 +128,163 @@ export const Recruit = () => {
 
             {/* TODO: アイコンとtwitterリンクを設置すること */}
             {recruitData.recruit.user && (
-              <Row
-                item="募集者"
-                content={
+              <>
+                <RecruitItem
+                  item="募集者"
+                  content={
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <UserAvatar user={recruitData.recruit.user} size={30} />
+                      <Box>{recruitData.recruit.user.name}</Box>
+                      {haveInfo && (
+                        <Button
+                          variant="text"
+                          onClick={onToggleUserDetail}
+                          sx={{ marginLeft: "auto", height: "30px" }}
+                          size="small"
+                        >
+                          詳細
+                        </Button>
+                      )}
+                    </Box>
+                  }
+                />
+                {isUserDetailOpen && (
                   <Box
-                    sx={{ display: "flex", alignItems: "center", gap: "10px" }}
+                    sx={{
+                      borderTop: `1px solid ${grey[300]}`,
+                      borderBottom: `1px solid ${grey[300]}`,
+                      padding: "10px 0px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "15px",
+                    }}
                   >
-                    <UserAvatar user={recruitData.recruit.user} size={30} />
-                    <Box>{recruitData.recruit.user.name}</Box>
+                    {recruitData.recruit.user.startedAt && (
+                      <UserItem
+                        item="謎解き歴"
+                        content={`${format(
+                          new Date(recruitData.recruit.user.startedAt),
+                          "yyyy年M月"
+                        )}ぐらいから`}
+                      />
+                    )}
+                    {recruitData.recruit.user.twitter && (
+                      <UserItem
+                        item="Xアカウント"
+                        content={
+                          <a
+                            href={`https://twitter.com/${recruitData.recruit.user.twitter}`}
+                            target="_blank"
+                          >
+                            リンク
+                          </a>
+                        }
+                      />
+                    )}
+                    {recruitData.recruit.user.instagram && (
+                      <UserItem
+                        item="インスタ"
+                        content={
+                          <a
+                            href={`https://www.instagram.com/${recruitData.recruit.user.instagram}`}
+                            target="_blank"
+                          >
+                            リンク
+                          </a>
+                        }
+                      />
+                    )}
+                    {recruitData.recruit.user.userGameTypes &&
+                      recruitData.recruit.user.userGameTypes.length > 0 && (
+                        <UserItem
+                          item="好きなゲーム"
+                          content={
+                            <Box
+                              sx={{
+                                display: "flex",
+                                gap: "10px",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              {recruitData.recruit.user.userGameTypes
+                                .filter((ugt) => ugt.likeOrDislike === "LIKE")
+                                .map((ugt, index) => (
+                                  <Chip
+                                    key={index}
+                                    label={ugt.gameType.name}
+                                    color="primary"
+                                    variant="filled"
+                                    size="small"
+                                    sx={{ height: "30px" }}
+                                  />
+                                ))}
+                            </Box>
+                          }
+                        />
+                      )}
+                    {recruitData.recruit.user.userGameTypes &&
+                      recruitData.recruit.user.userGameTypes.length > 0 && (
+                        <UserItem
+                          item="嫌いなゲーム"
+                          content={
+                            <Box
+                              sx={{
+                                display: "flex",
+                                gap: "10px",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              {recruitData.recruit.user.userGameTypes
+                                .filter(
+                                  (ugt) => ugt.likeOrDislike === "DISLIKE"
+                                )
+                                .map((ugt, index) => (
+                                  <Chip
+                                    key={index}
+                                    label={ugt.gameType.name}
+                                    color="secondary"
+                                    // variant="filled"
+                                    size="small"
+                                    sx={{ height: "30px" }}
+                                  />
+                                ))}
+                            </Box>
+                          }
+                        />
+                      )}
+                    {recruitData.recruit.user.description && (
+                      <UserItem
+                        item="自由記入欄"
+                        content={recruitData.recruit.user.description}
+                      />
+                    )}
                   </Box>
-                }
-              />
+                )}
+              </>
             )}
 
             {recruitData.recruit.user?.twitter && (
-              <Row
+              <RecruitItem
                 item="Xアカウント"
                 content={recruitData.recruit.user.twitter}
               />
             )}
 
             {recruitData.recruit.numberOfPeople && (
-              <Row
+              <RecruitItem
                 item="募集人数"
                 content={recruitData.recruit.numberOfPeople + "人"}
               />
             )}
 
             {recruitData.recruit.recruitTags.length > 0 && (
-              <Row
+              <RecruitItem
                 item="タグ"
                 content={
                   <Box
@@ -162,7 +308,10 @@ export const Recruit = () => {
             )}
 
             {recruitData.recruit.description && (
-              <Row item="詳細" content={recruitData.recruit.description} />
+              <RecruitItem
+                item="詳細"
+                content={recruitData.recruit.description}
+              />
             )}
           </Box>
         </Container>
@@ -171,7 +320,13 @@ export const Recruit = () => {
   );
 };
 
-const Row = ({ item, content }: { item: string; content: ReactNode }) => {
+const RecruitItem = ({
+  item,
+  content,
+}: {
+  item: string;
+  content: ReactNode;
+}) => {
   const { isMobile } = useIsMobileContext();
 
   return (
@@ -195,10 +350,49 @@ const Row = ({ item, content }: { item: string; content: ReactNode }) => {
             flexShrink: 0,
           }}
         >
-          <Box sx={{ color: teal[700], fontSize: "14px" }}>{item}</Box>
+          <Box
+            sx={{ color: teal[700], fontSize: "14px" }}
+            className="word-wrap"
+          >
+            {item}
+          </Box>
         </Box>
       </Box>
       <Box sx={{ flexGrow: 1, lineHeight: "30px" }}>{content}</Box>
+    </Box>
+  );
+};
+
+const UserItem = ({ item, content }: { item: string; content: ReactNode }) => {
+  const { isMobile } = useIsMobileContext();
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "start",
+        gap: isMobile ? "0px" : "20px",
+      }}
+    >
+      <Box sx={{ width: "100px", flexShrink: 0 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "90px",
+            // backgroundColor: teal[100],
+            height: "30px",
+            borderRadius: "4px",
+            flexShrink: 0,
+          }}
+        >
+          <Box sx={{ color: teal[700], fontSize: "14px" }}>{item}</Box>
+        </Box>
+      </Box>
+      <Box sx={{ flexGrow: 1, lineHeight: "30px" }} className="word-wrap">
+        {content}
+      </Box>
     </Box>
   );
 };

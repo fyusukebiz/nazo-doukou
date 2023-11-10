@@ -78,11 +78,12 @@ const getHandler = async (
 ) => {
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: userId },
-    include: { userGameTypes: true },
+    include: { userGameTypes: { include: { gameType: true } } },
   });
 
   res.status(200).json({
     myUser: {
+      id: user.id,
       name: user.name || "名無しさん",
       ...(user.iconImageFileKey && {
         iconImageUrl: await generateReadSignedUrl(user.iconImageFileKey),
@@ -93,10 +94,12 @@ const getHandler = async (
       ...(user.description && { description: user.description }),
       ...(user.twitter && { twitter: user.twitter }),
       ...(user.instagram && { instagram: user.instagram }),
-      userGameTypes: user.userGameTypes.map((ugt) => ({
-        gameTypeId: ugt.gameTypeId,
-        likeOrDislike: ugt.likeOrDislike,
-      })),
+      ...(user.userGameTypes && {
+        userGameTypes: user.userGameTypes.map((ugt) => ({
+          gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
+          likeOrDislike: ugt.likeOrDislike,
+        })),
+      }),
     },
   });
 };
@@ -209,6 +212,7 @@ const patchHandler = async (
       description: userData.description || null,
       twitter: userData.twitter || null,
       instagram: userData.instagram || null,
+      iconImageFileKey: userData.iconImageFileKey ?? null,
     },
   });
 

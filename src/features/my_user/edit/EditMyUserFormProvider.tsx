@@ -58,10 +58,11 @@ export const EditMyUserFormProvider = ({ children, myUser }: Props) => {
       description: myUser.description ?? "",
       twitter: myUser.twitter ?? "",
       instagram: myUser.instagram ?? "",
-      userGameTypes: myUser.userGameTypes.map((ugt) => ({
-        gameTypeId: ugt.gameTypeId,
-        likeOrDislike: ugt.likeOrDislike,
-      })),
+      userGameTypes:
+        myUser.userGameTypes?.map((ugt) => ({
+          gameTypeId: ugt.gameType.id,
+          likeOrDislike: ugt.likeOrDislike,
+        })) ?? [],
     },
   });
 

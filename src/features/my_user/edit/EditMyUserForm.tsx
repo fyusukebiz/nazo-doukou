@@ -232,7 +232,7 @@ export const EditMyUserForm = ({ myUser }: Props) => {
           <InputWithLabelRHF<EditMyUserFormSchema>
             name="description"
             control={control}
-            label="その他"
+            label="自由記入欄"
             multiline
             minRows={5}
             fullWidth
