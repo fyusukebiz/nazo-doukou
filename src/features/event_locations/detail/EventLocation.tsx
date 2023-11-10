@@ -7,6 +7,14 @@ import { blue, grey } from "@mui/material/colors";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import { ReactNode, useMemo } from "react";
+import { Yusei_Magic } from "next/font/google";
+
+const yuseiMagic = Yusei_Magic({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
+});
 
 export const EventLocation = () => {
   const router = useRouter();
@@ -188,6 +196,7 @@ const Row = ({ item, content }: { item: string; content: ReactNode }) => {
             borderRadius: "4px",
             flexShrink: 0,
           }}
+          className={yuseiMagic.className}
         >
           <Box sx={{ color: blue[700], fontSize: "14px" }}>{item}</Box>
         </Box>

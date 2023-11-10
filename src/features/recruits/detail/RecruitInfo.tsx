@@ -8,6 +8,14 @@ import { grey, teal } from "@mui/material/colors";
 import { format } from "date-fns";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
+import { Yusei_Magic } from "next/font/google";
+
+const yuseiMagic = Yusei_Magic({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
+});
 
 type Props = {
   recruit: RecruitDetail;
@@ -283,6 +291,7 @@ const RecruitItem = ({
             borderRadius: "4px",
             flexShrink: 0,
           }}
+          className={yuseiMagic.className}
         >
           <Box
             sx={{ color: teal[700], fontSize: "14px" }}
@@ -320,6 +329,7 @@ const UserItem = ({ item, content }: { item: string; content: ReactNode }) => {
             borderRadius: "4px",
             flexShrink: 0,
           }}
+          className={yuseiMagic.className}
         >
           <Box sx={{ color: teal[700], fontSize: "14px" }}>{item}</Box>
         </Box>

@@ -34,9 +34,15 @@ export const MobileTopBar = () => {
           component="h1"
           sx={{ fontSize: "24px", color: "black", fontWeight: "bold" }}
         >
-          {/^\/admin/.test(pathname)
-            ? "【管理画面】" + process.env.NEXT_PUBLIC_SERVICE_NAME
-            : process.env.NEXT_PUBLIC_SERVICE_NAME}
+          {/^\/admin/.test(pathname) ? (
+            "【管理画面】"
+          ) : (
+            <img
+              src="/service_logo.png"
+              alt="service_logo"
+              style={{ height: "50px" }}
+            />
+          )}
         </Button>
       </Link>
 

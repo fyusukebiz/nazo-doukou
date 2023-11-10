@@ -18,6 +18,14 @@ import { grey, teal } from "@mui/material/colors";
 import { FaSearch } from "react-icons/fa";
 import { PcRecruitCard } from "./misc/PcRecruitCard";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
+import { Yusei_Magic } from "next/font/google";
+
+const yuseiMagic = Yusei_Magic({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
+});
 
 export const Recruits = () => {
   const router = useRouter();
@@ -71,20 +79,21 @@ export const Recruits = () => {
             textAlign: "center",
             fontSize: "18px",
           }}
+          className={yuseiMagic.className}
         >
           <Box
             sx={{
               width: "50%",
+              height: "40px",
               color: teal[500],
               backgroundColor: teal[100],
               borderRadius: "5px 0px 0px 5px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "40px",
             }}
           >
-            <Box>募集</Box>
+            謎解き同行者募集
           </Box>
           <Box
             sx={{
@@ -100,7 +109,7 @@ export const Recruits = () => {
             }}
             onClick={() => router.push("/event_locations")}
           >
-            <Box>イベント</Box>
+            謎解きイベント
           </Box>
         </Box>
 
