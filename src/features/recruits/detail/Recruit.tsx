@@ -1,55 +1,62 @@
-import { UserAvatar } from "@/components/avatars/UserAvatar";
 import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
-import { useIsMobileContext } from "@/features/common/IsMobileProvider";
-import { useDisclosure } from "@/hooks/useDisclosure";
 import { useRecruitQuery } from "@/react_queries/recruits/useRecruitQuery";
-import { Box, Button, Chip, Container } from "@mui/material";
-import { grey, teal } from "@mui/material/colors";
-import { format } from "date-fns";
-import Link from "next/link";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Box, Container, Tab } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import { useRouter } from "next/router";
-import { ReactNode, useMemo } from "react";
+import { SyntheticEvent, useCallback, useEffect, useState } from "react";
+import { RecruitInfo } from "./RecruitInfo";
+import { CommentsToRecruit } from "./CommentsToRecruit";
+
+type Tab = "recruitInfo" | "commentsToRecruit";
 
 export const Recruit = () => {
   const router = useRouter();
   const recruitId = router.query.id as string;
-
-  const { data: recruitData, status: recruitStatus } = useRecruitQuery({
+  const {
+    data: recruitData,
+    status: recruitStatus,
+    refetch: refetchRecruit,
+  } = useRecruitQuery({
     path: { recruitId },
   });
 
-  const { isOpen: isUserDetailOpen, onToggle: onToggleUserDetail } =
-    useDisclosure();
+  const [tab, setTab] = useState<Tab>("recruitInfo");
 
-  const location = useMemo(() => {
-    if (recruitStatus !== "success") return "";
-    if (recruitData.recruit.manualLocation) {
-      return recruitData.recruit.manualLocation;
-    } else {
-      return (
-        recruitData.recruit.eventLocation!.location.name +
-        (recruitData.recruit.eventLocation!.building
-          ? " / " + recruitData.recruit.eventLocation!.building
-          : "")
-      );
-    }
-  }, [recruitData, recruitStatus]);
+  // TODO: ブラウザバックしたときに正しく動かない、react-queryかブラウザのバグ？
+  const handleChangeTab = useCallback(
+    (event: SyntheticEvent, newValue: Tab) => {
+      setTab(newValue);
+      // router.push(`/recruits/${recruitId}?tab=${newValue}`, undefined, {
+      //   shallow: true,
+      // });
+    },
+    []
+  );
 
-  const haveInfo = useMemo(() => {
-    const user = recruitData?.recruit.user;
-    if (!user) return false;
+  // 初回の設定
+  // useEffect(() => {
+  //   if (!router.isReady) return;
+  //   const InitialTab = router.query.tab as Tab | undefined;
+  //   console.log("tab", tab);
+  //   // console.log("router.pathname", router.pathname);
+  //   console.log("router.asPath", router.asPath);
+  //   // console.log(router.pathname.split("?")[1] === tab);
+  //   if (router.asPath.split("tab=")[1] === tab) return;
 
-    return (
-      !!user.age ||
-      !!user.description ||
-      !!user.instagram ||
-      !!user.sex ||
-      !!user.startedAt ||
-      !!user.twitter ||
-      (user.userGameTypes && user.userGameTypes.length > 0)
-    );
-  }, [recruitData?.recruit.user]);
+  //   if (InitialTab) {
+  //     setTab(InitialTab);
+  //     router.push(`/recruits/${recruitId}?tab=${InitialTab}`, undefined, {
+  //       shallow: true,
+  //     });
+  //   } else {
+  //     router.push(`/recruits/${recruitId}?tab=recruitInfo`, undefined, {
+  //       shallow: true,
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [router]);
 
   return (
     <Box sx={{ height: "100%", overflowY: "scroll" }}>
@@ -57,7 +64,7 @@ export const Recruit = () => {
       {recruitStatus === "pending" && <LoadingSpinner />}
       {recruitStatus === "success" && (
         <Container maxWidth="sm" sx={{ padding: "24px" }}>
-          <Box>
+          <Box sx={{ marginBottom: "15px" }}>
             {recruitData.recruit.eventLocation ? (
               <img
                 src={recruitData.recruit.eventLocation.event.coverImageFileUrl}
@@ -65,7 +72,6 @@ export const Recruit = () => {
                   objectFit: "cover",
                   maxHeight: "220px",
                   width: "100%",
-                  marginBottom: "8px",
                   cursor: "pointer",
                   borderRadius: "10px",
                 }}
@@ -79,7 +85,6 @@ export const Recruit = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: "8px",
                   cursor: "pointer",
                   borderRadius: "10px",
                   backgroundColor: grey[400],
@@ -89,310 +94,51 @@ export const Recruit = () => {
               </Box>
             )}
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "15px",
-              marginTop: "10px",
-            }}
-          >
-            {/* イベント名 */}
-            <Box sx={{ fontSize: "20px" }}>
-              {recruitData.recruit.manualEventName
-                ? recruitData.recruit.manualEventName
-                : recruitData.recruit.eventLocation!.event.name}
-            </Box>
 
-            {recruitData.recruit.eventLocation?.id && (
-              <RecruitItem
-                item="イベント"
-                content={
-                  <Link
-                    href={`/event_locations/${recruitData.recruit.eventLocation.id}`}
-                  >
-                    リンク
-                  </Link>
-                }
-              />
-            )}
-
-            {location && <RecruitItem item="場所" content={location} />}
-
-            <RecruitItem
-              item="候補日"
-              content={recruitData.recruit.possibleDates
-                .map((date) => format(new Date(date.date), "MM/d"))
-                .join(", ")}
-            />
-
-            {/* TODO: アイコンとtwitterリンクを設置すること */}
-            {recruitData.recruit.user && (
-              <>
-                <RecruitItem
-                  item="募集者"
-                  content={
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <UserAvatar user={recruitData.recruit.user} size={30} />
-                      <Box>{recruitData.recruit.user.name}</Box>
-                      {haveInfo && (
-                        <Button
-                          variant="text"
-                          onClick={onToggleUserDetail}
-                          sx={{ marginLeft: "auto", height: "30px" }}
-                          size="small"
-                        >
-                          詳細
-                        </Button>
-                      )}
-                    </Box>
-                  }
-                />
-                {isUserDetailOpen && (
-                  <Box
-                    sx={{
-                      borderTop: `1px solid ${grey[300]}`,
-                      borderBottom: `1px solid ${grey[300]}`,
-                      padding: "10px 0px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "15px",
-                    }}
-                  >
-                    {recruitData.recruit.user.startedAt && (
-                      <UserItem
-                        item="謎解き歴"
-                        content={`${format(
-                          new Date(recruitData.recruit.user.startedAt),
-                          "yyyy年M月"
-                        )}ぐらいから`}
-                      />
-                    )}
-                    {recruitData.recruit.user.twitter && (
-                      <UserItem
-                        item="Xアカウント"
-                        content={
-                          <a
-                            href={`https://twitter.com/${recruitData.recruit.user.twitter}`}
-                            target="_blank"
-                          >
-                            リンク
-                          </a>
-                        }
-                      />
-                    )}
-                    {recruitData.recruit.user.instagram && (
-                      <UserItem
-                        item="インスタ"
-                        content={
-                          <a
-                            href={`https://www.instagram.com/${recruitData.recruit.user.instagram}`}
-                            target="_blank"
-                          >
-                            リンク
-                          </a>
-                        }
-                      />
-                    )}
-                    {recruitData.recruit.user.userGameTypes &&
-                      recruitData.recruit.user.userGameTypes.length > 0 && (
-                        <UserItem
-                          item="好きなゲーム"
-                          content={
-                            <Box
-                              sx={{
-                                display: "flex",
-                                gap: "10px",
-                                flexWrap: "wrap",
-                              }}
-                            >
-                              {recruitData.recruit.user.userGameTypes
-                                .filter((ugt) => ugt.likeOrDislike === "LIKE")
-                                .map((ugt, index) => (
-                                  <Chip
-                                    key={index}
-                                    label={ugt.gameType.name}
-                                    color="primary"
-                                    variant="filled"
-                                    size="small"
-                                    sx={{ height: "30px" }}
-                                  />
-                                ))}
-                            </Box>
-                          }
-                        />
-                      )}
-                    {recruitData.recruit.user.userGameTypes &&
-                      recruitData.recruit.user.userGameTypes.length > 0 && (
-                        <UserItem
-                          item="嫌いなゲーム"
-                          content={
-                            <Box
-                              sx={{
-                                display: "flex",
-                                gap: "10px",
-                                flexWrap: "wrap",
-                              }}
-                            >
-                              {recruitData.recruit.user.userGameTypes
-                                .filter(
-                                  (ugt) => ugt.likeOrDislike === "DISLIKE"
-                                )
-                                .map((ugt, index) => (
-                                  <Chip
-                                    key={index}
-                                    label={ugt.gameType.name}
-                                    color="secondary"
-                                    // variant="filled"
-                                    size="small"
-                                    sx={{ height: "30px" }}
-                                  />
-                                ))}
-                            </Box>
-                          }
-                        />
-                      )}
-                    {recruitData.recruit.user.description && (
-                      <UserItem
-                        item="自由記入欄"
-                        content={recruitData.recruit.user.description}
-                      />
-                    )}
-                  </Box>
-                )}
-              </>
-            )}
-
-            {recruitData.recruit.user?.twitter && (
-              <RecruitItem
-                item="Xアカウント"
-                content={recruitData.recruit.user.twitter}
-              />
-            )}
-
-            {recruitData.recruit.numberOfPeople && (
-              <RecruitItem
-                item="募集人数"
-                content={recruitData.recruit.numberOfPeople + "人"}
-              />
-            )}
-
-            {recruitData.recruit.recruitTags.length > 0 && (
-              <RecruitItem
-                item="タグ"
-                content={
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "5px",
-                    }}
-                  >
-                    {recruitData.recruit.recruitTags.map((tag, index) => (
-                      <Chip
-                        key={index}
-                        label={tag.name}
-                        size="small"
-                        sx={{ height: "30px" }}
-                      />
-                    ))}
-                  </Box>
-                }
-              />
-            )}
-
-            {recruitData.recruit.description && (
-              <RecruitItem
-                item="詳細"
-                content={recruitData.recruit.description}
-              />
-            )}
+          {/* イベント名 */}
+          <Box sx={{ fontSize: "20px" }}>
+            {recruitData.recruit.manualEventName
+              ? recruitData.recruit.manualEventName
+              : recruitData.recruit.eventLocation!.event.name}
           </Box>
+
+          <TabContext value={tab}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <TabList onChange={handleChangeTab} sx={{ minHeight: "30px" }}>
+                <Tab
+                  label="内容"
+                  value="recruitInfo"
+                  sx={{ width: "50%", minHeight: "30px" }}
+                />
+                <Tab
+                  label="コメント"
+                  value="commentsToRecruit"
+                  sx={{ width: "50%", minHeight: "30px" }}
+                />
+              </TabList>
+            </Box>
+            <TabPanel
+              value="recruitInfo"
+              sx={{ height: "100%", padding: "15px 0px 0px", minHeight: 0 }}
+            >
+              {recruitData.recruit && (
+                <RecruitInfo recruit={recruitData.recruit} />
+              )}
+            </TabPanel>
+            <TabPanel
+              value="commentsToRecruit"
+              sx={{ height: "100%", padding: "15px 0px 0px", minHeight: 0 }}
+            >
+              {recruitData.recruit && (
+                <CommentsToRecruit
+                  recruit={recruitData.recruit}
+                  refetchRecruit={refetchRecruit}
+                />
+              )}
+            </TabPanel>
+          </TabContext>
         </Container>
       )}
-    </Box>
-  );
-};
-
-const RecruitItem = ({
-  item,
-  content,
-}: {
-  item: string;
-  content: ReactNode;
-}) => {
-  const { isMobile } = useIsMobileContext();
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "start",
-        gap: isMobile ? "0px" : "20px",
-      }}
-    >
-      <Box sx={{ width: "100px", flexShrink: 0 }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "90px",
-            backgroundColor: teal[100],
-            height: "30px",
-            borderRadius: "4px",
-            flexShrink: 0,
-          }}
-        >
-          <Box
-            sx={{ color: teal[700], fontSize: "14px" }}
-            className="word-wrap"
-          >
-            {item}
-          </Box>
-        </Box>
-      </Box>
-      <Box sx={{ flexGrow: 1, lineHeight: "30px" }}>{content}</Box>
-    </Box>
-  );
-};
-
-const UserItem = ({ item, content }: { item: string; content: ReactNode }) => {
-  const { isMobile } = useIsMobileContext();
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "start",
-        gap: isMobile ? "0px" : "20px",
-      }}
-    >
-      <Box sx={{ width: "100px", flexShrink: 0 }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "90px",
-            // backgroundColor: teal[100],
-            height: "30px",
-            borderRadius: "4px",
-            flexShrink: 0,
-          }}
-        >
-          <Box sx={{ color: teal[700], fontSize: "14px" }}>{item}</Box>
-        </Box>
-      </Box>
-      <Box sx={{ flexGrow: 1, lineHeight: "30px" }} className="word-wrap">
-        {content}
-      </Box>
     </Box>
   );
 };

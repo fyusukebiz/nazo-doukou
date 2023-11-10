@@ -11,7 +11,7 @@ type PostCommentToRecruitRequest = {
 
 const postCommentToRecruitFn = async (req: PostCommentToRecruitRequest) => {
   const { data } = await axios.post<PostCommentToRecruitResponseSuccessBody>(
-    `/api/comments_to_recruit`,
+    `/api/comments_to_recruit`, // TODO: /api/recruit/{recruitId}/commentsの方がベター
     req.body
   );
 

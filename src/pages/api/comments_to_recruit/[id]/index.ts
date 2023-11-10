@@ -28,7 +28,8 @@ export default async function handler(
   }
 
   const user = await prisma.user.findUnique({ where: { fbUid } });
-  if (!user) {
+  const userId = getCookie("userId", { req, res });
+  if (!user || user.id !== userId) {
     return res.status(401).json({ error: "再ログインしてください。" });
   }
 

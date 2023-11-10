@@ -16,14 +16,12 @@ import { makeZodI18nMap } from "zod-i18n-map";
 import translation from "@/libs/zod-i18n-map/ja/zod.json";
 import { z } from "zod";
 import { RouterHistoryProvider } from "@/features/common/RouterHistoryProvider";
-import { Roboto } from "next/font/google";
+import { Noto_Sans_JP } from "next/font/google";
 import { initializeFirebaseApp } from "@/libs/firebaseClient";
-import { getApp } from "firebase/app";
 import { FirebaseAuthProvider } from "@/components/providers/FirebaseAuthProvider";
 
-const roboto = Roboto({
+const notoJp = Noto_Sans_JP({
   weight: ["400", "700"],
-  style: ["normal", "italic"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -57,7 +55,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         <QueryClientProvider client={customQueryClient}>
           <IsMobileProvider>
             <RouterHistoryProvider>
-              <main className={roboto.className} style={{ height: "100%" }}>
+              <main className={notoJp.className} style={{ height: "100%" }}>
                 {getLayout(
                   <>
                     <ToastContainer

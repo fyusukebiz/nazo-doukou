@@ -1,3 +1,4 @@
+import { useLogout } from "@/react_queries/auth/useLogout";
 import { deleteCookie } from "cookies-next";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "next/router";
@@ -6,17 +7,20 @@ import { toast } from "react-toastify";
 
 export const useLogoutAndClearStorage = () => {
   const router = useRouter();
+  const { refetch: refetchLogout } = useLogout();
+
   const logoutAndClearStorage = useCallback(async () => {
     try {
       const auth = getAuth();
-      await signOut(auth);
-      deleteCookie("fbUid");
+      await signOut(auth); // firebaseでログアウト
+      deleteCookie("fbUid"); // TODO: BE側で実装する
+      await refetchLogout(); // サーバー側でクッキーを消しに行く
       toast.success("ログアウトしました");
       router.push("/auth/login");
     } catch (error) {
       console.error(error);
     }
-  }, [router]);
+  }, [router, refetchLogout]);
 
   return { logoutAndClearStorage };
 };

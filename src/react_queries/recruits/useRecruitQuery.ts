@@ -15,7 +15,8 @@ const getRecruit = async (req: GetRecruitRequest) => {
 
 export const useRecruitQuery = (req: GetRecruitRequest) => {
   return useQuery({
-    queryKey: ["getRecruit"],
+    queryKey: ["getRecruit", req.path.recruitId],
     queryFn: () => getRecruit(req),
+    enabled: !!req.path.recruitId,
   });
 };

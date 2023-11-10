@@ -2,8 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
-import { getCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
+import { cookieOptions } from "@/constants/cookieOptions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -55,16 +56,18 @@ const postHandler = async (
   >,
   fbUid: string
 ) => {
-  const user = await prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: { fbUid: fbUid },
   });
 
   // 万が一、fbUifに紐づくuserがなければ作成
   if (!user) {
-    await prisma.user.create({
+    user = await prisma.user.create({
       data: { fbUid: fbUid, name: uuidv4() },
     });
   }
+
+  setCookie("userId", user.id, { req, res, ...cookieOptions });
 
   return res.status(200).end();
 };

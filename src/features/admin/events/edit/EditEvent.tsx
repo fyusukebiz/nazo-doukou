@@ -30,7 +30,7 @@ export const EditEvent = () => {
             sx={{ paddingY: "24px", background: "white" }}
           >
             <EditEventFormProvider event={eventData.event}>
-              <EditEventForm eventId={eventId} />
+              <EditEventForm eventId={eventData.event.id} />
             </EditEventFormProvider>
           </Container>
         </>

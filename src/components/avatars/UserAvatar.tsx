@@ -18,8 +18,6 @@ export const UserAvatar = memo(({ sx, user, size = 36 }: Props) => {
     margin: 0,
   });
 
-  console.log("user", user);
-
   return (
     <>
       {!user ? null : (

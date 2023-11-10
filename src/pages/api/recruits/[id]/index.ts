@@ -42,7 +42,8 @@ export default async function handler(
         }
 
         const user = await prisma.user.findUnique({ where: { fbUid } });
-        if (!user) {
+        const userId = getCookie("userId", { req, res });
+        if (!user || user.id !== userId) {
           return res.status(401).json({ error: "再ログインしてください。" });
         }
 
@@ -73,7 +74,8 @@ export default async function handler(
         }
 
         const user = await prisma.user.findUnique({ where: { fbUid } });
-        if (!user) {
+        const userId = getCookie("userId", { req, res });
+        if (!user || user.id !== userId) {
           return res.status(401).json({ error: "再ログインしてください。" });
         }
 
@@ -109,7 +111,7 @@ const getHandler = async (
       user: { include: { userGameTypes: { include: { gameType: true } } } },
       eventLocation: { include: { event: true, location: true } },
       possibleDates: true,
-      commentToRecruits: {
+      commentsToRecruit: {
         include: {
           user: { include: { userGameTypes: { include: { gameType: true } } } },
         },
@@ -119,7 +121,6 @@ const getHandler = async (
   });
   if (!recruit) return res.status(404).json({ error: "募集がありません" });
 
-  console.log("recruit.user", recruit.user);
   const recruitData = {
     id: recruit.id,
     ...(recruit.user
@@ -193,8 +194,8 @@ const getHandler = async (
       date: date.date.toISOString(),
       ...(date.priority && { priority: date.priority }),
     })),
-    comments: await Promise.all(
-      recruit.commentToRecruits.map(async (comment) => ({
+    commentsToRecruit: await Promise.all(
+      recruit.commentsToRecruit.map(async (comment) => ({
         id: comment.id,
         message: comment.message,
         createdAt: comment.createdAt.toISOString(),

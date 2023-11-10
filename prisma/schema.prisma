@@ -36,7 +36,7 @@ model User {
   
   userGameTypes UserGameType[]
   recruits Recruit[]
-  commentToRecruits CommentToRecruit[]
+  commentsToRecruit CommentToRecruit[]
 }
 
 model GameType {
@@ -161,7 +161,7 @@ model Recruit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  commentToRecruits CommentToRecruit[]
+  commentsToRecruit CommentToRecruit[]
   possibleDates PossibleDate[]
   recruitTagRecruits RecruitTagRecruit[]
 }

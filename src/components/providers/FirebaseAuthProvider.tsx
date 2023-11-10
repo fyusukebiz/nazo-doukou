@@ -36,7 +36,7 @@ export const FirebaseAuthProvider = ({ children }: Props) => {
     try {
       const auth = getAuth();
       unsubscribe = onAuthStateChanged(auth, async (user) => {
-        console.log("user", user);
+        // console.log("user", user);
         setCurrentFbUser(user);
       });
     } catch (error) {

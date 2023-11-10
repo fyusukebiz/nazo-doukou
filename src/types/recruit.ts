@@ -1,4 +1,5 @@
 import { UserDetail } from "./user";
+import { CommentToRecruit } from "./commentToRecruit";
 
 export type RecruitSimple = {
   id: string;
@@ -54,11 +55,5 @@ export type RecruitDetail = {
     priority?: number;
   }[];
   recruitTags: { id: string; name: string }[];
-  comments: {
-    id: string;
-    message: string;
-    createdAt: string;
-    updatedAt: string;
-    user: UserDetail;
-  }[];
+  commentsToRecruit: CommentToRecruit[];
 };

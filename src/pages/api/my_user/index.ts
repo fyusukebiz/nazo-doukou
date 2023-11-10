@@ -6,9 +6,10 @@ import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
 import { User as UserInDb } from "@prisma/client";
 import { UserDetail } from "@/types/user";
-import { getCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 import { getZodFormattedErrors } from "@/utils/getZodFormattedErrors";
+import { cookieOptions } from "@/constants/cookieOptions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,7 +33,8 @@ export default async function handler(
     switch (req.method) {
       case "GET": {
         const user = await prisma.user.findUnique({ where: { fbUid } });
-        if (!user) {
+        const userId = getCookie("userId", { req, res });
+        if (!user || user.id !== userId) {
           return res.status(401).json({ error: "再ログインしてください。" });
         }
 
@@ -48,7 +50,8 @@ export default async function handler(
           where: { fbUid: fbUid },
           include: { userGameTypes: true },
         });
-        if (!user) {
+        const userId = getCookie("userId", { req, res });
+        if (!user || user.id !== userId) {
           return res.status(401).json({ error: "再ログインしてください。" });
         }
 
@@ -133,10 +136,12 @@ const postHandler = async (
   if (!validation.success)
     return res.status(422).json({ errors: getZodFormattedErrors(validation) });
 
-  const user = validation.data.user;
-  await prisma.user.create({
-    data: { ...user, fbUid },
+  const userData = validation.data.user;
+  const user = await prisma.user.create({
+    data: { ...userData, fbUid },
   });
+
+  setCookie("userId", user.id, { req, res, ...cookieOptions });
 
   res.status(200).end();
 };

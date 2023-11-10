@@ -30,7 +30,7 @@ export const EventLocation = () => {
       {eventLocationStatus === "pending" && <LoadingSpinner />}
       {eventLocationStatus === "success" && (
         <Container maxWidth="sm" sx={{ padding: "24px" }}>
-          <Box>
+          <Box sx={{ marginBottom: "15px" }}>
             {eleData.eventLocation.event.coverImageFileUrl ? (
               <img
                 src={eleData.eventLocation.event.coverImageFileUrl}
@@ -38,7 +38,6 @@ export const EventLocation = () => {
                   objectFit: "cover",
                   maxHeight: "220px",
                   width: "100%",
-                  marginBottom: "8px",
                   cursor: "pointer",
                   borderRadius: "10px",
                 }}
@@ -52,7 +51,6 @@ export const EventLocation = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: "8px",
                   cursor: "pointer",
                   borderRadius: "10px",
                   backgroundColor: grey[400],

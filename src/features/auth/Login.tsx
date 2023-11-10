@@ -35,9 +35,12 @@ export const Login = () => {
       );
       const fbUser = userCredential.user;
       const idToken = await fbUser.getIdToken();
+
+      // TODO: FEでsetCookieすべきじゃない
       setCookie("currentFbUserIdToken", idToken, cookieOptions);
 
       // DBにちゃんとUserが存在しているか確認、存在していなければUserを作成
+      // cookieをセット
       await postConfirmMyUser.mutateAsync();
 
       router.push("/recruits");
@@ -70,8 +73,18 @@ export const Login = () => {
           component="form"
           sx={{ display: "flex", flexDirection: "column", gap: "20px" }}
         >
+          <img
+            src="/service_logo.png"
+            alt="service_logo"
+            style={{ height: "100px", objectFit: "contain" }}
+          />
           <Box
-            sx={{ fontSize: "32px", textAlign: "center", fontWeight: "bold" }}
+            sx={{
+              fontSize: "32px",
+              textAlign: "center",
+              fontWeight: "bold",
+              paddingY: "10px",
+            }}
           >
             ログイン
           </Box>

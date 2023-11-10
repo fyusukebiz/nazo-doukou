@@ -42,9 +42,12 @@ export const Signup = () => {
       // ユーザー登録すると自動的にログインされてuserCredential.userでユーザーの情報を取得できる
       const fbUser = userCredential.user;
       const idToken = await fbUser.getIdToken();
+
+      // TODO: FEでsetCookieすべきじゃない
       setCookie("currentFbUserIdToken", idToken, cookieOptions);
 
       // DBにUserを作成する
+      // cookieをセット
       await postMyUser.mutateAsync({ body: { user: { name } } });
 
       // 認証用のメールを送る
@@ -80,8 +83,18 @@ export const Signup = () => {
           component="form"
           sx={{ display: "flex", flexDirection: "column", gap: "20px" }}
         >
+          <img
+            src="/service_logo.png"
+            alt="service_logo"
+            style={{ height: "100px", objectFit: "contain" }}
+          />
           <Box
-            sx={{ fontSize: "32px", textAlign: "center", fontWeight: "bold" }}
+            sx={{
+              fontSize: "32px",
+              textAlign: "center",
+              fontWeight: "bold",
+              paddingY: "10px",
+            }}
           >
             新規登録
           </Box>
