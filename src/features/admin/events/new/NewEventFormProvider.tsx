@@ -4,9 +4,9 @@ import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string().min(1).max(255),
+  name: z.string().min(1).max(30),
   organization: z.object({ label: z.string(), value: z.string().nullable() }),
-  description: z.string(),
+  description: z.string().max(1000),
   sourceUrl: z.string(),
   twitterTag: z.string(),
   gameTypes: z.object({ label: z.string(), value: z.string() }).array(),

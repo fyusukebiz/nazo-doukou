@@ -175,7 +175,7 @@ const patchHandler = async (
       name: z.string().min(1).max(255),
       organizationId: z.string().optional(),
       twitterTag: z.string().optional(),
-      description: z.string().optional(),
+      description: z.string().max(1000).optional(),
       sourceUrl: z.string().optional(),
       coverImageFileKey: z.string().optional(),
       numberOfPeopleInTeam: z.string().optional(),

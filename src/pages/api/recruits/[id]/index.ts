@@ -123,35 +123,33 @@ const getHandler = async (
 
   const recruitData = {
     id: recruit.id,
-    ...(recruit.user
-      ? {
-          user: {
-            id: recruit.user.id,
-            name: recruit.user.name || "名無しさん",
-            ...(recruit.user.iconImageFileKey && {
-              iconImageUrl: await generateReadSignedUrl(
-                recruit.user.iconImageFileKey
-              ),
-            }),
-            ...(recruit.user.sex && { sex: recruit.user.sex }),
-            ...(recruit.user.age && { age: recruit.user.age }),
-            ...(recruit.user.startedAt && {
-              startedAt: recruit.user.startedAt.toISOString(),
-            }),
-            ...(recruit.user.description && {
-              description: recruit.user.description,
-            }),
-            ...(recruit.user.twitter && { twitter: recruit.user.twitter }),
-            ...(recruit.user.instagram && {
-              instagram: recruit.user.instagram,
-            }),
-            userGameTypes: recruit.user.userGameTypes.map((ugt) => ({
-              gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
-              likeOrDislike: ugt.likeOrDislike,
-            })),
-          },
-        }
-      : { user: { name: "名無しさん" } }),
+    ...(recruit.user && {
+      user: {
+        id: recruit.user.id,
+        name: recruit.user.name || "名無しさん",
+        ...(recruit.user.iconImageFileKey && {
+          iconImageUrl: await generateReadSignedUrl(
+            recruit.user.iconImageFileKey
+          ),
+        }),
+        ...(recruit.user.sex && { sex: recruit.user.sex }),
+        ...(recruit.user.age && { age: recruit.user.age }),
+        ...(recruit.user.startedAt && {
+          startedAt: recruit.user.startedAt.toISOString(),
+        }),
+        ...(recruit.user.description && {
+          description: recruit.user.description,
+        }),
+        ...(recruit.user.twitter && { twitter: recruit.user.twitter }),
+        ...(recruit.user.instagram && {
+          instagram: recruit.user.instagram,
+        }),
+        userGameTypes: recruit.user.userGameTypes.map((ugt) => ({
+          gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
+          likeOrDislike: ugt.likeOrDislike,
+        })),
+      },
+    }),
 
     ...(recruit.manualEventName && {
       manualEventName: recruit.manualEventName,
@@ -276,11 +274,11 @@ const patchHandler = async (
     .object({
       isSelectType: z.boolean(),
       recruit: z.object({
-        manualEventName: z.string().optional(),
-        manualLocation: z.string().optional(),
+        manualEventName: z.string().max(30).optional(),
+        manualLocation: z.string().max(30).optional(),
         eventLocationId: z.string().optional(),
         numberOfPeople: z.number().optional(),
-        description: z.string().optional(),
+        description: z.string().min(10).max(200),
       }),
       recruitTagIds: z.string().array(),
       possibleDates: z

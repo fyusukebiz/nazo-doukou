@@ -75,7 +75,6 @@ export const Recruits = () => {
         <Box
           sx={{
             display: "flex",
-            marginBottom: "15px",
             textAlign: "center",
             fontSize: "18px",
           }}
@@ -84,7 +83,7 @@ export const Recruits = () => {
           <Box
             sx={{
               width: "50%",
-              height: "40px",
+              height: "35px",
               color: teal[500],
               backgroundColor: teal[100],
               borderRadius: "5px 0px 0px 5px",
@@ -98,13 +97,13 @@ export const Recruits = () => {
           <Box
             sx={{
               width: "50%",
-              backgroundColor: grey[100],
+              height: "35px",
               color: grey[500],
+              backgroundColor: grey[100],
               borderRadius: "0px 5px 5px 0px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "40px",
               cursor: "pointer",
             }}
             onClick={() => router.push("/event_locations")}
@@ -119,7 +118,7 @@ export const Recruits = () => {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            marginY: "20px",
+            marginY: "15px",
           }}
         >
           <OutlinedInput
@@ -127,6 +126,12 @@ export const Recruits = () => {
             sx={{ maxWidth: "500px", width: "400px" }}
             value={freeWord}
             onChange={(e) => setFreeWord(e.target.value)}
+            inputProps={{
+              style: {
+                height: "35px",
+                padding: "0 5px",
+              },
+            }}
             startAdornment={
               <InputAdornment position="start">
                 <FaSearch size={20} />
@@ -134,7 +139,7 @@ export const Recruits = () => {
             }
           />
           <ButtonGroup
-            sx={{ height: "40px", border: `1px solid ${grey[300]}` }}
+            sx={{ height: "35px", border: `1px solid ${grey[300]}` }}
           >
             <Button
               size="medium"
@@ -161,10 +166,6 @@ export const Recruits = () => {
         {recruitsStatus === "pending" && <LoadingSpinner />}
         {recruitsStatus === "success" && (
           <>
-            <Box sx={{ marginBottom: "10px" }}>
-              全{recruitsData.totalCount}個中{recruitsData.currentPage}
-              ページ目
-            </Box>
             <Grid container spacing={2}>
               {recruitsData.recruits.map((recruit, index) => (
                 <Grid key={index} item xs={12} sm={6} md={4}>
@@ -182,24 +183,29 @@ export const Recruits = () => {
                 </Grid>
               ))}
             </Grid>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                my: 2,
-                paddingBottom: "80px",
-              }}
-            >
-              <Pagination
-                count={recruitsData.totalPages}
-                page={page}
-                boundaryCount={0}
-                siblingCount={2}
-                color="primary"
-                shape="rounded"
-                size="large"
-                onChange={handleClickPage}
-              />
+            <Box sx={{ paddingBottom: "80px" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                }}
+              >
+                <Pagination
+                  count={recruitsData.totalPages}
+                  page={page}
+                  boundaryCount={0}
+                  siblingCount={2}
+                  color="primary"
+                  shape="rounded"
+                  size="large"
+                  onChange={handleClickPage}
+                />
+              </Box>
+              <Box sx={{ textAlign: "right", marginTop: "10px" }}>
+                全{recruitsData.totalCount}個中{recruitsData.currentPage}
+                ページ目
+              </Box>
             </Box>
           </>
         )}

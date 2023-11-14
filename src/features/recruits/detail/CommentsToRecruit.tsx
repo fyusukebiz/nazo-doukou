@@ -8,6 +8,7 @@ import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvi
 import { GetRecruitResponseSuccessBody } from "@/pages/api/recruits/[id]";
 import { RefetchOptions, QueryObserverResult } from "@tanstack/react-query";
 import Link from "next/link";
+import { grey } from "@mui/material/colors";
 
 type Props = {
   recruit: RecruitDetail;
@@ -44,6 +45,9 @@ export const CommentsToRecruit = (props: Props) => {
           </Box>
         </Link>
       )}
+      <Box sx={{ marginBottom: "15px", color: grey[500], fontSize: "14px" }}>
+        ※個人情報を含むやり取りはSNSのダイレクトメッセージで行ってください。
+      </Box>
       {recruit.commentsToRecruit.length > 0 && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {recruit.commentsToRecruit.map((comment) => (

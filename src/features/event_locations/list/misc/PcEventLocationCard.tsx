@@ -10,7 +10,7 @@ type Props = {
   saveScrollPosition?: () => void;
 };
 
-export const EventLocationCard = (props: Props) => {
+export const PcEventLocationCard = (props: Props) => {
   const { eventLocation, saveScrollPosition } = props;
   const router = useRouter();
 

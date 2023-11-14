@@ -7,8 +7,9 @@ import {
   Switch,
   IconButton,
   Checkbox,
+  Chip,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
   NewRecruitFormSchema,
@@ -23,13 +24,11 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { SingleSelectWithLabelRHF } from "@/components/forms/hook_form/SingleSelectWithLabelRHF";
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
-import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
 import { usePostRecruit } from "@/react_queries/recruits/usePostRecruit";
 import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTagsQuery";
 import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
 import { grey } from "@mui/material/colors";
-import { format } from "date-fns";
 import { makeTwitterText } from "./makeTwitterText";
 
 export const NewRecruitForm = () => {
@@ -42,6 +41,8 @@ export const NewRecruitForm = () => {
   } = useNewRecruitFormContext();
 
   const isSelectType = useWatch({ control, name: "isSelectType" });
+  const myRecruitTags = useWatch({ control, name: "recruitTags" });
+
   const [willPostToTwitter, setWillPostToTwitter] = useState(true);
 
   const { postRecruit } = usePostRecruit();
@@ -70,17 +71,7 @@ export const NewRecruitForm = () => {
     }));
   }, [eventLocationOptsData, eventLocationOptsStatus]);
 
-  const recruitTags = useMemo(() => {
-    if (recruitTagsStatus !== "success") return [];
-    return recruitTagsData.recruitTags.map((tag) => ({
-      value: tag.id,
-      label: tag.name,
-    }));
-  }, [recruitTagsData, recruitTagsStatus]);
-
   const onSubmit: SubmitHandler<NewRecruitFormSchema> = async (rawData) => {
-    console.log("data", rawData);
-
     // 送信用にデータを加工
     const dataToPost = convertNewRecruitDataForPost({
       data: rawData,
@@ -107,6 +98,22 @@ export const NewRecruitForm = () => {
       }
     );
   };
+
+  const handleClickRecruitTag = useCallback(
+    ({ recruitTag }: { recruitTag: { id: string; name: string } }) => {
+      const index = myRecruitTags.findIndex((tag) => tag.id === recruitTag.id);
+      if (index > -1) {
+        // 削除
+        const newMyRecruitTags = [...myRecruitTags];
+        newMyRecruitTags.splice(index, 1);
+        setValue("recruitTags", newMyRecruitTags);
+      } else {
+        // 追加
+        setValue("recruitTags", [...myRecruitTags, recruitTag]);
+      }
+    },
+    [myRecruitTags, setValue]
+  );
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -237,16 +244,30 @@ export const NewRecruitForm = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <MultipleSelectWithLabelRHF<
-            NewRecruitFormSchema,
-            { label: string; value: string }
-          >
-            name="recruitTags"
-            control={control}
-            label="募集タグ"
-            placeholder="募集タグ"
-            options={recruitTags}
-          />
+          <Box sx={{ marginBottom: "8px" }}>
+            <Box component="label" sx={{ fontWeight: "bold" }}>
+              募集タグ
+            </Box>
+          </Box>
+          <Box sx={{ display: "flex", gap: "10px" }}>
+            {recruitTagsData?.recruitTags.map((rt) => (
+              <Chip
+                key={rt.id}
+                label={rt.name}
+                color="primary"
+                variant={
+                  myRecruitTags.find((myRt) => myRt.id === rt.id)
+                    ? "filled"
+                    : "outlined"
+                }
+                onClick={() =>
+                  handleClickRecruitTag({
+                    recruitTag: rt,
+                  })
+                }
+              />
+            ))}
+          </Box>
         </Grid>
 
         <Grid item xs={12}>

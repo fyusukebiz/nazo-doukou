@@ -71,6 +71,7 @@ const getHandler = async (
               el.event.coverImageFileKey
             ),
           }),
+          ...(el.event.timeRequired && { timeRequired: el.event.timeRequired }),
         },
         location: {
           id: el.location.id,

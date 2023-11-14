@@ -292,11 +292,11 @@ const postHandler = async (
     .object({
       isSelectType: z.boolean(),
       recruit: z.object({
-        manualEventName: z.string().optional(),
-        manualLocation: z.string().optional(),
+        manualEventName: z.string().max(30).optional(),
+        manualLocation: z.string().max(30).optional(),
         eventLocationId: z.string().optional(),
         numberOfPeople: z.number().optional(),
-        description: z.string().optional(),
+        description: z.string().min(10).max(200),
       }),
       recruitTagIds: z.string().array(),
       possibleDates: z

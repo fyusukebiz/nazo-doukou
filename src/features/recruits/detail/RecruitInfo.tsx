@@ -1,14 +1,14 @@
-import { UserAvatar } from "@/components/avatars/UserAvatar";
 import { UserAvatarWithName } from "@/components/avatars/UserAvatarWithName";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { RecruitDetail } from "@/types/recruit";
-import { Box, Button, Chip } from "@mui/material";
-import { grey, teal } from "@mui/material/colors";
+import { Box, Chip, IconButton } from "@mui/material";
+import { blue, grey, teal } from "@mui/material/colors";
 import { format } from "date-fns";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 import { Yusei_Magic } from "next/font/google";
+import { PiCaretDownBold, PiCaretUpBold } from "react-icons/pi";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -16,6 +16,19 @@ const yuseiMagic = Yusei_Magic({
   display: "swap",
   adjustFontFallback: false,
 });
+
+const toCircled = (num: number) => {
+  if (num <= 20) {
+    const base = "①".charCodeAt(0);
+    return String.fromCharCode(base + num - 1);
+  }
+  if (num <= 35) {
+    const base = "㉑".charCodeAt(0);
+    return String.fromCharCode(base + num - 21);
+  }
+  const base = "㊱".charCodeAt(0);
+  return String.fromCharCode(base + num - 36);
+};
 
 type Props = {
   recruit: RecruitDetail;
@@ -63,23 +76,29 @@ export const RecruitInfo = (props: Props) => {
         gap: "15px",
       }}
     >
-      {recruit.eventLocation?.id && (
-        <RecruitItem
-          item="イベント"
-          content={
-            <Link href={`/event_locations/${recruit.eventLocation.id}`}>
-              リンク
-            </Link>
-          }
-        />
-      )}
-
       {location && <RecruitItem item="場所" content={location} />}
 
       <RecruitItem
         item="候補日"
         content={recruit.possibleDates
-          .map((date) => format(new Date(date.date), "MM/d"))
+          .sort((a, b) => {
+            // 数字が小さい方が、配列の頭（左側）の方に配置される, nullは最後
+            if (typeof a.priority === "undefined") {
+              return 1;
+            }
+            if (typeof b.priority === "undefined") {
+              return -1;
+            }
+            if (a.priority === b.priority) {
+              return 0;
+            }
+            return a.priority < b.priority ? -1 : 1;
+          })
+          .map((date, index) =>
+            date.priority
+              ? toCircled(index + 1) + format(new Date(date.date), "MM/d")
+              : format(new Date(date.date), "MM/d")
+          )
           .join(", ")}
       />
 
@@ -98,14 +117,17 @@ export const RecruitInfo = (props: Props) => {
               >
                 <UserAvatarWithName user={recruit.user} size={30} />
                 {haveInfo && (
-                  <Button
-                    variant="text"
+                  <IconButton
                     onClick={onToggleUserDetail}
-                    sx={{ marginLeft: "auto", height: "30px" }}
+                    sx={{
+                      marginLeft: "10px",
+                      height: "30px",
+                      color: blue[500],
+                    }}
                     size="small"
                   >
-                    詳細
-                  </Button>
+                    {isUserDetailOpen ? <PiCaretUpBold /> : <PiCaretDownBold />}
+                  </IconButton>
                 )}
               </Box>
             }
@@ -184,34 +206,6 @@ export const RecruitInfo = (props: Props) => {
                     }
                   />
                 )}
-              {recruit.user.userGameTypes &&
-                recruit.user.userGameTypes.length > 0 && (
-                  <UserItem
-                    item="嫌いなゲーム"
-                    content={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: "10px",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        {recruit.user.userGameTypes
-                          .filter((ugt) => ugt.likeOrDislike === "DISLIKE")
-                          .map((ugt, index) => (
-                            <Chip
-                              key={index}
-                              label={ugt.gameType.name}
-                              color="secondary"
-                              // variant="filled"
-                              size="small"
-                              sx={{ height: "30px" }}
-                            />
-                          ))}
-                      </Box>
-                    }
-                  />
-                )}
               {recruit.user.description && (
                 <UserItem
                   item="自由記入欄"
@@ -223,41 +217,30 @@ export const RecruitInfo = (props: Props) => {
         </>
       )}
 
-      {recruit.user?.twitter && (
-        <RecruitItem item="Xアカウント" content={recruit.user.twitter} />
-      )}
-
       {recruit.numberOfPeople && (
         <RecruitItem item="募集人数" content={recruit.numberOfPeople + "人"} />
       )}
 
       {recruit.recruitTags.length > 0 && (
-        <RecruitItem
-          item="タグ"
-          content={
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "5px",
-              }}
-            >
-              {recruit.recruitTags.map((tag, index) => (
-                <Chip
-                  key={index}
-                  label={tag.name}
-                  size="small"
-                  sx={{ height: "30px" }}
-                />
-              ))}
-            </Box>
-          }
-        />
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "5px",
+          }}
+        >
+          {recruit.recruitTags.map((tag, index) => (
+            <Chip
+              key={index}
+              label={tag.name}
+              size="small"
+              sx={{ height: "30px" }}
+            />
+          ))}
+        </Box>
       )}
 
-      {recruit.description && (
-        <RecruitItem item="詳細" content={recruit.description} />
-      )}
+      {recruit.description && <Box>{recruit.description}</Box>}
     </Box>
   );
 };

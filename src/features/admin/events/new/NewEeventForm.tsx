@@ -80,8 +80,6 @@ export const NewEventForm = () => {
   }, [organizationsData, organizationsStatus]);
 
   const onSubmit: SubmitHandler<NewEventFormSchema> = async (rawData) => {
-    console.log("data", rawData);
-
     // 画像データがあれば事前にアップロード
     let coverImageFileKey: string | undefined;
     if (rawData.coverImageFile) {

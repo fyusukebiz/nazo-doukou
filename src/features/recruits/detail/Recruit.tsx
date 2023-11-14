@@ -2,12 +2,13 @@ import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useRecruitQuery } from "@/react_queries/recruits/useRecruitQuery";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Container, Tab } from "@mui/material";
+import { Box, Container, Divider, Tab } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { RecruitInfo } from "./RecruitInfo";
 import { CommentsToRecruit } from "./CommentsToRecruit";
+import Link from "next/link";
 
 type Tab = "recruitInfo" | "commentsToRecruit";
 
@@ -102,41 +103,31 @@ export const Recruit = () => {
               : recruitData.recruit.eventLocation!.event.name}
           </Box>
 
-          <TabContext value={tab}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList onChange={handleChangeTab} sx={{ minHeight: "30px" }}>
-                <Tab
-                  label="内容"
-                  value="recruitInfo"
-                  sx={{ width: "50%", minHeight: "30px" }}
-                />
-                <Tab
-                  label="コメント"
-                  value="commentsToRecruit"
-                  sx={{ width: "50%", minHeight: "30px" }}
-                />
-              </TabList>
+          {recruitData.recruit.eventLocation?.id && (
+            <Box sx={{ display: "flex", marginY: "7px" }}>
+              <Link
+                href={`/event_locations/${recruitData.recruit.eventLocation.id}`}
+                style={{ marginLeft: "auto" }}
+              >
+                詳しくはこちら
+              </Link>
             </Box>
-            <TabPanel
-              value="recruitInfo"
-              sx={{ height: "100%", padding: "15px 0px 0px", minHeight: 0 }}
-            >
-              {recruitData.recruit && (
-                <RecruitInfo recruit={recruitData.recruit} />
+          )}
+
+          {recruitData.recruit && (
+            <>
+              <RecruitInfo recruit={recruitData.recruit} />
+              {recruitData.recruit.user && (
+                <>
+                  <Divider sx={{ marginY: "20px" }} />
+                  <CommentsToRecruit
+                    recruit={recruitData.recruit}
+                    refetchRecruit={refetchRecruit}
+                  />
+                </>
               )}
-            </TabPanel>
-            <TabPanel
-              value="commentsToRecruit"
-              sx={{ height: "100%", padding: "15px 0px 0px", minHeight: 0 }}
-            >
-              {recruitData.recruit && (
-                <CommentsToRecruit
-                  recruit={recruitData.recruit}
-                  refetchRecruit={refetchRecruit}
-                />
-              )}
-            </TabPanel>
-          </TabContext>
+            </>
+          )}
         </Container>
       )}
     </Box>

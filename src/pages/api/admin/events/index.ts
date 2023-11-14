@@ -141,9 +141,9 @@ const postHandler = async (
 
   const schema = z.object({
     event: z.object({
-      name: z.string().min(1).max(255),
+      name: z.string().min(1).max(30),
       organizationId: z.string().optional(),
-      description: z.string().optional(),
+      description: z.string().max(1000).optional(),
       sourceUrl: z.string().optional(),
       coverImageFileKey: z.string().optional(),
       numberOfPeopleInTeam: z.string().optional(),

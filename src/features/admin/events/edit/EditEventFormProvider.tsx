@@ -5,9 +5,9 @@ import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string().min(1).max(255),
+  name: z.string().min(1).max(30),
   twitterTag: z.string(),
-  description: z.string(),
+  description: z.string().max(1000),
   sourceUrl: z.string(),
   numberOfPeopleInTeam: z.string(), // 自由記述
   timeRequired: z.string(),

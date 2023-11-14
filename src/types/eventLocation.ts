@@ -6,6 +6,7 @@ export type EventLocationSimple = {
     id: string;
     name: string;
     coverImageFileUrl?: string;
+    timeRequired?: string;
   };
   location: {
     id: string;

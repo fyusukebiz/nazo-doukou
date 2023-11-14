@@ -1,6 +1,14 @@
 import { LoadingButton } from "@mui/lab";
-import { Grid, Box, Button, Stack, Switch, IconButton } from "@mui/material";
-import { useMemo } from "react";
+import {
+  Grid,
+  Box,
+  Button,
+  Stack,
+  Switch,
+  IconButton,
+  Chip,
+} from "@mui/material";
+import { useCallback, useMemo } from "react";
 import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
   EditMyRecruitFormSchema,
@@ -15,7 +23,6 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { SingleSelectWithLabelRHF } from "@/components/forms/hook_form/SingleSelectWithLabelRHF";
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
-import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
 import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTagsQuery";
 import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
@@ -38,6 +45,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
   } = useEditMyRecruitFormContext();
 
   const isSelectType = useWatch({ control, name: "isSelectType" });
+  const myRecruitTags = useWatch({ control, name: "recruitTags" });
 
   const { patchRecruit } = usePatchRecruit();
   console.log(errors);
@@ -67,17 +75,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
     }));
   }, [eventLocationOptsData, eventLocationOptsStatus]);
 
-  const recruitTags = useMemo(() => {
-    if (recruitTagsStatus !== "success") return [];
-    return recruitTagsData.recruitTags.map((tag) => ({
-      value: tag.id,
-      label: tag.name,
-    }));
-  }, [recruitTagsData, recruitTagsStatus]);
-
   const onSubmit: SubmitHandler<EditMyRecruitFormSchema> = async (rawData) => {
-    console.log("data", rawData);
-
     // // 送信用にデータを加工
     const dataToPatch = convertMyRecruitDataForPatch({
       data: rawData,
@@ -92,6 +90,22 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
       }
     );
   };
+
+  const handleClickRecruitTag = useCallback(
+    ({ recruitTag }: { recruitTag: { id: string; name: string } }) => {
+      const index = myRecruitTags.findIndex((tag) => tag.id === recruitTag.id);
+      if (index > -1) {
+        // 削除
+        const newMyRecruitTags = [...myRecruitTags];
+        newMyRecruitTags.splice(index, 1);
+        setValue("recruitTags", newMyRecruitTags);
+      } else {
+        // 追加
+        setValue("recruitTags", [...myRecruitTags, recruitTag]);
+      }
+    },
+    [myRecruitTags, setValue]
+  );
 
   const handleClickDelete = () => {
     const result = window.confirm("募集を削除しますか？");
@@ -236,16 +250,30 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
         </Grid>
 
         <Grid item xs={12}>
-          <MultipleSelectWithLabelRHF<
-            EditMyRecruitFormSchema,
-            { label: string; value: string }
-          >
-            name="recruitTags"
-            control={control}
-            label="募集タグ"
-            placeholder="募集タグ"
-            options={recruitTags}
-          />
+          <Box sx={{ marginBottom: "8px" }}>
+            <Box component="label" sx={{ fontWeight: "bold" }}>
+              募集タグ
+            </Box>
+          </Box>
+          <Box sx={{ display: "flex", gap: "10px" }}>
+            {recruitTagsData?.recruitTags.map((rt) => (
+              <Chip
+                key={rt.id}
+                label={rt.name}
+                color="primary"
+                variant={
+                  myRecruitTags.find((myRt) => myRt.id === rt.id)
+                    ? "filled"
+                    : "outlined"
+                }
+                onClick={() =>
+                  handleClickRecruitTag({
+                    recruitTag: rt,
+                  })
+                }
+              />
+            ))}
+          </Box>
         </Grid>
 
         <Grid item xs={12}>

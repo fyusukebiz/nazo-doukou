@@ -202,33 +202,6 @@ export const EditMyUserForm = ({ myUser }: Props) => {
         </Grid>
 
         <Grid item xs={12}>
-          <Box sx={{ marginBottom: "8px", fontWeight: "bold" }}>
-            <Box component="label">嫌いなゲームタイプ</Box>
-          </Box>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-            {gameTypesData?.gameTypes.map((gt) => (
-              <Chip
-                key={gt.id}
-                label={gt.name}
-                color="primary"
-                variant={
-                  userGameTypes.find((ugt) => ugt.gameTypeId === gt.id)
-                    ?.likeOrDislike === "DISLIKE"
-                    ? "filled"
-                    : "outlined"
-                }
-                onClick={() =>
-                  handleClickGameType({
-                    gameTypeId: gt.id,
-                    likeOrDislike: "DISLIKE",
-                  })
-                }
-              />
-            ))}
-          </Box>
-        </Grid>
-
-        <Grid item xs={12}>
           <InputWithLabelRHF<EditMyUserFormSchema>
             name="description"
             control={control}

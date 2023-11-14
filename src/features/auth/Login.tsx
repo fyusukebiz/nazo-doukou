@@ -66,9 +66,10 @@ export const Login = () => {
         bgcolor: grey[50],
         height: "100%",
         px: "10px",
+        backgroundImage: "url(/auth_background.png)",
       }}
     >
-      <CustomCard sx={{ maxWidth: "350px" }}>
+      <CustomCard sx={{ maxWidth: "350px", opacity: 0.8 }}>
         <Box
           component="form"
           sx={{ display: "flex", flexDirection: "column", gap: "20px" }}
@@ -80,10 +81,10 @@ export const Login = () => {
           />
           <Box
             sx={{
-              fontSize: "32px",
+              fontSize: "28px",
               textAlign: "center",
               fontWeight: "bold",
-              paddingY: "10px",
+              paddingTop: "30px",
             }}
           >
             ログイン

@@ -83,8 +83,6 @@ export const EditEventForm = ({ eventId }: Props) => {
   }, [organizationsData, organizationsStatus]);
 
   const onSubmit: SubmitHandler<EditEventFormSchema> = async (rawData) => {
-    console.log("data", rawData);
-
     // 画像データがあれば事前にアップロード
     let coverImageFileKey: string | undefined;
     if (rawData.coverImageFile) {

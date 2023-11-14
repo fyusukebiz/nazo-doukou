@@ -80,14 +80,14 @@ export const EventLocation = () => {
               {eleData.eventLocation.event.name}
             </Box>
 
-            {eleData.eventLocation.event.sourceUrl && (
-              <Row
-                item="公式ページ"
-                content={
-                  <a href={eleData.eventLocation.event.sourceUrl}>リンク</a>
-                }
-              />
-            )}
+            <Box sx={{ display: "flex" }}>
+              <a
+                href={eleData.eventLocation.event.sourceUrl}
+                style={{ marginLeft: "auto" }}
+              >
+                公式
+              </a>
+            </Box>
 
             {eleData.eventLocation.event.gameTypes.length > 0 && (
               <Row
@@ -103,7 +103,10 @@ export const EventLocation = () => {
                 item="Xタグ"
                 content={
                   <a
-                    href={`https://twitter.com/hashtag/${eleData.eventLocation.event.twitterTag}`}
+                    href={
+                      "https://twitter.com/hashtag/" +
+                      encodeURIComponent(eleData.eventLocation.event.twitterTag)
+                    }
                     target="_blank"
                   >
                     {eleData.eventLocation.event.twitterTag}

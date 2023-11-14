@@ -6,6 +6,7 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { EventCard } from "./misc/EventCard";
 import { useRouterHistoryContext } from "@/features/common/RouterHistoryProvider";
 import Link from "next/link";
+import { blue, grey } from "@mui/material/colors";
 
 export const Events = () => {
   const router = useRouter();
@@ -50,6 +51,46 @@ export const Events = () => {
         {eventsStatus === "pending" && <LoadingSpinner />}
         {eventsStatus === "success" && (
           <>
+            <Box
+              sx={{
+                display: "flex",
+                marginBottom: "15px",
+                textAlign: "center",
+                fontSize: "18px",
+              }}
+            >
+              <Box
+                sx={{
+                  width: "50%",
+                  backgroundColor: grey[100],
+                  color: grey[500],
+                  borderRadius: "5px 0px 0px 5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "40px",
+                  cursor: "pointer",
+                }}
+                onClick={() => router.push("/admin/recruits")}
+              >
+                同行者募集(by管理)
+              </Box>
+              <Box
+                sx={{
+                  width: "50%",
+                  color: blue[500],
+                  backgroundColor: blue[100],
+                  borderRadius: "0px 5px 5px 0px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "40px",
+                }}
+              >
+                イベント
+              </Box>
+            </Box>
+
             <Box sx={{ display: "flex" }}>
               <Link
                 href="/admin/events/new"

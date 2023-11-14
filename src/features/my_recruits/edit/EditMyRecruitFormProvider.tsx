@@ -7,8 +7,8 @@ import { z } from "zod";
 const schema = z
   .object({
     isSelectType: z.boolean(),
-    manualEventName: z.string(),
-    manualLocation: z.string(),
+    manualEventName: z.string().max(30),
+    manualLocation: z.string().max(30),
     eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
@@ -16,7 +16,7 @@ const schema = z
     numberOfPeople: z.string().refine((v) => {
       return !v || !isNaN(Number(v));
     }, "数値を入力してください"),
-    description: z.string().min(10).max(1000),
+    description: z.string().min(10).max(200),
     possibleDates: z
       .object({
         date: z
@@ -36,7 +36,7 @@ const schema = z
       })
       .array()
       .min(1),
-    recruitTags: z.object({ label: z.string(), value: z.string() }).array(),
+    recruitTags: z.object({ id: z.string(), name: z.string() }).array(),
   })
   .superRefine((val, ctx) => {
     if (val.isSelectType && !val.eventLocation.value) {
@@ -100,8 +100,8 @@ export const EditMyRecruitFormProvider = ({ children, recruit }: Props) => {
         priority: date.priority?.toString() || "",
       })),
       recruitTags: recruit.recruitTags.map((tag) => ({
-        value: tag.id,
-        label: tag.name,
+        id: tag.id,
+        name: tag.name,
       })),
     },
   });

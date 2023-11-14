@@ -25,11 +25,7 @@ export const MobileTopBar = () => {
         paddingX: "20px",
       }}
     >
-      <Link
-        href={/^\/admin/.test(pathname) ? "/admin/events" : "/recruits"}
-        style={{ textDecoration: "none" }}
-        passHref
-      >
+      <Link href="/recruits" style={{ textDecoration: "none" }} passHref>
         <Button
           component="h1"
           sx={{ fontSize: "24px", color: "black", fontWeight: "bold" }}
@@ -71,7 +67,7 @@ export const MobileTopBar = () => {
               <MenuItem
                 sx={{ fontSize: "20px" }}
                 onClick={() => {
-                  router.push("/admin/events");
+                  router.push("/admin/recruits");
                   menuRef.current?.closeMenu();
                 }}
               >

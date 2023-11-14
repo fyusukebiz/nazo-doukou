@@ -29,7 +29,7 @@ export type RecruitSimple = {
 
 export type RecruitDetail = {
   id: string;
-  user: UserDetail;
+  user?: UserDetail;
   manualEventName?: string;
   manualLocation?: string;
   eventLocation?: {
