@@ -60,8 +60,6 @@ async function main() {
   });
 
   const gameTypes = [
-    // "小謎",
-    // "大謎",
     "ルーム型",
     "ホール型",
     "周遊型",
@@ -72,9 +70,6 @@ async function main() {
     "マダミス",
     "ボドゲ",
     "ポーカー",
-    // "スタジアム",
-    // "推理系",
-    // "館内周遊型",
   ];
   for (const gameType of gameTypes) {
     await prisma.gameType.create({ data: { name: gameType } });

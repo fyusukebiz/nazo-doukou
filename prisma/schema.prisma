@@ -79,7 +79,6 @@ model StrongArea {
 
 model UserStrongArea {
   id String    @id @default(cuid())
-  likeOrDislike LikeOrDislike
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
   strongArea StrongArea @relation(fields: [strongAreaId], references: [id], onDelete: Cascade)

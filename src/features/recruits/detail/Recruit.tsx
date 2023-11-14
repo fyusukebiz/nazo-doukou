@@ -1,11 +1,10 @@
 import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useRecruitQuery } from "@/react_queries/recruits/useRecruitQuery";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Container, Divider, Tab } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useRouter } from "next/router";
-import { SyntheticEvent, useCallback, useEffect, useState } from "react";
+import { SyntheticEvent, useCallback, useState } from "react";
 import { RecruitInfo } from "./RecruitInfo";
 import { CommentsToRecruit } from "./CommentsToRecruit";
 import Link from "next/link";

@@ -23,7 +23,9 @@ export const Login = () => {
   const { postConfirmMyUser } = usePostConfirmMyUser();
 
   useEffect(() => {
-    if (!!currentFbUser) router.push("/recruits");
+    if (!!currentFbUser && currentFbUser.emailVerified) {
+      router.push("/recruits");
+    }
   }, [currentFbUser, router]);
 
   const handleClickLogin = async () => {
@@ -49,9 +51,8 @@ export const Login = () => {
 
       router.push("/recruits");
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error instanceof FirebaseError) {
-        console.log(error.code);
         toast.error(firebaseErrors[error.code]);
       } else {
         toast.error("ログインに失敗しました");

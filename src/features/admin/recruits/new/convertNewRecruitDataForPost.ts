@@ -9,10 +9,10 @@ export const convertNewRecruitDataForPost = ({
     isSelectType: data.isSelectType,
     recruit: {
       ...(data.manualEventName && {
-        manualEventName: data.manualEventName,
+        manualEventName: data.manualEventName.trim(),
       }),
       ...(data.manualLocation && {
-        manualLocation: data.manualLocation,
+        manualLocation: data.manualLocation.trim(),
       }),
       ...(data.eventLocation.value && {
         eventLocationId: data.eventLocation.value,
@@ -21,7 +21,7 @@ export const convertNewRecruitDataForPost = ({
         numberOfPeople: Number(data.numberOfPeople) as number,
       }),
       ...(data.description && {
-        description: data.description,
+        description: data.description.trim(),
       }),
     },
     recruitTagIds: data.recruitTags.map((tag) => tag.id),

@@ -31,6 +31,7 @@ const schema = z.object({
       likeOrDislike: z.nativeEnum(LikeOrDislike),
     })
     .array(),
+  strongAreas: z.object({ id: z.string(), name: z.string() }).array(), // TODO: よくない
 });
 
 export type EditMyUserFormSchema = z.infer<typeof schema>;
@@ -62,6 +63,11 @@ export const EditMyUserFormProvider = ({ children, myUser }: Props) => {
         myUser.userGameTypes?.map((ugt) => ({
           gameTypeId: ugt.gameType.id,
           likeOrDislike: ugt.likeOrDislike,
+        })) ?? [],
+      strongAreas:
+        myUser.userStrongAreas?.map((usa) => ({
+          id: usa.strongArea.id,
+          name: usa.strongArea.name,
         })) ?? [],
     },
   });

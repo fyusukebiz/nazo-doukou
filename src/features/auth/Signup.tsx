@@ -27,7 +27,9 @@ export const Signup = () => {
   const { postMyUser } = usePostMyUser();
 
   useEffect(() => {
-    if (!!currentFbUser) router.push("/recruits");
+    if (!!currentFbUser && currentFbUser.emailVerified) {
+      router.push("/recruits");
+    }
   }, [currentFbUser, router]);
 
   // ユーザーが登録ボタンを押したときにdoRegister関数が実行される
@@ -60,9 +62,9 @@ export const Signup = () => {
 
       router.push("/auth/verify");
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error instanceof FirebaseError) {
-        console.log(error.code);
+        // console.log(error.code);
         toast.error(firebaseErrors[error.code]);
       } else {
         toast.error("登録に失敗しました");

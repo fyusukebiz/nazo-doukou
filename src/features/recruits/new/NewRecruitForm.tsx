@@ -47,7 +47,7 @@ export const NewRecruitForm = () => {
   const [willPostToTwitter, setWillPostToTwitter] = useState(true);
 
   const { postRecruit } = usePostRecruit();
-  console.log(errors);
+  // console.log(errors);
 
   const { data: eventLocationOptsData, status: eventLocationOptsStatus } =
     useEventLocationOptionsQuery();

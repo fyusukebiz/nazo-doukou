@@ -206,6 +206,34 @@ export const RecruitInfo = (props: Props) => {
                     }
                   />
                 )}
+
+              {recruit.user.userStrongAreas &&
+                recruit.user.userStrongAreas.length > 0 && (
+                  <UserItem
+                    item="得意なこと"
+                    content={
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: "10px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {recruit.user.userStrongAreas.map((usa, index) => (
+                          <Chip
+                            key={index}
+                            label={usa.strongArea.name}
+                            color="teal"
+                            variant="filled"
+                            size="small"
+                            sx={{ height: "30px" }}
+                          />
+                        ))}
+                      </Box>
+                    }
+                  />
+                )}
+
               {recruit.user.description && (
                 <UserItem
                   item="自由記入欄"

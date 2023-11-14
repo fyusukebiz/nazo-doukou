@@ -1,7 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { z } from "zod";
-import { LikeOrDislike, Sex, UserGameType } from "@prisma/client";
+import {
+  LikeOrDislike,
+  Sex,
+  UserGameType,
+  UserStrongArea,
+} from "@prisma/client";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
 import { User as UserInDb } from "@prisma/client";
@@ -48,7 +53,7 @@ export default async function handler(
       case "PATCH": {
         const user = await prisma.user.findUnique({
           where: { fbUid: fbUid },
-          include: { userGameTypes: true },
+          include: { userGameTypes: true, userStrongAreas: true },
         });
         const userId = getCookie("userId", { req, res });
         if (!user || user.id !== userId) {
@@ -81,7 +86,10 @@ const getHandler = async (
 ) => {
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: userId },
-    include: { userGameTypes: { include: { gameType: true } } },
+    include: {
+      userGameTypes: { include: { gameType: true } },
+      userStrongAreas: { include: { strongArea: true } },
+    },
   });
 
   res.status(200).json({
@@ -97,12 +105,15 @@ const getHandler = async (
       ...(user.description && { description: user.description }),
       ...(user.twitter && { twitter: user.twitter }),
       ...(user.instagram && { instagram: user.instagram }),
-      ...(user.userGameTypes && {
-        userGameTypes: user.userGameTypes.map((ugt) => ({
-          gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
-          likeOrDislike: ugt.likeOrDislike,
-        })),
-      }),
+      userGameTypes: user.userGameTypes.map((ugt) => ({
+        id: ugt.id,
+        gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
+        likeOrDislike: ugt.likeOrDislike,
+      })),
+      userStrongAreas: user.userStrongAreas.map((usa) => ({
+        id: usa.id,
+        strongArea: { id: usa.strongArea.id, name: usa.strongArea.name },
+      })),
     },
   });
 };
@@ -162,6 +173,7 @@ export type PatchMyUserRequestBody = {
     gameTypeId: string;
     likeOrDislike: "LIKE" | "DISLIKE";
   }[];
+  strongAreaIds: string[];
 };
 
 export type PatchMyUserResponseSuccessBody = "";
@@ -169,7 +181,10 @@ export type PatchMyUserResponseSuccessBody = "";
 const patchHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<PatchMyUserResponseSuccessBody | ResponseErrorBody>,
-  user: UserInDb & { userGameTypes: UserGameType[] }
+  user: UserInDb & {
+    userGameTypes: UserGameType[];
+    userStrongAreas: UserStrongArea[];
+  }
 ) => {
   const rawParams: PatchMyUserRequestBody = req.body;
 
@@ -191,6 +206,7 @@ const patchHandler = async (
         likeOrDislike: z.nativeEnum(LikeOrDislike),
       })
       .array(),
+    strongAreaIds: z.string().array(),
   });
 
   const validation = schema.safeParse(rawParams);
@@ -234,6 +250,22 @@ const patchHandler = async (
         userId: user.id,
         gameTypeId: userGameType.gameTypeId,
         likeOrDislike: userGameType.likeOrDislike,
+      },
+    });
+  }
+
+  // TODO: 一旦全て消す、後々更新に切り替えること
+  for (const usa of user.userStrongAreas) {
+    await prisma.userStrongArea.delete({
+      where: { id: usa.id },
+    });
+  }
+  const strongAreaIdsData = validation.data.strongAreaIds;
+  for (const strongAreaId of strongAreaIdsData) {
+    await prisma.userStrongArea.create({
+      data: {
+        userId: user.id,
+        strongAreaId: strongAreaId,
       },
     });
   }

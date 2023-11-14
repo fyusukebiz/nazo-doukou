@@ -11,10 +11,18 @@ export type UserDetail = {
   twitter?: string;
   instagram?: string;
   userGameTypes?: {
+    id: string;
     gameType: {
       id: string;
       name: string;
     };
     likeOrDislike: LikeOrDislike;
+  }[];
+  userStrongAreas?: {
+    id: string;
+    strongArea: {
+      id: string;
+      name: string;
+    };
   }[];
 };

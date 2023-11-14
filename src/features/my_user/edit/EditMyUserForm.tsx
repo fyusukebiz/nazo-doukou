@@ -21,6 +21,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { convertEditMyUserDataForPatch } from "./convertEditMyUserDataForPatch";
 import { MonthYearPickerWithLabelRHF } from "@/components/forms/hook_form/MonthYearPickerRHFWithLabel";
+import { useStrongAreasQuery } from "@/react_queries/strong_areas/useStrongAreasQuery";
 
 type Props = {
   myUser: UserDetail;
@@ -34,11 +35,15 @@ export const EditMyUserForm = ({ myUser }: Props) => {
     formState: { errors },
   } = useEditMyUserFormContext();
   const userGameTypes = useWatch({ control, name: "userGameTypes" });
+  const myStrongAreas = useWatch({ control, name: "strongAreas" });
+
   const { patchMyUser } = usePatchMyUser();
   const router = useRouter();
   const { data: gameTypesData, status: gameTypesStatus } = useGameTypesQuery();
+  const { data: strongAreasData, status: strongAreasStatus } =
+    useStrongAreasQuery();
   const { refetch: refetchUploadSignedUrls } = useUploadSignedUrlsQuery();
-  console.log(errors);
+  // console.log(errors);
   const onSubmit: SubmitHandler<EditMyUserFormSchema> = async (rawData) => {
     // 画像データがあれば事前にアップロード
     let iconImageFileKey: string | undefined;
@@ -104,6 +109,24 @@ export const EditMyUserForm = ({ myUser }: Props) => {
       }
     },
     [gameTypesStatus, setValue, userGameTypes]
+  );
+
+  const handleClickStrongArea = useCallback(
+    ({ strongArea }: { strongArea: { id: string; name: string } }) => {
+      const index = myStrongAreas.findIndex(
+        (area) => area.id === strongArea.id
+      );
+      if (index > -1) {
+        // 削除
+        const newStrongAreas = [...myStrongAreas];
+        newStrongAreas.splice(index, 1);
+        setValue("strongAreas", newStrongAreas);
+      } else {
+        // 追加
+        setValue("strongAreas", [...myStrongAreas, strongArea]);
+      }
+    },
+    [myStrongAreas, setValue]
   );
 
   return (
@@ -176,7 +199,7 @@ export const EditMyUserForm = ({ myUser }: Props) => {
 
         <Grid item xs={12}>
           <Box sx={{ marginBottom: "8px", fontWeight: "bold" }}>
-            <Box component="label">好きなゲームタイプ</Box>
+            <Box component="label">好きなゲーム</Box>
           </Box>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
             {gameTypesData?.gameTypes.map((gt) => (
@@ -194,6 +217,31 @@ export const EditMyUserForm = ({ myUser }: Props) => {
                   handleClickGameType({
                     gameTypeId: gt.id,
                     likeOrDislike: "LIKE",
+                  })
+                }
+              />
+            ))}
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ marginBottom: "8px", fontWeight: "bold" }}>
+            <Box component="label">得意なこと</Box>
+          </Box>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            {strongAreasData?.strongAreas.map((area) => (
+              <Chip
+                key={area.id}
+                label={area.name}
+                color="teal"
+                variant={
+                  myStrongAreas.find((myArea) => myArea.id === area.id)
+                    ? "filled"
+                    : "outlined"
+                }
+                onClick={() =>
+                  handleClickStrongArea({
+                    strongArea: area,
                   })
                 }
               />

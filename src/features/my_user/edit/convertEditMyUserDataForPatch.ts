@@ -14,13 +14,14 @@ export const convertEditMyUserDataForPatch = ({
       ...(data.sex && { sex: data.sex.value }),
       // ...(data.age && {age: data.age}),
       ...(data.startedAt && { startedAt: data.startedAt.toISOString() }),
-      ...(data.description && { description: data.description }),
-      ...(data.twitter && { twitter: data.twitter }),
-      ...(data.instagram && { instagram: data.instagram }),
+      ...(data.description && { description: data.description.trim() }),
+      ...(data.twitter && { twitter: data.twitter.trim() }),
+      ...(data.instagram && { instagram: data.instagram.trim() }),
     },
     userGameTypes: data.userGameTypes.map((ugt) => ({
       gameTypeId: ugt.gameTypeId,
       likeOrDislike: ugt.likeOrDislike,
     })),
+    strongAreaIds: data.strongAreas.map((area) => area.id),
   };
 };

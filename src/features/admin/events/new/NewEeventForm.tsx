@@ -33,7 +33,7 @@ export const NewEventForm = () => {
     formState: { errors },
   } = useNewEventFormContext();
   const { postEventByAdmin } = usePostEventByAdmin();
-  console.log(errors);
+  // console.log(errors);
 
   const { data: prefecturesData, status: prefecturesStatus } =
     usePrefecturesQuery();

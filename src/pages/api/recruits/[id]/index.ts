@@ -108,12 +108,22 @@ const getHandler = async (
   const recruit = await prisma.recruit.findUnique({
     where: { id: recruitId },
     include: {
-      user: { include: { userGameTypes: { include: { gameType: true } } } },
+      user: {
+        include: {
+          userGameTypes: { include: { gameType: true } },
+          userStrongAreas: { include: { strongArea: true } },
+        },
+      },
       eventLocation: { include: { event: true, location: true } },
       possibleDates: true,
       commentsToRecruit: {
         include: {
-          user: { include: { userGameTypes: { include: { gameType: true } } } },
+          user: {
+            include: {
+              userGameTypes: { include: { gameType: true } },
+              userStrongAreas: { include: { strongArea: true } },
+            },
+          },
         },
       },
       recruitTagRecruits: { include: { recruitTag: true } },
@@ -145,8 +155,16 @@ const getHandler = async (
           instagram: recruit.user.instagram,
         }),
         userGameTypes: recruit.user.userGameTypes.map((ugt) => ({
+          id: ugt.id,
           gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
           likeOrDislike: ugt.likeOrDislike,
+        })),
+        userStrongAreas: recruit.user.userStrongAreas.map((usa) => ({
+          id: usa.id,
+          strongArea: {
+            id: usa.strongArea.id,
+            name: usa.strongArea.name,
+          },
         })),
       },
     }),
@@ -216,10 +234,13 @@ const getHandler = async (
           }),
           ...(comment.user.twitter && { twitter: comment.user.twitter }),
           ...(comment.user.instagram && { instagram: comment.user.instagram }),
-          userGameTypes: comment.user.userGameTypes.map((ugt) => ({
-            gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
-            likeOrDislike: ugt.likeOrDislike,
-          })),
+          // userGameTypes: comment.user.userGameTypes.map((ugt) => ({
+          //   id: ugt.id,
+          //   gameType: { id: ugt.gameType.id, name: ugt.gameType.name },
+          //   likeOrDislike: ugt.likeOrDislike,
+          // })),
+          // userStrongAreas: comment.user.userStrongAreas.map((usa) => ({
+          // }))
         },
       }))
     ),

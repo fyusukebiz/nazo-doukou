@@ -100,6 +100,7 @@ export const PcTopBar = () => {
             passHref
           >
             <Button
+              color="teal"
               variant="outlined"
               size="large"
               sx={{ width: "80px", paddingX: "0px" }}

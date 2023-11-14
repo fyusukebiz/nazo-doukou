@@ -49,7 +49,6 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
   const possibleDates = useWatch({ control, name: "possibleDates" });
 
   const { patchRecruit } = usePatchRecruit();
-  console.log(errors);
 
   const { deleteRecruit } = useDeleteRecruit();
 

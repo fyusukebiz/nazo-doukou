@@ -46,7 +46,6 @@ export const FirebaseAuthProvider = ({ children }: Props) => {
           const currentIdTooken = getCookie("currentFbUserIdToken");
           if (currentIdTooken !== idToken) {
             // TODO: FEでsetCookieすべきじゃない
-            console.log("idToken updated");
             setCookie("currentFbUserIdToken", idToken, cookieOptions);
           }
         } else {

@@ -14,21 +14,23 @@ export const convertEditEventDataForPatch = ({
       }),
       name: data.name,
       ...(coverImageFileKey && { coverImageFileKey: coverImageFileKey }),
-      ...(data.description && { description: data.description }),
-      ...(data.sourceUrl && { sourceUrl: data.sourceUrl }),
-      ...(data.twitterTag && { twitterTag: data.twitterTag }),
+      ...(data.description && { description: data.description.trim() }),
+      ...(data.sourceUrl && { sourceUrl: data.sourceUrl.trim() }),
+      ...(data.twitterTag && { twitterTag: data.twitterTag.trim() }),
       ...(data.numberOfPeopleInTeam && {
-        numberOfPeopleInTeam: data.numberOfPeopleInTeam,
+        numberOfPeopleInTeam: data.numberOfPeopleInTeam.trim(),
       }),
       gameTypeIds: data.gameTypes.map((gameType) => gameType.value),
-      ...(data.timeRequired && { timeRequired: data.timeRequired }),
+      ...(data.timeRequired && { timeRequired: data.timeRequired.trim() }),
       eventLocations: data.eventLocations.map((el) => ({
         locationId: el.location.value!, // バリデーションでnullではない
-        ...(el.building && { building: el.building }),
+        ...(el.building && { building: el.building.trim() }),
         ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
         ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
-        ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
-        ...(el.description && { description: el.description }),
+        ...(el.detailedSchedule && {
+          detailedSchedule: el.detailedSchedule.trim(),
+        }),
+        ...(el.description && { description: el.description.trim() }),
       })),
     },
   };
