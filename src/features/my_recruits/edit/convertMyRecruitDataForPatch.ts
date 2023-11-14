@@ -24,7 +24,7 @@ export const convertMyRecruitDataForPatch = ({
         description: data.description,
       }),
     },
-    recruitTagIds: data.recruitTags.map((tag) => tag.value),
+    recruitTagIds: data.recruitTags.map((tag) => tag.id),
     possibleDates: data.possibleDates.map((date) => ({
       date: date.date!.toISOString(),
       ...(date.priority && { priority: Number(date.priority) as number }),

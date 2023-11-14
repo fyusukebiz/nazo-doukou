@@ -46,43 +46,47 @@ export const MyRecruits = () => {
   return (
     <Box ref={listBoxRef} sx={{ height: "100%", overflowY: "scroll" }}>
       <SubPageHeader title="マイ募集一覧" />
-      {recruitsStatus === "pending" && <LoadingSpinner />}
-      {recruitsStatus === "success" && (
-        <Container sx={{ padding: "16px" }} maxWidth="xl">
-          <Box sx={{ marginBottom: "10px" }}>
-            全{recruitsData.totalCount}個中{recruitsData.currentPage}ページ目
-          </Box>
-          <Grid container spacing={2}>
-            {recruitsData.recruits.map((recruit, index) => (
-              <Grid key={index} item xs={12} sm={6} md={4}>
-                <RecruitCard
-                  recruit={recruit}
-                  saveScrollPosition={saveScrollPosition}
+      <Container sx={{ padding: "16px" }} maxWidth="xl">
+        {recruitsStatus === "pending" && <LoadingSpinner />}
+        {recruitsStatus === "success" && (
+          <>
+            <Grid container spacing={2}>
+              {recruitsData.recruits.map((recruit, index) => (
+                <Grid key={index} item xs={12} sm={6} md={4}>
+                  <RecruitCard
+                    recruit={recruit}
+                    saveScrollPosition={saveScrollPosition}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+            <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                }}
+              >
+                <Pagination
+                  count={recruitsData.totalPages}
+                  page={page}
+                  boundaryCount={0}
+                  siblingCount={2}
+                  color="primary"
+                  shape="rounded"
+                  size="large"
+                  onChange={handleClickPage}
                 />
-              </Grid>
-            ))}
-          </Grid>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              my: 2,
-              paddingBottom: "80px",
-            }}
-          >
-            <Pagination
-              count={recruitsData.totalPages}
-              page={page}
-              boundaryCount={0}
-              siblingCount={2}
-              color="primary"
-              shape="rounded"
-              size="large"
-              onChange={handleClickPage}
-            />
-          </Box>
-        </Container>
-      )}
+              </Box>
+              <Box sx={{ textAlign: "right", marginTop: "10px" }}>
+                全{recruitsData.totalCount}個中{recruitsData.currentPage}
+                ページ目
+              </Box>
+            </Box>
+          </>
+        )}
+      </Container>
     </Box>
   );
 };

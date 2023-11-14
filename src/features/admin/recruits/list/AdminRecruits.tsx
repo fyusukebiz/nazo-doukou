@@ -121,7 +121,6 @@ export const AdminRecruits = () => {
                 display: "flex",
                 justifyContent: "center",
                 my: 2,
-                paddingBottom: "80px",
               }}
             >
               <Pagination

@@ -5,7 +5,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setCookie } from "cookies-next";
 import { cookieOptions } from "@/constants/cookieOptions";
@@ -15,6 +15,7 @@ import { CustomCard } from "@/components/cards/CustomCard";
 import { grey } from "@mui/material/colors";
 import { FirebaseError } from "firebase/app";
 import { firebaseErrors } from "@/constants/firebaseErrors";
+import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvider";
 
 export const Signup = () => {
   const [name, setName] = useState("");
@@ -22,8 +23,12 @@ export const Signup = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
+  const { currentFbUser } = useFirebaseAuthContext();
   const { postMyUser } = usePostMyUser();
+
+  useEffect(() => {
+    if (!!currentFbUser) router.push("/recruits");
+  }, [currentFbUser, router]);
 
   // ユーザーが登録ボタンを押したときにdoRegister関数が実行される
   const handleClickRegister = async () => {

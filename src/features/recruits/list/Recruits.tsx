@@ -183,7 +183,7 @@ export const Recruits = () => {
                 </Grid>
               ))}
             </Grid>
-            <Box sx={{ paddingBottom: "80px" }}>
+            <Box>
               <Box
                 sx={{
                   display: "flex",
@@ -197,8 +197,8 @@ export const Recruits = () => {
                   boundaryCount={0}
                   siblingCount={2}
                   color="primary"
-                  shape="rounded"
-                  size="large"
+                  shape="circular"
+                  size="small"
                   onChange={handleClickPage}
                 />
               </Box>

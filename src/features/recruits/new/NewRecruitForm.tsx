@@ -249,7 +249,7 @@ export const NewRecruitForm = () => {
               募集タグ
             </Box>
           </Box>
-          <Box sx={{ display: "flex", gap: "10px" }}>
+          <Box sx={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             {recruitTagsData?.recruitTags.map((rt) => (
               <Chip
                 key={rt.id}
