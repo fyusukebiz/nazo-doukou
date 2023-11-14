@@ -34,7 +34,8 @@ const schema = z
         }, "数値を入力してください"),
       })
       .array()
-      .min(1),
+      .min(1)
+      .max(5),
     recruitTags: z.object({ id: z.string(), name: z.string() }).array(),
   })
   .superRefine((val, ctx) => {

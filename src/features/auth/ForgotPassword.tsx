@@ -66,6 +66,7 @@ export const ForgotPassword = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
           <LoadingButton
+            color="teal"
             type="submit"
             variant="contained"
             sx={{ height: "50px" }}

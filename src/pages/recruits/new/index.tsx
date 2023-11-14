@@ -20,6 +20,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
   // Firebase Authで認証情報が正しいかをチェックする
   const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
+
   if (!fbAuthRes.ok) {
     return {
       redirect: {

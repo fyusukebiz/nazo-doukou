@@ -196,7 +196,7 @@ export const RecruitInfo = (props: Props) => {
                             <Chip
                               key={index}
                               label={ugt.gameType.name}
-                              color="primary"
+                              color="teal"
                               variant="filled"
                               size="small"
                               sx={{ height: "30px" }}

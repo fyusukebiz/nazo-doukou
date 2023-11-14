@@ -15,7 +15,7 @@ export const MuiTheme = createTheme({
     teal: {
       light: teal[200],
       main: teal[400],
-      dark: teal[700],
+      dark: teal[500],
       contrastText: "#fff",
     },
     secondary: grey,
@@ -88,8 +88,24 @@ declare module "@mui/material/Button" {
   }
   interface ButtonPropsColorOverrides {
     teal: true;
-    deepGrey: true;
-    deepBlueGrey: true;
+  }
+}
+
+declare module "@mui/material/Chip" {
+  interface ChipPropsColorOverrides {
+    teal: true;
+  }
+}
+
+declare module "@mui/material/Checkbox" {
+  interface CheckboxPropsColorOverrides {
+    teal: true;
+  }
+}
+
+declare module "@mui/material/Switch" {
+  interface SwitchPropsColorOverrides {
+    teal: true;
   }
 }
 

@@ -87,7 +87,7 @@ export const CommentForm = (props: Props) => {
       {/*　投稿ボタン */}
       <LoadingButton
         type="submit"
-        color="primary"
+        color="teal"
         sx={{ padding: "6px 0px", minWidth: "40px" }}
         disabled={!message}
         loading={postCommentToRecruit.isPending}

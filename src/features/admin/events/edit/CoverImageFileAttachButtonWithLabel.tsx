@@ -50,7 +50,7 @@ export const CoverImageFileAttachButtonWithLabel = () => {
       <Box>
         <Button
           variant="contained"
-          color="primary"
+          color="teal"
           onClick={handleFileButtonClicked}
         >
           ファイルを選択する

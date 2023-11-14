@@ -226,7 +226,7 @@ export const NewEventForm = () => {
                 <Box sx={{ display: "flex" }}>
                   <Button
                     variant="outlined"
-                    color="primary"
+                    color="teal"
                     size="small"
                     sx={{ marginLeft: "auto" }}
                     onClick={() => removeEventLocation(index)}
@@ -286,7 +286,7 @@ export const NewEventForm = () => {
           <Box sx={{ marginY: "36px", display: "flex" }}>
             <Button
               variant="outlined"
-              color="primary"
+              color="teal"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
               onClick={() => appendEventLocation(defaultEventLocation)}
@@ -301,7 +301,7 @@ export const NewEventForm = () => {
         <LoadingButton
           type="submit"
           variant="contained"
-          color="primary"
+          color="teal"
           size="large"
           sx={{ width: "100%" }}
           loading={postEventByAdmin.isPending}

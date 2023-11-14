@@ -46,6 +46,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
 
   const isSelectType = useWatch({ control, name: "isSelectType" });
   const myRecruitTags = useWatch({ control, name: "recruitTags" });
+  const possibleDates = useWatch({ control, name: "possibleDates" });
 
   const { patchRecruit } = usePatchRecruit();
   console.log(errors);
@@ -136,6 +137,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
           <Stack direction="row" spacing={1} alignItems="center">
             <Box>入力</Box>
             <Switch
+              color="teal"
               checked={isSelectType}
               onChange={(e) => setValue("isSelectType", e.target.checked)}
             />
@@ -239,10 +241,11 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
           <Box sx={{ marginTop: "20px", display: "flex" }}>
             <Button
               variant="outlined"
-              color="primary"
+              color="teal"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
               onClick={() => appendPossibleDate(defaultPossibleDate)}
+              disabled={possibleDates.length > 4}
             >
               候補日を追加する
             </Button>
@@ -260,7 +263,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
               <Chip
                 key={rt.id}
                 label={rt.name}
-                color="primary"
+                color="teal"
                 variant={
                   myRecruitTags.find((myRt) => myRt.id === rt.id)
                     ? "filled"
@@ -293,7 +296,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
         <LoadingButton
           type="submit"
           variant="contained"
-          color="primary"
+          color="teal"
           size="large"
           sx={{ width: "100%" }}
           loading={patchRecruit.isPending}

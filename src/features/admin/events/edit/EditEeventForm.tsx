@@ -228,7 +228,7 @@ export const EditEventForm = ({ eventId }: Props) => {
                 <Box sx={{ display: "flex" }}>
                   <Button
                     variant="outlined"
-                    color="primary"
+                    color="teal"
                     size="small"
                     sx={{ marginLeft: "auto" }}
                     onClick={() => removeEventLocation(index)}
@@ -290,7 +290,7 @@ export const EditEventForm = ({ eventId }: Props) => {
           <Box sx={{ marginY: "36px", display: "flex" }}>
             <Button
               variant="outlined"
-              color="primary"
+              color="teal"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
               onClick={() => appendEventLocation(defaultEventLocation)}
@@ -305,7 +305,7 @@ export const EditEventForm = ({ eventId }: Props) => {
         <LoadingButton
           type="submit"
           variant="contained"
-          color="primary"
+          color="teal"
           size="large"
           sx={{ width: "100%" }}
           loading={patchEventByAdmin.isPending}

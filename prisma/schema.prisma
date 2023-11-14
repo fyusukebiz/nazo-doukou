@@ -37,11 +37,12 @@ model User {
   userGameTypes UserGameType[]
   recruits Recruit[]
   commentsToRecruit CommentToRecruit[]
+  userStrongAreas UserStrongArea[]
 }
 
 model GameType {
   id String    @id @default(cuid())
-  name String
+  name String  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -66,6 +67,29 @@ model UserGameType {
 
   @@unique([userId, gameTypeId])
 }
+
+model StrongArea {
+  id String    @id @default(cuid())
+  name String  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userStrongAreas UserStrongArea[]
+}
+
+model UserStrongArea {
+  id String    @id @default(cuid())
+  likeOrDislike LikeOrDislike
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  strongArea StrongArea @relation(fields: [strongAreaId], references: [id], onDelete: Cascade)
+  strongAreaId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, strongAreaId])
+}
+
 
 model Organization {
   id String    @id @default(cuid())

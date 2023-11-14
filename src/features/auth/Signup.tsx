@@ -127,6 +127,7 @@ export const Signup = () => {
           />
 
           <LoadingButton
+            color="teal"
             variant="contained"
             sx={{ height: "50px" }}
             onClick={handleClickRegister}

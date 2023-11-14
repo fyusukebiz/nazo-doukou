@@ -36,7 +36,7 @@ const schema = z
       })
       .array()
       .min(1),
-    recruitTags: z.object({ label: z.string(), value: z.string() }).array(),
+    recruitTags: z.object({ id: z.string(), name: z.string() }).array(),
   })
   .superRefine((val, ctx) => {
     if (val.isSelectType && !val.eventLocation.value) {
@@ -100,8 +100,8 @@ export const EditAdminRecruitFormProvider = ({ children, recruit }: Props) => {
         priority: date.priority?.toString() || "",
       })),
       recruitTags: recruit.recruitTags.map((tag) => ({
-        value: tag.id,
-        label: tag.name,
+        id: tag.id,
+        name: tag.name,
       })),
     },
   });

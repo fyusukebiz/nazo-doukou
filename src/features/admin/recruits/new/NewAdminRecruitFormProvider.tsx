@@ -35,7 +35,7 @@ const schema = z
       })
       .array()
       .min(1),
-    recruitTags: z.object({ label: z.string(), value: z.string() }).array(),
+    recruitTags: z.object({ id: z.string(), name: z.string() }).array(),
   })
   .superRefine((val, ctx) => {
     if (val.isSelectType && !val.eventLocation.value) {

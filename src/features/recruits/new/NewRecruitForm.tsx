@@ -42,6 +42,7 @@ export const NewRecruitForm = () => {
 
   const isSelectType = useWatch({ control, name: "isSelectType" });
   const myRecruitTags = useWatch({ control, name: "recruitTags" });
+  const possibleDates = useWatch({ control, name: "possibleDates" });
 
   const [willPostToTwitter, setWillPostToTwitter] = useState(true);
 
@@ -130,6 +131,7 @@ export const NewRecruitForm = () => {
           <Stack direction="row" spacing={1} alignItems="center">
             <Box>入力</Box>
             <Switch
+              color="teal"
               checked={isSelectType}
               onChange={(e) => setValue("isSelectType", e.target.checked)}
             />
@@ -234,10 +236,11 @@ export const NewRecruitForm = () => {
           <Box sx={{ marginTop: "20px", display: "flex" }}>
             <Button
               variant="outlined"
-              color="primary"
+              color="teal"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
               onClick={() => appendPossibleDate(defaultPossibleDate)}
+              disabled={possibleDates.length > 4}
             >
               候補日を追加する
             </Button>
@@ -255,7 +258,7 @@ export const NewRecruitForm = () => {
               <Chip
                 key={rt.id}
                 label={rt.name}
-                color="primary"
+                color="teal"
                 variant={
                   myRecruitTags.find((myRt) => myRt.id === rt.id)
                     ? "filled"
@@ -286,6 +289,7 @@ export const NewRecruitForm = () => {
         <Grid item xs={12}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Checkbox
+              color="teal"
               checked={willPostToTwitter}
               onChange={(e) => setWillPostToTwitter(e.target.checked)}
             />

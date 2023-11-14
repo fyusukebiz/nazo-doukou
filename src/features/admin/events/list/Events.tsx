@@ -97,7 +97,7 @@ export const Events = () => {
                 style={{ textDecoration: "none", marginLeft: "auto" }}
                 passHref
               >
-                <Button variant="outlined" size="large">
+                <Button variant="outlined" size="large" color="teal">
                   新規作成
                 </Button>
               </Link>

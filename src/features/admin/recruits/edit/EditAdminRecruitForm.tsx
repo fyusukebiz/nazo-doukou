@@ -1,6 +1,14 @@
 import { LoadingButton } from "@mui/lab";
-import { Grid, Box, Button, Stack, Switch, IconButton } from "@mui/material";
-import { useMemo } from "react";
+import {
+  Grid,
+  Box,
+  Button,
+  Stack,
+  Switch,
+  IconButton,
+  Chip,
+} from "@mui/material";
+import { useCallback, useMemo } from "react";
 import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
   EditAdminRecruitFormSchema,
@@ -38,6 +46,8 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
   } = useEditAdminRecruitFormContext();
 
   const isSelectType = useWatch({ control, name: "isSelectType" });
+  const myRecruitTags = useWatch({ control, name: "recruitTags" });
+  const possibleDates = useWatch({ control, name: "possibleDates" });
 
   const { patchRecruitByAdmin } = usePatchRecruitByAdmin();
 
@@ -92,6 +102,22 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
     );
   };
 
+  const handleClickRecruitTag = useCallback(
+    ({ recruitTag }: { recruitTag: { id: string; name: string } }) => {
+      const index = myRecruitTags.findIndex((tag) => tag.id === recruitTag.id);
+      if (index > -1) {
+        // 削除
+        const newMyRecruitTags = [...myRecruitTags];
+        newMyRecruitTags.splice(index, 1);
+        setValue("recruitTags", newMyRecruitTags);
+      } else {
+        // 追加
+        setValue("recruitTags", [...myRecruitTags, recruitTag]);
+      }
+    },
+    [myRecruitTags, setValue]
+  );
+
   const handleClickDelete = () => {
     const result = window.confirm("募集を削除しますか？");
     if (!result) return;
@@ -121,6 +147,7 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
           <Stack direction="row" spacing={1} alignItems="center">
             <Box>入力</Box>
             <Switch
+              color="teal"
               checked={isSelectType}
               onChange={(e) => setValue("isSelectType", e.target.checked)}
             />
@@ -224,10 +251,11 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
           <Box sx={{ marginTop: "20px", display: "flex" }}>
             <Button
               variant="outlined"
-              color="primary"
+              color="teal"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
               onClick={() => appendPossibleDate(defaultPossibleDate)}
+              disabled={possibleDates.length > 4}
             >
               候補日を追加する
             </Button>
@@ -235,16 +263,30 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
         </Grid>
 
         <Grid item xs={12}>
-          <MultipleSelectWithLabelRHF<
-            EditAdminRecruitFormSchema,
-            { label: string; value: string }
-          >
-            name="recruitTags"
-            control={control}
-            label="募集タグ"
-            placeholder="募集タグ"
-            options={recruitTags}
-          />
+          <Box sx={{ marginBottom: "8px" }}>
+            <Box component="label" sx={{ fontWeight: "bold" }}>
+              募集タグ
+            </Box>
+          </Box>
+          <Box sx={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            {recruitTagsData?.recruitTags.map((rt) => (
+              <Chip
+                key={rt.id}
+                label={rt.name}
+                color="teal"
+                variant={
+                  myRecruitTags.find((myRt) => myRt.id === rt.id)
+                    ? "filled"
+                    : "outlined"
+                }
+                onClick={() =>
+                  handleClickRecruitTag({
+                    recruitTag: rt,
+                  })
+                }
+              />
+            ))}
+          </Box>
         </Grid>
 
         <Grid item xs={12}>
@@ -264,7 +306,7 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
         <LoadingButton
           type="submit"
           variant="contained"
-          color="primary"
+          color="teal"
           size="large"
           sx={{ width: "100%" }}
           loading={patchRecruitByAdmin.isPending}

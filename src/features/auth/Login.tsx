@@ -109,6 +109,7 @@ export const Login = () => {
           />
 
           <LoadingButton
+            color="teal"
             variant="contained"
             sx={{ height: "50px" }}
             onClick={handleClickLogin}
@@ -124,7 +125,12 @@ export const Login = () => {
           style={{ textDecoration: "none" }}
           passHref
         >
-          <Button variant="outlined" sx={{ height: "50px" }} fullWidth>
+          <Button
+            color="teal"
+            variant="outlined"
+            sx={{ height: "50px" }}
+            fullWidth
+          >
             パスワードを忘れた場合
           </Button>
         </Link>

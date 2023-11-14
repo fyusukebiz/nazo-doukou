@@ -60,25 +60,50 @@ async function main() {
   });
 
   const gameTypes = [
-    "小謎",
-    "大謎",
-    "周遊型",
-    "上海型",
+    // "小謎",
+    // "大謎",
     "ルーム型",
     "ホール型",
-    "スタジアム",
-    "推理系",
-    "館内周遊型",
+    "周遊型",
+    "上海型",
+    "ホテル謎",
+    "持ち帰りキット",
+    "オンライン謎",
+    "マダミス",
+    "ボドゲ",
+    "ポーカー",
+    // "スタジアム",
+    // "推理系",
+    // "館内周遊型",
   ];
   for (const gameType of gameTypes) {
     await prisma.gameType.create({ data: { name: gameType } });
   }
 
+  const strongAreas = [
+    "大謎",
+    "小謎",
+    "探索",
+    "推理",
+    "ひらめき",
+    "論理",
+    "記憶",
+    "計算",
+    "パズル",
+    "情報整理",
+  ];
+
+  for (const strongArea of strongAreas) {
+    await prisma.strongArea.create({ data: { name: strongArea } });
+  }
+
   const recruitTags = [
     "初心者です",
     "初心者歓迎",
-    "ゆるく楽しみたいです",
-    "本気でクリア目指してます",
+    // "ゆるく楽しみたいです",
+    // "本気でクリア目指してます",
+    "わいわい楽しく",
+    "原作知らなくてもOK",
   ];
   for (const recruitTag of recruitTags) {
     await prisma.recruitTag.create({ data: { name: recruitTag } });

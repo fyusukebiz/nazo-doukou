@@ -119,6 +119,7 @@ export const MobileTopBar = () => {
         >
           <Link href="/auth/signup" style={{ textDecoration: "none" }} passHref>
             <Button
+              color="teal"
               variant="contained"
               size="large"
               sx={{ width: "80px", paddingX: "0px" }}
@@ -128,6 +129,7 @@ export const MobileTopBar = () => {
           </Link>
           <Link href="/auth/login" style={{ textDecoration: "none" }} passHref>
             <Button
+              color="teal"
               variant="outlined"
               size="large"
               sx={{ width: "80px", paddingX: "0px" }}

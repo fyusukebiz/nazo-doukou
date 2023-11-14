@@ -183,7 +183,7 @@ export const EditMyUserForm = ({ myUser }: Props) => {
               <Chip
                 key={gt.id}
                 label={gt.name}
-                color="primary"
+                color="teal"
                 variant={
                   userGameTypes.find((ugt) => ugt.gameTypeId === gt.id)
                     ?.likeOrDislike === "LIKE"
@@ -216,6 +216,7 @@ export const EditMyUserForm = ({ myUser }: Props) => {
           <LoadingButton
             type="submit"
             variant="contained"
+            color="teal"
             size="large"
             sx={{ width: 200, mx: "auto" }}
             loading={patchMyUser.isPending}

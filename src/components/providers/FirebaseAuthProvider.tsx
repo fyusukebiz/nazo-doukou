@@ -6,6 +6,8 @@ import React, {
   ReactNode,
 } from "react";
 import { Unsubscribe, User, getAuth, onAuthStateChanged } from "firebase/auth";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import { cookieOptions } from "@/constants/cookieOptions";
 
 // null：ログインしてない
 // undefined: ログインしてるかしてないかわからない初期状態
@@ -38,6 +40,18 @@ export const FirebaseAuthProvider = ({ children }: Props) => {
       unsubscribe = onAuthStateChanged(auth, async (user) => {
         // console.log("user", user);
         setCurrentFbUser(user);
+
+        if (user) {
+          const idToken = await user.getIdToken();
+          const currentIdTooken = getCookie("currentFbUserIdToken");
+          if (currentIdTooken !== idToken) {
+            // TODO: FEでsetCookieすべきじゃない
+            console.log("idToken updated");
+            setCookie("currentFbUserIdToken", idToken, cookieOptions);
+          }
+        } else {
+          deleteCookie("currentFbUserIdToken");
+        }
       });
     } catch (error) {
       setCurrentFbUser(undefined);
