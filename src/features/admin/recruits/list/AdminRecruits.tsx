@@ -128,8 +128,8 @@ export const AdminRecruits = () => {
                 page={page}
                 boundaryCount={0}
                 siblingCount={2}
-                color="primary"
-                shape="rounded"
+                color="standard"
+                shape="circular"
                 size="large"
                 onChange={handleClickPage}
               />

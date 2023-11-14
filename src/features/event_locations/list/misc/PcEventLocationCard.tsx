@@ -34,7 +34,14 @@ export const PcEventLocationCard = (props: Props) => {
   }, [eventLocation]);
 
   return (
-    <Box sx={{ border: `1px solid ${grey[300]}`, borderRadius: "10px" }}>
+    <Box
+      sx={{
+        border: `1px solid ${grey[300]}`,
+        borderRadius: "10px",
+        cursor: "pointer",
+      }}
+      onClick={handleClickCard}
+    >
       {eventLocation.event.coverImageFileUrl ? (
         <img
           src={eventLocation.event.coverImageFileUrl}
@@ -42,10 +49,8 @@ export const PcEventLocationCard = (props: Props) => {
             objectFit: "cover",
             maxHeight: "220px",
             width: "100%",
-            cursor: "pointer",
             borderRadius: "10px",
           }}
-          onClick={handleClickCard}
           alt="image"
         />
       ) : (
@@ -56,11 +61,9 @@ export const PcEventLocationCard = (props: Props) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            cursor: "pointer",
             borderRadius: "10px",
             backgroundColor: grey[400],
           }}
-          onClick={handleClickCard}
         >
           <Box sx={{ color: grey[600], fontSize: "36px" }}>NO IMAGE</Box>
         </Box>

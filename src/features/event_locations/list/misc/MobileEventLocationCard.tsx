@@ -34,7 +34,10 @@ export const MobileEventLocationCard = (props: Props) => {
   }, [eventLocation]);
 
   return (
-    <Box sx={{ display: "flex", fontSize: "14px" }}>
+    <Box
+      sx={{ display: "flex", fontSize: "14px", cursor: "pointer" }}
+      onClick={handleClickCard}
+    >
       <Box
         sx={{
           width: "170px",
@@ -51,10 +54,8 @@ export const MobileEventLocationCard = (props: Props) => {
               height: "100%",
               width: "100%",
               objectFit: "cover",
-              cursor: "contain",
               borderRadius: "10px",
             }}
-            onClick={handleClickCard}
             alt="image"
           />
         ) : (
@@ -64,11 +65,9 @@ export const MobileEventLocationCard = (props: Props) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              cursor: "pointer",
               borderRadius: "10px",
               backgroundColor: grey[400],
             }}
-            onClick={handleClickCard}
           >
             <Box sx={{ color: grey[600], fontSize: "20px" }}>NO IMAGE</Box>
           </Box>

@@ -13,9 +13,9 @@ export const MuiTheme = createTheme({
   },
   palette: {
     teal: {
-      light: teal[500],
-      main: teal[800],
-      dark: teal[900],
+      light: teal[200],
+      main: teal[400],
+      dark: teal[700],
       contrastText: "#fff",
     },
     secondary: grey,

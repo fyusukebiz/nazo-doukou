@@ -151,6 +151,7 @@ export const NewRecruitForm = () => {
               label="イベント"
               placeholder="イベント"
               options={eventLocations}
+              isSearchable={true}
             />
           </Grid>
         ) : (
@@ -299,7 +300,7 @@ export const NewRecruitForm = () => {
         <LoadingButton
           type="submit"
           variant="contained"
-          color="primary"
+          color="teal"
           size="large"
           sx={{ width: "100%" }}
           loading={postRecruit.isPending}

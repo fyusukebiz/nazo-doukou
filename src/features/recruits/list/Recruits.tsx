@@ -144,6 +144,7 @@ export const Recruits = () => {
             <Button
               size="medium"
               variant={orderBy === "createdAt" ? "contained" : "text"}
+              color="teal"
               sx={{ width: "70px", padding: "0px" }}
               onClick={() => setOrderBy("createdAt")}
               disableElevation
@@ -153,6 +154,7 @@ export const Recruits = () => {
             <Button
               size="medium"
               variant={orderBy === "possibleDate" ? "contained" : "text"}
+              color="teal"
               sx={{ width: "70px", padding: "0px" }}
               onClick={() => setOrderBy("possibleDate")}
               disableElevation
@@ -196,9 +198,9 @@ export const Recruits = () => {
                   page={page}
                   boundaryCount={0}
                   siblingCount={2}
-                  color="primary"
+                  color="standard"
                   shape="circular"
-                  size="small"
+                  size="large"
                   onChange={handleClickPage}
                 />
               </Box>
