@@ -102,7 +102,6 @@ export const RecruitInfo = (props: Props) => {
           .join(", ")}
       />
 
-      {/* TODO: アイコンとtwitterリンクを設置すること */}
       {recruit.user && (
         <>
           <RecruitItem

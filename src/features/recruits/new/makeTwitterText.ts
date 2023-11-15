@@ -23,7 +23,8 @@ export const makeTwitterText = ({ isSelectType, rawData, url }: Props) => {
     .join(", ");
   text += "\n";
   text += "詳細: ";
-  text += url; // TODO: twitter上でリンクになってるかを確認する
+  text += "\n";
+  text += url;
   text += "\n";
 
   return text;

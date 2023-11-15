@@ -84,7 +84,8 @@ export const NewRecruitForm = () => {
           toast.success("作成しました");
           router.push("/recruits");
           if (willPostToTwitter) {
-            const url = `${process.env.NEXT_PUBLIC_HOST}/recruits/${res.recruitId}`;
+            const url = "https://cly7796.net/blog";
+            // const url = `${process.env.NEXT_PUBLIC_HOST}/recruits/${res.recruitId}`;
             const text = makeTwitterText({ isSelectType, rawData, url });
             const urlSearchParam = new URLSearchParams();
             urlSearchParam.set("hashtags", "謎解き同行者募集,謎同行");

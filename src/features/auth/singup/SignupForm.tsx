@@ -127,6 +127,7 @@ export const SignupForm = () => {
         type="password"
         placeholder="パスワード確認"
         control={control}
+        autoComplete="new-password"
         fullWidth
       />
 

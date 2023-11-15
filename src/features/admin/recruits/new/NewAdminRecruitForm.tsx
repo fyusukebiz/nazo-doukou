@@ -24,12 +24,10 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { SingleSelectWithLabelRHF } from "@/components/forms/hook_form/SingleSelectWithLabelRHF";
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
-import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
 import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTagsQuery";
 import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
 import { grey } from "@mui/material/colors";
-import { format } from "date-fns";
 import { makeTwitterText } from "./makeTwitterText";
 import { usePostRecruitByAdmin } from "@/react_queries/admin/recruits/usePostRecruitByAdmin";
 

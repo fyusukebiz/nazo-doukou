@@ -29,7 +29,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
   const data = await fbAuthRes.json();
-  // console.log("data", data); //TODO:確認
   const fbUser = data.users[0];
   const fbUid = fbUser.localId;
 

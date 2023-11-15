@@ -43,7 +43,6 @@ https://zenn.dev/hashito/articles/6041b746496eb6
 
 TODO潰す
 ブラウザエラー対応（色々ページを遷移すること）
-リンク
 ptengine
 管理ボタン消す
 データ消す

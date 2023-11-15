@@ -102,7 +102,9 @@ const postHandler = async (
           ? recruit.eventLocation.event.name
           : recruit.manualEventName
       }」の募集にコメントが来ました。</p>
-      <p>${process.env.NEXT_PUBLIC_HOST}/recruits/${recruit.id}</p>
+      <a href="${process.env.NEXT_PUBLIC_HOST}/recruits/${recruit.id}">${
+      process.env.NEXT_PUBLIC_HOST
+    }/recruits/${recruit.id}</a>
     `;
 
     const result = await emailTransporter.sendMail({
