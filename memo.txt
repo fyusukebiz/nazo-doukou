@@ -41,9 +41,9 @@ https://zenn.dev/hashito/articles/6041b746496eb6
 
 
 
-独自ドメイン反映
 TODO潰す
 Twitterへの流れ
-エラー対応
+ブラウザエラー対応（色々ページを遷移すること）
 ハッシュタグのバグ
-be-ta 
+リンク
+ptengine

@@ -153,11 +153,11 @@ const postHandler = async (
       eventLocations: z
         .object({
           locationId: z.string().min(1),
-          building: z.string().optional(),
-          description: z.string().optional(),
+          building: z.string().max(12).optional(),
+          description: z.string().max(200).optional(),
           startedAt: z.string().optional(),
           endedAt: z.string().optional(),
-          detailedSchedule: z.string().optional(),
+          detailedSchedule: z.string().max(100).optional(),
         })
         .array(),
     }),

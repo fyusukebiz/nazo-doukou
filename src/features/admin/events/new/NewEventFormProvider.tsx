@@ -39,11 +39,11 @@ const schema = z.object({
           }),
         label: z.string(),
       }),
+      building: z.string().max(12),
+      description: z.string().max(200),
       startedAt: z.date().nullable(),
       endedAt: z.date().nullable(),
-      detailedSchedule: z.string(),
-      building: z.string(),
-      description: z.string(),
+      detailedSchedule: z.string().max(100),
     })
     .array(),
 });

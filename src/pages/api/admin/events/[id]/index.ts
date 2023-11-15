@@ -172,7 +172,7 @@ const patchHandler = async (
 
   const schema = z.object({
     event: z.object({
-      name: z.string().min(1).max(255),
+      name: z.string().min(1).max(30),
       organizationId: z.string().optional(),
       twitterTag: z.string().optional(),
       description: z.string().max(1000).optional(),
@@ -184,11 +184,11 @@ const patchHandler = async (
       eventLocations: z
         .object({
           locationId: z.string().min(1),
-          description: z.string().optional(),
-          building: z.string().optional(),
+          building: z.string().max(12).optional(),
+          description: z.string().max(200).optional(),
           startedAt: z.string().optional(),
           endedAt: z.string().optional(),
-          detailedSchedule: z.string().optional(),
+          detailedSchedule: z.string().max(100).optional(),
         })
         .array(),
     }),
