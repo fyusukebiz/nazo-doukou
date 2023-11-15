@@ -122,6 +122,8 @@ const getHandler = async (
 export type PostMyUserRequestBody = {
   user: {
     name: string;
+    twitter?: string;
+    instagram?: string;
   };
 };
 export type PostMyUserResponseSuccessBody = "";
@@ -140,6 +142,8 @@ const postHandler = async (
   const schema = z.object({
     user: z.object({
       name: z.string().min(1).max(255),
+      twitter: z.string().max(30).optional(),
+      instagram: z.string().max(30).optional(),
     }),
   });
 

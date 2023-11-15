@@ -38,10 +38,10 @@ export const FirebaseAuthProvider = ({ children }: Props) => {
     try {
       const auth = getAuth();
       unsubscribe = onAuthStateChanged(auth, async (user) => {
-        // console.log("user", user);
+        // 注意！：メール認証をしてもこの関数は呼ばれない
         setCurrentFbUser(user);
 
-        if (user) {
+        if (!!user && user.emailVerified) {
           const idToken = await user.getIdToken();
           const currentIdTooken = getCookie("currentFbUserIdToken");
           if (currentIdTooken !== idToken) {

@@ -192,7 +192,7 @@ export const EditMyUserForm = ({ myUser }: Props) => {
           <InputWithLabelRHF<EditMyUserFormSchema>
             name="instagram"
             control={control}
-            label="インスタユーザー名"
+            label="インスタアカウント名"
             fullWidth
           />
         </Grid>

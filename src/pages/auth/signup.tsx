@@ -1,6 +1,6 @@
 import { NextPageWithLayout } from "@/pages/_app";
 import { Layout } from "@/components/layouts/layout/Layout";
-import { Signup } from "@/features/auth/Signup";
+import { Signup } from "@/features/auth/singup/Signup";
 
 const SignupPage: NextPageWithLayout = () => {
   return <Signup />;

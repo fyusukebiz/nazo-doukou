@@ -49,7 +49,8 @@ export const Login = () => {
       // cookieをセット
       await postConfirmMyUser.mutateAsync();
 
-      router.push("/recruits");
+      // router.push("/recruits");
+      window.location.href = "/recruits";
     } catch (error) {
       // console.log(error);
       if (error instanceof FirebaseError) {
@@ -98,6 +99,7 @@ export const Login = () => {
             name="email"
             type="email"
             placeholder="メールアドレス"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -105,6 +107,7 @@ export const Login = () => {
             name="password"
             type="password"
             placeholder="パスワード"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />

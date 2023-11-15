@@ -80,14 +80,16 @@ export const EventLocation = () => {
               {eleData.eventLocation.event.name}
             </Box>
 
-            <Box sx={{ display: "flex" }}>
-              <a
-                href={eleData.eventLocation.event.sourceUrl}
-                style={{ marginLeft: "auto" }}
-              >
-                公式
-              </a>
-            </Box>
+            {eleData.eventLocation.event.sourceUrl && (
+              <Box sx={{ display: "flex" }}>
+                <a
+                  href={eleData.eventLocation.event.sourceUrl}
+                  style={{ marginLeft: "auto" }}
+                >
+                  公式
+                </a>
+              </Box>
+            )}
 
             {eleData.eventLocation.event.gameTypes.length > 0 && (
               <Row
@@ -100,12 +102,14 @@ export const EventLocation = () => {
 
             {eleData.eventLocation.event.twitterTag && (
               <Row
-                item="Xタグ"
+                item="Xタグ1"
                 content={
                   <a
                     href={
-                      "https://twitter.com/hashtag/" +
-                      encodeURIComponent(eleData.eventLocation.event.twitterTag)
+                      "https://twitter.com/search?q=" +
+                      encodeURIComponent(
+                        "#" + eleData.eventLocation.event.twitterTag
+                      )
                     }
                     target="_blank"
                   >

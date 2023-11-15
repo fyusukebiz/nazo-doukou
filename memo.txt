@@ -42,8 +42,8 @@ https://zenn.dev/hashito/articles/6041b746496eb6
 
 
 TODO潰す
-Twitterへの流れ
 ブラウザエラー対応（色々ページを遷移すること）
-ハッシュタグのバグ
 リンク
 ptengine
+管理ボタン消す
+データ消す
