@@ -19,6 +19,7 @@ import { RouterHistoryProvider } from "@/features/common/RouterHistoryProvider";
 import { Noto_Sans_JP } from "next/font/google";
 import { initializeFirebaseApp } from "@/libs/firebaseClient";
 import { FirebaseAuthProvider } from "@/components/providers/FirebaseAuthProvider";
+import { DefaultSeo } from "next-seo";
 
 const notoJp = Noto_Sans_JP({
   weight: ["400", "700"],
@@ -50,30 +51,58 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const customQueryClient = useCustomQueryClient();
 
   return (
-    <ThemeProvider theme={MuiTheme}>
-      <FirebaseAuthProvider>
-        <QueryClientProvider client={customQueryClient}>
-          <IsMobileProvider>
-            <RouterHistoryProvider>
-              <main className={notoJp.className} style={{ height: "100%" }}>
-                {getLayout(
-                  <>
-                    <ToastContainer
-                      position="top-right"
-                      autoClose={5000}
-                      closeOnClick
-                      rtl={false}
-                      pauseOnFocusLoss
-                      pauseOnHover
-                    />
-                    <Component {...pageProps} />
-                  </>
-                )}
-              </main>
-            </RouterHistoryProvider>
-          </IsMobileProvider>
-        </QueryClientProvider>
-      </FirebaseAuthProvider>
-    </ThemeProvider>
+    <>
+      <DefaultSeo
+        defaultTitle="謎同行"
+        description="脱出ゲームや謎解きイベントに一緒に行く人を募集＆応募できるサービスです。投稿した内容はTwitterにも一緒に投稿できます。"
+        openGraph={{
+          type: "website",
+          title: "謎同行",
+          description:
+            "脱出ゲームや謎解きイベントに一緒に行く人を募集＆応募できるサービスです。投稿した内容はTwitterにも一緒に投稿できます。",
+          site_name: "謎同行",
+          url: process.env.NEXT_PUBLIC_HOST,
+          images: [
+            {
+              url: process.env.NEXT_PUBLIC_HOST + "/service_logo.png",
+              width: 800,
+              height: 600,
+              alt: "謎同行",
+              type: "image/png",
+            },
+          ],
+        }}
+        twitter={{
+          handle: "@minnanonazotok", // コンテンツ作成者のTwitterID
+          site: "@minnanonazotok", // WebサイトのTwitterID
+          cardType: "summary",
+        }}
+      />
+      <ThemeProvider theme={MuiTheme}>
+        <FirebaseAuthProvider>
+          <QueryClientProvider client={customQueryClient}>
+            <IsMobileProvider>
+              <RouterHistoryProvider>
+                <main className={notoJp.className} style={{ height: "100%" }}>
+                  {getLayout(
+                    <>
+                      <ToastContainer
+                        position="top-right"
+                        autoClose={5000}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        pauseOnHover
+                      />
+                      <Component {...pageProps} />
+                    </>
+                  )}
+                </main>
+              </RouterHistoryProvider>
+            </IsMobileProvider>
+          </QueryClientProvider>
+        </FirebaseAuthProvider>
+      </ThemeProvider>
+    </>
   );
 }

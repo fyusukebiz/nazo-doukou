@@ -41,7 +41,7 @@ https://zenn.dev/hashito/articles/6041b746496eb6
 
 
 
-TODO潰す
+SEO
 ブラウザエラー対応（色々ページを遷移すること）
 ptengine
 管理ボタン消す
