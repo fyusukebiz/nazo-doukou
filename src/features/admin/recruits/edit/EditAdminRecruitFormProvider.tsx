@@ -13,9 +13,12 @@ const schema = z
       label: z.string(),
       value: z.string().nullable(),
     }),
-    numberOfPeople: z.string().refine((v) => {
-      return !v || !isNaN(Number(v));
-    }, "数値を入力してください"),
+    numberOfPeople: z
+      .string()
+      .min(1)
+      .refine((v) => {
+        return !isNaN(Number(v));
+      }, "数値を入力してください"),
     description: z.string().min(10).max(1000),
     possibleDates: z
       .object({

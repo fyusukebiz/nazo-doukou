@@ -13,7 +13,6 @@ type GetRecruitsRequest = {
 
 const getRecruits = async (req: GetRecruitsRequest) => {
   const { page } = req.query;
-
   const urlSearchParam = new URLSearchParams();
   urlSearchParam.set("page", page.toString());
   if (req.query.onlyMine) urlSearchParam.set("only_mine", true.toString());

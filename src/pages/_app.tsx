@@ -20,6 +20,8 @@ import { Noto_Sans_JP } from "next/font/google";
 import { initializeFirebaseApp } from "@/libs/firebaseClient";
 import { FirebaseAuthProvider } from "@/components/providers/FirebaseAuthProvider";
 import { DefaultSeo } from "next-seo";
+import nextSeoConfig from "../../next-seo.config";
+import Head from "next/head";
 
 const notoJp = Noto_Sans_JP({
   weight: ["400", "700"],
@@ -52,37 +54,30 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <>
-      <DefaultSeo
-        defaultTitle="謎同行"
-        description="脱出ゲームや謎解きイベントに一緒に行く人を募集＆応募できるサービスです。投稿した内容はTwitterにも一緒に投稿できます。"
-        openGraph={{
-          type: "website",
-          title: "謎同行",
-          description:
-            "脱出ゲームや謎解きイベントに一緒に行く人を募集＆応募できるサービスです。投稿した内容はTwitterにも一緒に投稿できます。",
-          site_name: "謎同行",
-          url: process.env.NEXT_PUBLIC_HOST,
-          images: [
-            {
-              url: process.env.NEXT_PUBLIC_HOST + "/service_logo.png",
-              width: 800,
-              height: 600,
-              alt: "謎同行",
-              type: "image/png",
-            },
-          ],
-        }}
-        twitter={{
-          handle: "@minnanonazotok", // コンテンツ作成者のTwitterID
-          site: "@minnanonazotok", // WebサイトのTwitterID
-          cardType: "summary",
-        }}
-      />
+      <DefaultSeo {...nextSeoConfig} />
       <ThemeProvider theme={MuiTheme}>
         <FirebaseAuthProvider>
           <QueryClientProvider client={customQueryClient}>
             <IsMobileProvider>
               <RouterHistoryProvider>
+                <Head>
+                  {/* TODO: 不要なら削除 */}
+                  {/* Twitter用 next-seoだと反映されないため, _document.tsxだと重複する */}
+                  {/* <meta
+                    name="twitter:title"
+                    content={process.env.NEXT_PUBLIC_SERVICE_NAME}
+                  />
+                  <meta
+                    name="twitter:description"
+                    content={
+                      "脱出ゲームや謎解きイベントに一緒に行く人を募集＆応募できるサービスです。投稿した内容はTwitterにも一緒に投稿できます。"
+                    }
+                  />
+                  <meta
+                    name="twitter:image"
+                    content={process.env.NEXT_PUBLIC_HOST + "/service_logo.png"}
+                  /> */}
+                </Head>
                 <main className={notoJp.className} style={{ height: "100%" }}>
                   {getLayout(
                     <>

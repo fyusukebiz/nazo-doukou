@@ -169,6 +169,7 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
               label="イベント"
               placeholder="イベント"
               options={eventLocations}
+              isSearchable={true}
             />
           </Grid>
         ) : (

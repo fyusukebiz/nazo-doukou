@@ -1,22 +1,10 @@
 import { Box } from "@mui/material";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
 import { CustomCard } from "@/components/cards/CustomCard";
 import { grey } from "@mui/material/colors";
-import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvider";
 import { SignupFormProvider } from "./SignupFormProvider";
 import { SignupForm } from "./SignupForm";
 
 export const Signup = () => {
-  const router = useRouter();
-  const { currentFbUser } = useFirebaseAuthContext();
-
-  useEffect(() => {
-    if (!!currentFbUser && currentFbUser.emailVerified) {
-      router.push("/recruits");
-    }
-  }, [currentFbUser, router]);
-
   return (
     <Box
       sx={{

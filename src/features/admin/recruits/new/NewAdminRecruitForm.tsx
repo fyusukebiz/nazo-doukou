@@ -162,6 +162,7 @@ export const NewAdminRecruitForm = () => {
               label="イベント"
               placeholder="イベント"
               options={eventLocations}
+              isSearchable={true}
             />
           </Grid>
         ) : (

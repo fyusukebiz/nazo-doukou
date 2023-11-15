@@ -89,7 +89,7 @@ export const SignupForm = () => {
         control={control}
         fullWidth
       />
-      <Box sx={{ color: grey[500], fontSize: "12px" }}>
+      <Box sx={{ color: grey[700], fontSize: "14px" }}>
         どちらかのSNSのユーザー名を入力してください
       </Box>
       <InputWithLabelRHF<SignupFormSchema>

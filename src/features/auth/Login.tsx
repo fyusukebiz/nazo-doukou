@@ -1,9 +1,8 @@
-import { Box, Button, Divider, TextField, Typography } from "@mui/material";
+import { Box, Button, Divider, TextField } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { CustomCard } from "@/components/cards/CustomCard";
 import { LoadingButton } from "@mui/lab";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { setCookie } from "cookies-next";
 import { cookieOptions } from "@/constants/cookieOptions";
@@ -12,21 +11,12 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { FirebaseError } from "firebase/app";
 import { firebaseErrors } from "@/constants/firebaseErrors";
-import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvider";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const { currentFbUser } = useFirebaseAuthContext();
   const { postConfirmMyUser } = usePostConfirmMyUser();
-
-  useEffect(() => {
-    if (!!currentFbUser && currentFbUser.emailVerified) {
-      router.push("/recruits");
-    }
-  }, [currentFbUser, router]);
 
   const handleClickLogin = async () => {
     setIsLoading(true);
@@ -52,7 +42,6 @@ export const Login = () => {
       // router.push("/recruits");
       window.location.href = "/recruits";
     } catch (error) {
-      // console.log(error);
       if (error instanceof FirebaseError) {
         toast.error(firebaseErrors[error.code]);
       } else {
