@@ -17,6 +17,9 @@ export const convertEditEventDataForPatch = ({
       ...(data.description && { description: data.description.trim() }),
       ...(data.sourceUrl && { sourceUrl: data.sourceUrl.trim() }),
       ...(data.twitterTag && { twitterTag: data.twitterTag.trim() }),
+      ...(data.twitterContentTag && {
+        twitterContentTag: data.twitterContentTag.trim(),
+      }),
       ...(data.numberOfPeopleInTeam && {
         numberOfPeopleInTeam: data.numberOfPeopleInTeam.trim(),
       }),

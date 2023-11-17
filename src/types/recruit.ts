@@ -40,6 +40,8 @@ export type RecruitDetail = {
       name: string;
       coverImageFileUrl?: string;
       sourceUrl?: string; // 不要？
+      twitterTag?: string;
+      twitterContentTag?: string;
     };
     location: {
       id: string;

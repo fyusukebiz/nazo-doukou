@@ -109,7 +109,8 @@ model Event {
   coverImageFileKey String?
   numberOfPeopleInTeam String?
   timeRequired String?
-  twitterTag String?
+  twitterTag String? // #コナン脱出、など
+  twitterContentTag String? // #コナン、とかIP自体にひもづくタグ
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -215,6 +216,7 @@ model PossibleDate {
   priority Int?
   recruit Recruit @relation(fields: [recruitId], references: [id], onDelete: Cascade)
   recruitId String
+  hours String @default("") // TODO: @defaultを消す
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

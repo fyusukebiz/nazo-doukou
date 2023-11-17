@@ -68,7 +68,8 @@ export const NewRecruitForm = () => {
     if (eventLocationOptsStatus !== "success") return [];
     return eventLocationOptsData.eventLocationOptions.map((opt) => ({
       value: opt.id,
-      label: `${opt.name}(${opt.location})`,
+      label: `${opt.name} @ ${opt.building}(${opt.location})`,
+      event: opt.event,
     }));
   }, [eventLocationOptsData, eventLocationOptsStatus]);
 
@@ -87,7 +88,6 @@ export const NewRecruitForm = () => {
             const url = `${process.env.NEXT_PUBLIC_HOST}/recruits/${res.recruitId}`;
             const text = makeTwitterText({ isSelectType, rawData, url });
             const urlSearchParam = new URLSearchParams();
-            urlSearchParam.set("hashtags", "謎解き同行者募集,謎同行");
             urlSearchParam.set("text", text);
 
             window.open(
@@ -146,7 +146,15 @@ export const NewRecruitForm = () => {
           <Grid item xs={12}>
             <SingleSelectWithLabelRHF<
               NewRecruitFormSchema,
-              { label: string; value: string }
+              {
+                label: string;
+                value: string;
+                event: {
+                  id: string;
+                  twitterTag?: string;
+                  twitterContentTag?: string;
+                };
+              }
             >
               name="eventLocation"
               control={control}

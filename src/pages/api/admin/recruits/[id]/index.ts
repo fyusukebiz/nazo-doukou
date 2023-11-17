@@ -109,13 +109,19 @@ const getHandler = async (
         event: {
           id: recruit.eventLocation.event.id,
           name: recruit.eventLocation.event.name,
-          ...(recruit.eventLocation.event?.coverImageFileKey && {
+          ...(recruit.eventLocation.event.coverImageFileKey && {
             coverImageFileUrl: await generateReadSignedUrl(
               recruit.eventLocation.event.coverImageFileKey
             ),
           }),
           ...(recruit.eventLocation.event.sourceUrl && {
             sourceUrl: recruit.eventLocation.event.sourceUrl,
+          }),
+          ...(recruit.eventLocation.event.twitterTag && {
+            twitterTag: recruit.eventLocation.event.twitterTag,
+          }),
+          ...(recruit.eventLocation.event.twitterContentTag && {
+            twitterContentTag: recruit.eventLocation.event.twitterContentTag,
           }),
         },
         location: {
@@ -194,7 +200,9 @@ const patchHandler = async (
           date: z.string().min(1),
           priority: z.number().optional(),
         })
-        .array(),
+        .array()
+        .min(1)
+        .max(2),
     })
     .superRefine((val, ctx) => {
       if (val.isSelectType && !val.recruit.eventLocationId) {

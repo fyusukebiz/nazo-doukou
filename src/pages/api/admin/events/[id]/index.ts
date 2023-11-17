@@ -98,6 +98,9 @@ const getHandler = async (
     id: event.id,
     name: event.name,
     ...(event.twitterTag && { twitterTag: event.twitterTag }),
+    ...(event.twitterContentTag && {
+      twitterContentTag: event.twitterContentTag,
+    }),
     ...(event.description && { description: event.description }),
     ...(event.sourceUrl && { sourceUrl: event.sourceUrl }),
     ...(event.numberOfPeopleInTeam && {
@@ -147,6 +150,7 @@ export type PatchEventByAdminRequestBody = {
     numberOfPeopleInTeam?: string;
     timeRequired?: string;
     twitterTag?: string;
+    twitterContentTag?: string;
     gameTypeIds: string[];
     eventLocations: {
       locationId: string;
@@ -175,6 +179,7 @@ const patchHandler = async (
       name: z.string().min(1).max(30),
       organizationId: z.string().optional(),
       twitterTag: z.string().optional(),
+      twitterContentTag: z.string().optional(),
       description: z.string().max(1000).optional(),
       sourceUrl: z.string().optional(),
       coverImageFileKey: z.string().optional(),

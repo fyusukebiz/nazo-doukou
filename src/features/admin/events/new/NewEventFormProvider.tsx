@@ -9,6 +9,7 @@ const schema = z.object({
   description: z.string().max(1000),
   sourceUrl: z.string(),
   twitterTag: z.string(),
+  twitterContentTag: z.string(),
   gameTypes: z.object({ label: z.string(), value: z.string() }).array(),
   coverImageFile: z
     .custom<File | null>()
@@ -75,6 +76,7 @@ export const NewEventFormProvider = ({ children }: Props) => {
       organization: { label: "", value: null },
       gameTypes: [],
       twitterTag: "",
+      twitterContentTag: "",
       description: "",
       sourceUrl: "",
       coverImageFile: null,

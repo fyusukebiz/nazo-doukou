@@ -32,6 +32,7 @@ export type EventLocationDetail = {
     numberOfPeopleInTeam?: string;
     timeRequired?: string;
     twitterTag?: string;
+    twitterContentTag?: string;
     sourceUrl?: string;
     description?: string;
     organization?: {
@@ -57,4 +58,10 @@ export type EventLocationOption = {
   id: string;
   name: string;
   location: string;
+  building?: string;
+  event: {
+    id: string;
+    twitterTag?: string;
+    twitterContentTag?: string;
+  };
 };

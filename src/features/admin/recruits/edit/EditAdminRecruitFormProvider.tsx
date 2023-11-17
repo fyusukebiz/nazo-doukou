@@ -12,6 +12,11 @@ const schema = z
     eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
+      event: z.object({
+        id: z.string(),
+        twitterTag: z.string().optional(),
+        twitterContentTag: z.string().optional(),
+      }),
     }),
     numberOfPeople: z
       .string()
@@ -38,7 +43,8 @@ const schema = z
         }, "数値を入力してください"),
       })
       .array()
-      .min(1),
+      .min(1)
+      .max(2),
     recruitTags: z.object({ id: z.string(), name: z.string() }).array(),
   })
   .superRefine((val, ctx) => {
@@ -94,8 +100,18 @@ export const EditAdminRecruitFormProvider = ({ children, recruit }: Props) => {
         ? {
             value: recruit.eventLocation.id,
             label: `${recruit.eventLocation.event.name}(${recruit.eventLocation.location.name})`,
+            event: {
+              id: recruit.eventLocation.event.id,
+              ...(recruit.eventLocation.event.twitterTag && {
+                twitterTag: recruit.eventLocation.event.twitterTag,
+              }),
+              ...(recruit.eventLocation.event.twitterContentTag && {
+                twitterContentTag:
+                  recruit.eventLocation.event.twitterContentTag,
+              }),
+            },
           }
-        : { value: null, label: "" },
+        : { value: null, label: "", event: undefined },
       numberOfPeople: recruit.numberOfPeople?.toString() || "",
       description: recruit.description || "",
       possibleDates: recruit.possibleDates.map((date) => ({

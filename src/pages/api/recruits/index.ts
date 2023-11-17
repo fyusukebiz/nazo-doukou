@@ -304,7 +304,9 @@ const postHandler = async (
           date: z.string().min(1),
           priority: z.number().optional(),
         })
-        .array(),
+        .array()
+        .min(1)
+        .max(2),
     })
     .superRefine((val, ctx) => {
       if (val.isSelectType && !val.recruit.eventLocationId) {

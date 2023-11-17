@@ -199,7 +199,17 @@ export const EditEventForm = ({ eventId }: Props) => {
         <Grid item xs={12}>
           <InputWithLabelRHF<EditEventFormSchema>
             name="twitterTag"
-            label="Xタグ"
+            label="脱出ゲームのXタグ"
+            control={control}
+            placeholder="頭に#は不要"
+            fullWidth
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <InputWithLabelRHF<EditEventFormSchema>
+            name="twitterContentTag"
+            label="コンテンツのXタグ"
             control={control}
             placeholder="頭に#は不要"
             fullWidth

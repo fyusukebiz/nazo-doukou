@@ -23,7 +23,6 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { SingleSelectWithLabelRHF } from "@/components/forms/hook_form/SingleSelectWithLabelRHF";
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
-import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
 import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTagsQuery";
 import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
@@ -73,6 +72,7 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
     return eventLocationOptsData.eventLocationOptions.map((opt) => ({
       value: opt.id,
       label: `${opt.name}(${opt.location})`,
+      event: opt.event,
     }));
   }, [eventLocationOptsData, eventLocationOptsStatus]);
 
@@ -162,7 +162,15 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
           <Grid item xs={12}>
             <SingleSelectWithLabelRHF<
               EditAdminRecruitFormSchema,
-              { label: string; value: string }
+              {
+                label: string;
+                value: string;
+                event: {
+                  id: string;
+                  twitterTag?: string;
+                  twitterContentTag?: string;
+                };
+              }
             >
               name="eventLocation"
               control={control}

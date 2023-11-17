@@ -11,6 +11,11 @@ const schema = z
     eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
+      event: z.object({
+        id: z.string(),
+        twitterTag: z.string().optional(),
+        twitterContentTag: z.string().optional(),
+      }),
     }),
     numberOfPeople: z
       .string()
@@ -37,7 +42,8 @@ const schema = z
         }, "数値を入力してください"),
       })
       .array()
-      .min(1),
+      .min(1)
+      .max(2),
     recruitTags: z.object({ id: z.string(), name: z.string() }).array(),
   })
   .superRefine((val, ctx) => {
@@ -88,7 +94,7 @@ export const NewAdminRecruitFormProvider = ({ children }: Props) => {
       isSelectType: true,
       manualEventName: "",
       manualLocation: "",
-      eventLocation: { value: null, label: "" },
+      eventLocation: { value: null, label: "", event: undefined },
       numberOfPeople: "",
       description: "",
       possibleDates: [defaultPossibleDate],

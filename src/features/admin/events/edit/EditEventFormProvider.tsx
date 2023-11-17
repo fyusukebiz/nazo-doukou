@@ -7,6 +7,7 @@ import { z } from "zod";
 const schema = z.object({
   name: z.string().min(1).max(30),
   twitterTag: z.string(),
+  twitterContentTag: z.string(),
   description: z.string().max(1000),
   sourceUrl: z.string(),
   numberOfPeopleInTeam: z.string(), // 自由記述
@@ -77,6 +78,7 @@ export const EditEventFormProvider = ({ children, event }: Props) => {
     defaultValues: {
       name: event.name,
       twitterTag: event.twitterTag ?? "",
+      twitterContentTag: event.twitterContentTag ?? "",
       description: event.description ?? "",
       sourceUrl: event.sourceUrl ?? "",
       numberOfPeopleInTeam: event.numberOfPeopleInTeam ?? "",

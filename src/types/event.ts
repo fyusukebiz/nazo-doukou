@@ -8,6 +8,7 @@ export type EventDetail = {
   id: string;
   name: string;
   twitterTag?: string;
+  twitterContentTag?: string;
   description?: string;
   sourceUrl?: string;
   numberOfPeopleInTeam?: string;

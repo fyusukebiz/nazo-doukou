@@ -72,6 +72,9 @@ const getHandler = async (
       }),
       ...(el.event.timeRequired && { timeRequired: el.event.timeRequired }),
       ...(el.event.twitterTag && { twitterTag: el.event.twitterTag }),
+      ...(el.event.twitterContentTag && {
+        twitterContentTag: el.event.twitterContentTag,
+      }),
       ...(el.event.description && { description: el.event.description }),
       ...(el.event.sourceUrl && { sourceUrl: el.event.sourceUrl }),
       ...(el.event.organization && {

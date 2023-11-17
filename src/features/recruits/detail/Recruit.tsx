@@ -108,7 +108,7 @@ export const Recruit = () => {
                 href={`/event_locations/${recruitData.recruit.eventLocation.id}`}
                 style={{ marginLeft: "auto" }}
               >
-                詳しくはこちら
+                イベント詳細
               </Link>
             </Box>
           )}

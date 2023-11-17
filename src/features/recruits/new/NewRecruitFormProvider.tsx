@@ -11,6 +11,12 @@ const schema = z
     eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
+      building: z.string().optional(),
+      event: z.object({
+        id: z.string(),
+        twitterTag: z.string().optional(),
+        twitterContentTag: z.string().optional(),
+      }),
     }),
     numberOfPeople: z
       .string()
@@ -38,7 +44,7 @@ const schema = z
       })
       .array()
       .min(1)
-      .max(5),
+      .max(2),
     recruitTags: z.object({ id: z.string(), name: z.string() }).array(),
   })
   .superRefine((val, ctx) => {
@@ -89,7 +95,7 @@ export const NewRecruitFormProvider = ({ children }: Props) => {
       isSelectType: true,
       manualEventName: "",
       manualLocation: "",
-      eventLocation: { value: null, label: "" },
+      eventLocation: { value: null, label: "", event: undefined },
       numberOfPeople: "",
       description: "",
       possibleDates: [defaultPossibleDate],

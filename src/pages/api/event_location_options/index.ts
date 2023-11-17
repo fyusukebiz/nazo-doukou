@@ -47,6 +47,14 @@ const getHandler = async (
     id: el.id,
     name: el.event.name,
     location: el.location.name,
+    ...(el.building && { building: el.building }),
+    event: {
+      id: el.event.id,
+      ...(el.event.twitterTag && { twitterTag: el.event.twitterTag }),
+      ...(el.event.twitterContentTag && {
+        twitterContentTag: el.event.twitterContentTag,
+      }),
+    },
   }));
 
   res.status(200).json({

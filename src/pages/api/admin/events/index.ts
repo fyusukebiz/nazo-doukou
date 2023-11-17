@@ -119,6 +119,7 @@ export type PostEventByAdminRequestBody = {
     numberOfPeopleInTeam?: string;
     timeRequired?: string;
     twitterTag?: string;
+    twitterContentTag?: string;
     gameTypeIds: string[];
     eventLocations: {
       description?: string;
@@ -149,6 +150,7 @@ const postHandler = async (
       numberOfPeopleInTeam: z.string().optional(),
       timeRequired: z.string().optional(),
       twitterTag: z.string().optional(),
+      twitterContentTag: z.string().optional(),
       gameTypeIds: z.string().array(),
       eventLocations: z
         .object({
@@ -178,6 +180,9 @@ const postHandler = async (
       ...(eventData.description && { description: eventData.description }),
       ...(eventData.sourceUrl && { sourceUrl: eventData.sourceUrl }),
       ...(eventData.twitterTag && { twitterTag: eventData.twitterTag }),
+      ...(eventData.twitterContentTag && {
+        twitterContentTag: eventData.twitterContentTag,
+      }),
       ...(eventData.coverImageFileKey && {
         coverImageFileKey: eventData.coverImageFileKey,
       }),

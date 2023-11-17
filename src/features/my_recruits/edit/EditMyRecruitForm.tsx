@@ -72,6 +72,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
     return eventLocationOptsData.eventLocationOptions.map((opt) => ({
       value: opt.id,
       label: `${opt.name}(${opt.location})`,
+      event: opt.event,
     }));
   }, [eventLocationOptsData, eventLocationOptsStatus]);
 
@@ -151,7 +152,15 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
           <Grid item xs={12}>
             <SingleSelectWithLabelRHF<
               EditMyRecruitFormSchema,
-              { label: string; value: string }
+              {
+                label: string;
+                value: string;
+                event: {
+                  id: string;
+                  twitterTag?: string;
+                  twitterContentTag?: string;
+                };
+              }
             >
               name="eventLocation"
               control={control}
