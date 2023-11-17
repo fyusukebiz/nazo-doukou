@@ -164,7 +164,6 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
             >
               name="eventLocation"
               control={control}
-              label="イベント"
               placeholder="イベント"
               options={eventLocations}
               isSearchable={true}

@@ -175,7 +175,6 @@ export const NewRecruitForm = () => {
             >
               name="eventLocation"
               control={control}
-              label="イベント"
               placeholder="イベント"
               options={eventLocations}
               isSearchable={true}
