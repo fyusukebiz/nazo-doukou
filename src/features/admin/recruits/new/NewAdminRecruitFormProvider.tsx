@@ -6,8 +6,8 @@ import { z } from "zod";
 const schema = z
   .object({
     isSelectType: z.boolean(),
-    manualEventName: z.string(),
-    manualLocation: z.string(),
+    manualEventName: z.string().max(30),
+    manualLocation: z.string().max(30),
     eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
@@ -22,8 +22,11 @@ const schema = z
       .min(1)
       .refine((v) => {
         return !isNaN(Number(v));
-      }, "数値を入力してください"),
-    description: z.string().min(10).max(1000),
+      }, "数値を入力してください")
+      .refine((v) => {
+        return Number(v) > 0;
+      }, "1以上の値を入力してください"),
+    description: z.string().min(10).max(200),
     possibleDates: z
       .object({
         date: z

@@ -291,7 +291,7 @@ const postHandler = async (
         manualEventName: z.string().max(30).optional(),
         manualLocation: z.string().max(30).optional(),
         eventLocationId: z.string().optional(),
-        numberOfPeople: z.number().optional(),
+        numberOfPeople: z.number().min(1),
         description: z.string().min(10).max(200),
       }),
       recruitTagIds: z.string().array(),

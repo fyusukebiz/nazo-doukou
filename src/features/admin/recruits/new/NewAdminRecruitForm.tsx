@@ -188,11 +188,11 @@ export const NewAdminRecruitForm = () => {
 
         <Grid item xs={12}>
           <InputWithLabelRHF<NewAdminRecruitFormSchema>
-            // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
             type="number"
             name="numberOfPeople"
             label="募集人数"
             control={control}
+            inputProps={{ inputProps: { min: 1 } }}
             fullWidth
           />
         </Grid>
