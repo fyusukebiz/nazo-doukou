@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 import { Yusei_Magic } from "next/font/google";
 import { PiCaretDownBold, PiCaretUpBold } from "react-icons/pi";
+import { toCircled } from "@/utils/toCircled";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -16,19 +17,6 @@ const yuseiMagic = Yusei_Magic({
   display: "swap",
   adjustFontFallback: false,
 });
-
-const toCircled = (num: number) => {
-  if (num <= 20) {
-    const base = "①".charCodeAt(0);
-    return String.fromCharCode(base + num - 1);
-  }
-  if (num <= 35) {
-    const base = "㉑".charCodeAt(0);
-    return String.fromCharCode(base + num - 21);
-  }
-  const base = "㊱".charCodeAt(0);
-  return String.fromCharCode(base + num - 36);
-};
 
 type Props = {
   recruit: RecruitDetail;

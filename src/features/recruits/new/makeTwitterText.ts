@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { NewRecruitFormSchema } from "./NewRecruitFormProvider";
+import { toCircled } from "@/utils/toCircled";
 
 type Props = {
   isSelectType: boolean;
@@ -19,9 +20,13 @@ export const makeTwitterText = ({ isSelectType, rawData, url }: Props) => {
     ? `${rawData.eventLocation.label}`
     : `${rawData.manualEventName}(${rawData.manualLocation})`;
   text += "\n";
-  text += `${rawData.possibleDates
-    .map((date) => format(date.date!, "MM/d"))
-    .join(", ")} 募集人数${rawData.numberOfPeople}`;
+  rawData.possibleDates.forEach((date) => {
+    text += `${toCircled(date.priority)}${format(date.date!, "MM/d")} ${
+      date.hours
+    }`;
+    text += "\n";
+  });
+  text += `募集人数${rawData.numberOfPeople}`;
   text += "\n";
   text += rawData.recruitTags.map((tag) => tag.name).join(" ");
   text += "\n";
