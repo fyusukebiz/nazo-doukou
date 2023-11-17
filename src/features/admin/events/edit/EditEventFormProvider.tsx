@@ -6,8 +6,8 @@ import { z } from "zod";
 
 const schema = z.object({
   name: z.string().min(1).max(30),
-  twitterTag: z.string(),
-  twitterContentTag: z.string(),
+  twitterTag: z.string().regex(/^([^#]|^$)/i, "#をつけないでください"),
+  twitterContentTag: z.string().regex(/^([^#]|^$)/i, "#をつけないでください"),
   description: z.string().max(1000),
   sourceUrl: z.string(),
   numberOfPeopleInTeam: z.string(), // 自由記述

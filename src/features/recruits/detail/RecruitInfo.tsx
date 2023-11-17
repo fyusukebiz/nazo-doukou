@@ -66,29 +66,34 @@ export const RecruitInfo = (props: Props) => {
     >
       {location && <RecruitItem item="場所" content={location} />}
 
-      <RecruitItem
-        item="候補日"
-        content={recruit.possibleDates
-          .sort((a, b) => {
-            // 数字が小さい方が、配列の頭（左側）の方に配置される, nullは最後
-            if (typeof a.priority === "undefined") {
-              return 1;
-            }
-            if (typeof b.priority === "undefined") {
-              return -1;
-            }
-            if (a.priority === b.priority) {
-              return 0;
-            }
-            return a.priority < b.priority ? -1 : 1;
-          })
-          .map((date, index) =>
-            date.priority
-              ? toCircled(index + 1) + format(new Date(date.date), "MM/d")
-              : format(new Date(date.date), "MM/d")
-          )
-          .join(", ")}
-      />
+      {recruit.possibleDates.length === 1 ? (
+        <RecruitItem
+          item="候補日"
+          content={
+            format(new Date(recruit.possibleDates[0].date), "MM/d") +
+            " " +
+            recruit.possibleDates[0].hours
+          }
+        />
+      ) : (
+        <RecruitItem
+          item="候補日"
+          content={recruit.possibleDates
+            .sort((a, b) => {
+              // 数字が小さい方が、配列の頭（左側）の方に配置される, nullは最後
+              if (a.priority === b.priority) return 0;
+              return a.priority < b.priority ? -1 : 1;
+            })
+            .map(
+              (date, index) =>
+                toCircled(index + 1) +
+                format(new Date(date.date), "MM/d") +
+                " " +
+                date.hours
+            )
+            .join(", ")}
+        />
+      )}
 
       {recruit.user && (
         <>
