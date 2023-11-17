@@ -8,8 +8,8 @@ const schema = z.object({
   organization: z.object({ label: z.string(), value: z.string().nullable() }),
   description: z.string().max(1000),
   sourceUrl: z.string(),
-  twitterTag: z.string(),
-  twitterContentTag: z.string(),
+  twitterTag: z.string().regex(/^([^#]|^$)/i, "#をつけないでください"),
+  twitterContentTag: z.string().regex(/^([^#]|^$)/i, "#をつけないでください"),
   gameTypes: z.object({ label: z.string(), value: z.string() }).array(),
   coverImageFile: z
     .custom<File | null>()

@@ -102,7 +102,7 @@ export const EventLocation = () => {
 
             {eleData.eventLocation.event.twitterTag && (
               <Row
-                item="Xタグ1"
+                item="Xタグ"
                 content={
                   <a
                     href={

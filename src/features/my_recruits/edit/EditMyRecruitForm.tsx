@@ -197,7 +197,6 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
             name="numberOfPeople"
             label="募集人数"
             control={control}
-            inputProps={{ inputProps: { min: 1 } }}
             fullWidth
           />
         </Grid>
@@ -229,7 +228,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
                 </Box>
                 <Box sx={{ flexGrow: 1, marginRight: "10px" }}>
                   <InputWithLabelRHF<EditMyRecruitFormSchema>
-                    inputProps={{ flexGrow: "1" }}
+                    sx={{ flexGrow: "1" }}
                     placeholder="時間"
                     name={`possibleDates.${index}.hours`}
                     control={control}

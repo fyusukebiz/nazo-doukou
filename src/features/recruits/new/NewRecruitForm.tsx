@@ -30,6 +30,7 @@ import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/us
 import { FaTrash } from "react-icons/fa";
 import { grey } from "@mui/material/colors";
 import { makeTwitterText } from "./makeTwitterText";
+import axios from "axios";
 
 export const NewRecruitForm = () => {
   const router = useRouter();
@@ -86,7 +87,23 @@ export const NewRecruitForm = () => {
           router.push("/recruits");
           if (willPostToTwitter) {
             const url = `${process.env.NEXT_PUBLIC_HOST}/recruits/${res.recruitId}`;
-            const text = makeTwitterText({ isSelectType, rawData, url });
+
+            // 短縮URLを取得 TODO: 2025/8にサービス終了する
+            const body = {
+              longDynamicLink: `${process.env.NEXT_PUBLIC_FIREBASE_DYNAMIC_LINK}?link=${url}`,
+              suffix: { option: "SHORT" },
+            };
+            const shortenUrlData = await axios.post(
+              `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${process.env.NEXT_PUBLIC_FIREBASE_APIKEY}`,
+              body
+            );
+            const shortUrl = shortenUrlData.data.shortLink;
+
+            const text = makeTwitterText({
+              isSelectType,
+              rawData,
+              url: shortUrl,
+            });
             const urlSearchParam = new URLSearchParams();
             urlSearchParam.set("text", text);
 
@@ -191,7 +208,6 @@ export const NewRecruitForm = () => {
             name="numberOfPeople"
             label="募集人数"
             control={control}
-            inputProps={{ inputProps: { min: 1 } }}
             fullWidth
           />
         </Grid>
@@ -223,7 +239,7 @@ export const NewRecruitForm = () => {
                 </Box>
                 <Box sx={{ flexGrow: 1, marginRight: "10px" }}>
                   <InputWithLabelRHF<NewRecruitFormSchema>
-                    inputProps={{ flexGrow: "1" }}
+                    sx={{ flexGrow: "1" }}
                     placeholder="時間"
                     name={`possibleDates.${index}.hours`}
                     control={control}
