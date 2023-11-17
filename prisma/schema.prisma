@@ -213,7 +213,7 @@ model RecruitTagRecruit {
 model PossibleDate {
   id String @id @default(cuid())
   date DateTime
-  priority Int?
+  priority Int
   recruit Recruit @relation(fields: [recruitId], references: [id], onDelete: Cascade)
   recruitId String
   hours String @default("") // TODO: @defaultを消す

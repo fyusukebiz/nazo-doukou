@@ -22,7 +22,8 @@ export type RecruitSimple = {
   possibleDates: {
     id: string;
     date: string;
-    priority?: number;
+    hours: string;
+    priority: number;
   }[];
   createdAt: string;
 };
@@ -54,7 +55,8 @@ export type RecruitDetail = {
   possibleDates: {
     id: string;
     date: string;
-    priority?: number;
+    hours: string;
+    priority: number;
   }[];
   recruitTags: { id: string; name: string }[];
   commentsToRecruit: CommentToRecruit[];

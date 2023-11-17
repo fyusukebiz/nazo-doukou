@@ -38,9 +38,8 @@ const schema = z
               });
             return value;
           }),
-        priority: z.string().refine((v) => {
-          return !v || !isNaN(Number(v));
-        }, "数値を入力してください"),
+        hours: z.string().min(1).max(15),
+        priority: z.number().min(1),
       })
       .array()
       .min(1)
@@ -84,7 +83,7 @@ type Props = {
 
 export const defaultPossibleDate = {
   date: null,
-  priority: "",
+  hours: "",
 };
 
 export const NewRecruitFormProvider = ({ children }: Props) => {
@@ -98,7 +97,7 @@ export const NewRecruitFormProvider = ({ children }: Props) => {
       eventLocation: { value: null, label: "", event: undefined },
       numberOfPeople: "",
       description: "",
-      possibleDates: [defaultPossibleDate],
+      possibleDates: [{ ...defaultPossibleDate, priority: 1 }],
       recruitTags: [],
     },
   });

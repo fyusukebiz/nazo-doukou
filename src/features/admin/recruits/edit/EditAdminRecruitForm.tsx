@@ -76,14 +76,6 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
     }));
   }, [eventLocationOptsData, eventLocationOptsStatus]);
 
-  const recruitTags = useMemo(() => {
-    if (recruitTagsStatus !== "success") return [];
-    return recruitTagsData.recruitTags.map((tag) => ({
-      value: tag.id,
-      label: tag.name,
-    }));
-  }, [recruitTagsData, recruitTagsStatus]);
-
   const onSubmit: SubmitHandler<EditAdminRecruitFormSchema> = async (
     rawData
   ) => {
@@ -220,38 +212,41 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             {possibleDateFields.map((field, index) => (
-              <Box key={field.id} sx={{ display: "flex", alignItems: "start" }}>
-                <Box sx={{ marginRight: "15px" }}>
+              <Box
+                key={field.id}
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box
+                  sx={{ marginRight: "5px", wordBreak: "keep-all" }}
+                >{`第${field.priority}`}</Box>
+                <Box
+                  sx={{ marginRight: "10px", width: "170px", flexShrink: 0 }}
+                >
                   <DatePickerWithLabelRHF<EditAdminRecruitFormSchema>
                     name={`possibleDates.${index}.date`}
                     control={control}
-                    endIcon={<BiCalendar size={30} />}
+                    endIcon={<BiCalendar size={25} />}
                     isClearable
                   />
                 </Box>
-                <Box sx={{ width: "100px", marginRight: "15px" }}>
+                <Box sx={{ flexGrow: 1, marginRight: "10px" }}>
                   <InputWithLabelRHF<EditAdminRecruitFormSchema>
-                    type="number"
-                    inputProps={{
-                      // inputMode: "numeric",
-                      // pattern: "[0-9]*",
-                      width: "100px",
-                    }}
-                    placeholder="優先度"
-                    name={`possibleDates.${index}.priority`}
+                    inputProps={{ flexGrow: "1" }}
+                    placeholder="時間"
+                    name={`possibleDates.${index}.hours`}
                     control={control}
                   />
                 </Box>
                 {index !== 0 ? (
                   <IconButton
-                    sx={{ marginLeft: "auto" }}
+                    sx={{ marginLeft: "auto", padding: "0px", width: "20px" }}
                     onClick={() => removePossibleDate(index)}
                   >
-                    <FaTrash />
+                    <FaTrash size={20} />
                   </IconButton>
                 ) : (
                   <Box
-                    sx={{ width: "40px", height: "40px", flexShrink: 0 }}
+                    sx={{ width: "20px", height: "30px", flexShrink: 0 }}
                   ></Box>
                 )}
               </Box>
@@ -263,8 +258,13 @@ export const EditAdminRecruitForm = ({ recruit }: Props) => {
               color="teal"
               sx={{ marginX: "auto" }}
               startIcon={<AiOutlinePlus />}
-              onClick={() => appendPossibleDate(defaultPossibleDate)}
-              disabled={possibleDates.length > 4}
+              onClick={() =>
+                appendPossibleDate({
+                  ...defaultPossibleDate,
+                  priority: possibleDates.length + 1,
+                })
+              }
+              disabled={possibleDates.length > 1}
             >
               候補日を追加する
             </Button>

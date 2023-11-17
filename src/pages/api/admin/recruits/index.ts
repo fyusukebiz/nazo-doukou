@@ -131,13 +131,7 @@ const getHandler = async (
       ...(recruit.numberOfPeople && { numberOfPeople: recruit.numberOfPeople }),
       possibleDates: recruit.possibleDates
         .sort((a, b) => {
-          // 数字が小さい方が、配列の頭（左側）の方に配置される, nullは最後
-          if (a.priority === null) {
-            return 1;
-          }
-          if (b.priority === null) {
-            return -1;
-          }
+          // 数字が小さい方が、配列の頭（左側）の方に配置される
           if (a.priority === b.priority) {
             return 0;
           }
@@ -146,7 +140,8 @@ const getHandler = async (
         .map((date) => ({
           id: date.id,
           date: date.date.toISOString(),
-          ...(date.priority && { priority: date.priority }),
+          hours: date.hours,
+          priority: date.priority,
         })),
       createdAt: recruit.createdAt.toISOString(),
     }))
@@ -173,7 +168,8 @@ export type PostRecruitByAdminRequestBody = {
   recruitTagIds: string[];
   possibleDates: {
     date: string;
-    priority?: number;
+    hours: string;
+    priority: number;
   }[];
 };
 export type PostRecruitByAdminResponseSuccessBody = { recruitId: string };
@@ -200,7 +196,8 @@ const postHandler = async (
       possibleDates: z
         .object({
           date: z.string().min(1),
-          priority: z.number().optional(),
+          hours: z.string().min(1).max(15),
+          priority: z.number().min(1),
         })
         .array()
         .min(1)

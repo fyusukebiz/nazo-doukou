@@ -214,7 +214,8 @@ const getHandler = async (
     possibleDates: recruit.possibleDates.map((date) => ({
       id: date.id,
       date: date.date.toISOString(),
-      ...(date.priority && { priority: date.priority }),
+      hours: date.hours,
+      priority: date.priority,
     })),
     commentsToRecruit: await Promise.all(
       recruit.commentsToRecruit.map(async (comment) => ({
@@ -271,7 +272,8 @@ export type PatchRecruitRequestBody = {
   recruitTagIds: string[];
   possibleDates: {
     date: string;
-    priority?: number;
+    hours: string;
+    priority: number;
   }[];
 };
 export type PatchRecruitResponseSuccessBody = "";
@@ -311,7 +313,8 @@ const patchHandler = async (
       possibleDates: z
         .object({
           date: z.string().min(1),
-          priority: z.number().optional(),
+          hours: z.string().min(1).max(15),
+          priority: z.number().min(1),
         })
         .array()
         .min(1)
@@ -384,6 +387,7 @@ const patchHandler = async (
       data: {
         recruitId: recruitId,
         date: possibleDate.date,
+        hours: possibleDate.hours,
         priority: possibleDate.priority,
       },
     });

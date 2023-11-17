@@ -27,7 +27,8 @@ export const convertAdminRecruitDataForPatch = ({
     recruitTagIds: data.recruitTags.map((tag) => tag.id),
     possibleDates: data.possibleDates.map((date) => ({
       date: date.date!.toISOString(),
-      ...(date.priority && { priority: Number(date.priority) as number }),
+      hours: date.hours,
+      priority: date.priority,
     })),
   };
 };
