@@ -12,11 +12,13 @@ const schema = z
     eventLocation: z.object({
       label: z.string(),
       value: z.string().nullable(),
-      event: z.object({
-        id: z.string(),
-        twitterTag: z.string().optional(),
-        twitterContentTag: z.string().optional(),
-      }),
+      event: z
+        .object({
+          id: z.string(),
+          twitterTag: z.string().optional(),
+          twitterContentTag: z.string().optional(),
+        })
+        .optional(),
     }),
     numberOfPeople: z
       .string()

@@ -322,7 +322,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
 
       <Box sx={{ display: "flex", marginTop: "10px" }}>
         <Button
-          sx={{ marginLeft: "auto", color: grey[300] }}
+          sx={{ marginLeft: "auto", color: grey[500] }}
           size="small"
           onClick={handleClickDelete}
         >

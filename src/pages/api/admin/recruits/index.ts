@@ -227,6 +227,25 @@ const postHandler = async (
           message: "イベント名を記載してください",
         });
       }
+
+      if (
+        val.isSelectType &&
+        (!!val.recruit.manualLocation || !!val.recruit.manualEventName)
+      ) {
+        ctx.addIssue({
+          path: ["recruit.manualEventName"],
+          code: "custom",
+          message: "入力が間違っています",
+        });
+      }
+
+      if (!val.isSelectType && !!val.recruit.eventLocationId) {
+        ctx.addIssue({
+          path: ["recruit.eventLocationId"],
+          code: "custom",
+          message: "入力が間違っています",
+        });
+      }
     });
 
   const validation = schema.safeParse(rawParams);
@@ -235,7 +254,7 @@ const postHandler = async (
 
   const recruitData = validation.data.recruit;
   const recruit = await prisma.recruit.create({
-    data: { ...recruitData },
+    data: recruitData,
   });
 
   const possibleDatesData = validation.data.possibleDates;
@@ -244,6 +263,7 @@ const postHandler = async (
       data: {
         recruitId: recruit.id,
         date: possibleDate.date,
+        hours: possibleDate.hours,
         priority: possibleDate.priority,
       },
     });

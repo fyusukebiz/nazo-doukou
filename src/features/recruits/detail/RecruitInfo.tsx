@@ -10,6 +10,7 @@ import { ReactNode, useMemo } from "react";
 import { Yusei_Magic } from "next/font/google";
 import { PiCaretDownBold, PiCaretUpBold } from "react-icons/pi";
 import { toCircled } from "@/utils/toCircled";
+import { insertLinkInText } from "@/utils/insertLinkInText";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -260,7 +261,14 @@ export const RecruitInfo = (props: Props) => {
         </Box>
       )}
 
-      {recruit.description && <Box>{recruit.description}</Box>}
+      {recruit.description && (
+        <Box
+          sx={{ whiteSpace: "pre-wrap" }}
+          dangerouslySetInnerHTML={{
+            __html: insertLinkInText(recruit.description),
+          }}
+        ></Box>
+      )}
     </Box>
   );
 };

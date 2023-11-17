@@ -12,20 +12,21 @@ const schema = z
       label: z.string(),
       value: z.string().nullable(),
       building: z.string().optional(),
-      event: z.object({
-        id: z.string(),
-        twitterTag: z.string().optional(),
-        twitterContentTag: z.string().optional(),
-      }),
+      event: z
+        .object({
+          id: z.string(),
+          twitterTag: z.string().optional(),
+          twitterContentTag: z.string().optional(),
+        })
+        .optional(),
     }),
     numberOfPeople: z
       .string()
-      .min(1)
       .refine((v) => {
         return !isNaN(Number(v));
       }, "数値を入力してください")
       .refine((v) => {
-        return Number(v) > 0;
+        return !!v && Number(v) > 0;
       }, "1以上の値を入力してください"),
     description: z.string().min(10).max(200),
     possibleDates: z

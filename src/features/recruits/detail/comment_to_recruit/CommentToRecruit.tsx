@@ -13,6 +13,7 @@ import { useState } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { UserAvatar } from "@/components/avatars/UserAvatar";
 import { GetRecruitResponseSuccessBody } from "@/pages/api/recruits/[id]";
+import { insertLinkInText } from "@/utils/insertLinkInText";
 
 type Props = {
   commentToRecruit: CommentToRecruitType;
@@ -69,11 +70,13 @@ export const CommentToRecruit = (props: Props) => {
             padding: "12px",
             border: `1px solid ${grey[300]}`,
             background: grey[100],
+            whiteSpace: "pre-wrap",
           }}
           className="word-wrap"
-        >
-          {commentToRecruit.message}
-        </Box>
+          dangerouslySetInnerHTML={{
+            __html: insertLinkInText(commentToRecruit.message),
+          }}
+        ></Box>
 
         {/* 投稿時間、ボタン類 */}
         <Box sx={{ display: "flex", marginTop: "5px" }}>

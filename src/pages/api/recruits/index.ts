@@ -173,7 +173,9 @@ const getHandler = async (
 
     const result = await prismaWithPaginate.recruit
       .paginate({
-        ...(user && { where: { userId: user.id } }),
+        ...(user && {
+          where: { userId: user.role === "ADMIN" ? null : user.id },
+        }),
         ...(freeWord && {
           where: {
             ...(user && { userId: user.id }),
@@ -327,6 +329,25 @@ const postHandler = async (
           path: ["recruit.manualEventName"],
           code: "custom",
           message: "イベント名を記載してください",
+        });
+      }
+
+      if (
+        val.isSelectType &&
+        (!!val.recruit.manualLocation || !!val.recruit.manualEventName)
+      ) {
+        ctx.addIssue({
+          path: ["recruit.manualEventName"],
+          code: "custom",
+          message: "入力が間違っています",
+        });
+      }
+
+      if (!val.isSelectType && !!val.recruit.eventLocationId) {
+        ctx.addIssue({
+          path: ["recruit.eventLocationId"],
+          code: "custom",
+          message: "入力が間違っています",
         });
       }
     });

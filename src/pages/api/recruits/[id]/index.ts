@@ -344,6 +344,25 @@ const patchHandler = async (
           message: "イベント名を記載してください",
         });
       }
+
+      if (
+        val.isSelectType &&
+        (!!val.recruit.manualLocation || !!val.recruit.manualEventName)
+      ) {
+        ctx.addIssue({
+          path: ["recruit.manualEventName"],
+          code: "custom",
+          message: "入力が間違っています",
+        });
+      }
+
+      if (!val.isSelectType && !!val.recruit.eventLocationId) {
+        ctx.addIssue({
+          path: ["recruit.eventLocationId"],
+          code: "custom",
+          message: "入力が間違っています",
+        });
+      }
     });
 
   const validation = schema.safeParse(rawParams);
@@ -429,8 +448,11 @@ const deleteHandler = async (
   });
   if (!recruit) return res.status(404).json({ error: "募集がありません" });
 
-  // 投稿者しか削除できない
-  if (!recruit.user || recruit.user.id !== user.id) {
+  // 投稿者かadminしか削除できない
+  if (
+    !recruit.user ||
+    (recruit.user.role !== "ADMIN" && recruit.user.id !== user.id)
+  ) {
     return res.status(403).json({ error: "権限がありません" });
   }
 

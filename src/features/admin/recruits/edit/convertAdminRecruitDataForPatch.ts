@@ -8,15 +8,18 @@ export const convertAdminRecruitDataForPatch = ({
   return {
     isSelectType: data.isSelectType,
     recruit: {
-      ...(data.manualEventName && {
-        manualEventName: data.manualEventName.trim(),
-      }),
-      ...(data.manualLocation && {
-        manualLocation: data.manualLocation.trim(),
-      }),
-      ...(data.eventLocation.value && {
-        eventLocationId: data.eventLocation.value,
-      }),
+      ...(!data.isSelectType &&
+        data.manualEventName && {
+          manualEventName: data.manualEventName.trim(),
+        }),
+      ...(!data.isSelectType &&
+        data.manualLocation && {
+          manualLocation: data.manualLocation.trim(),
+        }),
+      ...(data.isSelectType &&
+        data.eventLocation.value && {
+          eventLocationId: data.eventLocation.value,
+        }),
       ...(data.numberOfPeople && {
         numberOfPeople: Number(data.numberOfPeople) as number,
       }),

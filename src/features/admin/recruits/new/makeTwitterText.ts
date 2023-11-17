@@ -26,9 +26,9 @@ export const makeTwitterText = ({ isSelectType, rawData, url }: Props) => {
   text += rawData.recruitTags.map((tag) => tag.name).join(" ");
   text += "\n";
   text += "#謎解き同行者募集 #謎同行 #脱出ゲーム";
-  if (rawData.eventLocation.event.twitterContentTag)
+  if (rawData.eventLocation.event?.twitterContentTag)
     text += ` #${rawData.eventLocation.event.twitterContentTag}`;
-  if (rawData.eventLocation.event.twitterTag)
+  if (rawData.eventLocation.event?.twitterTag)
     text += ` #${rawData.eventLocation.event.twitterTag}`;
   text += "\n";
   text += "詳細↓";

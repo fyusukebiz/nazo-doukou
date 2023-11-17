@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { useRouter } from "next/router";
 import { ReactNode, useMemo } from "react";
 import { Yusei_Magic } from "next/font/google";
+import { insertLinkInText } from "@/utils/insertLinkInText";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -171,7 +172,12 @@ export const EventLocation = () => {
             )}
 
             {eleData.eventLocation.description && (
-              <Row item="詳細" content={eleData.eventLocation.description} />
+              <Box
+                sx={{ whiteSpace: "pre-wrap" }}
+                dangerouslySetInnerHTML={{
+                  __html: insertLinkInText(eleData.eventLocation.description),
+                }}
+              ></Box>
             )}
           </Box>
         </Container>
