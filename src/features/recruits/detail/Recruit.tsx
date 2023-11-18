@@ -8,6 +8,7 @@ import { SyntheticEvent, useCallback, useState } from "react";
 import { RecruitInfo } from "./RecruitInfo";
 import { CommentsToRecruit } from "./CommentsToRecruit";
 import Link from "next/link";
+import { NextSeo } from "next-seo";
 
 type Tab = "recruitInfo" | "commentsToRecruit";
 
@@ -59,76 +60,103 @@ export const Recruit = () => {
   // }, [router]);
 
   return (
-    <Box sx={{ height: "100%", overflowY: "scroll" }}>
-      <SubPageHeader title="募集詳細" />
-      {recruitStatus === "pending" && <LoadingSpinner />}
+    <>
       {recruitStatus === "success" && (
-        <Container maxWidth="sm" sx={{ padding: "24px" }}>
-          <Box sx={{ marginBottom: "15px" }}>
-            {recruitData.recruit.eventLocation ? (
-              <img
-                src={recruitData.recruit.eventLocation.event.coverImageFileUrl}
-                style={{
-                  objectFit: "cover",
-                  maxHeight: "220px",
-                  width: "100%",
-                  cursor: "pointer",
-                  borderRadius: "10px",
-                }}
-                alt="image"
-              />
-            ) : (
-              <Box
-                sx={{
-                  height: "220px",
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  borderRadius: "10px",
-                  backgroundColor: grey[400],
-                }}
-              >
-                <Box sx={{ color: grey[600], fontSize: "36px" }}>NO IMAGE</Box>
+        <NextSeo
+          openGraph={{
+            title: recruitData.recruit.manualEventName
+              ? recruitData.recruit.manualEventName
+              : recruitData.recruit.eventLocation!.event.name,
+            ...(recruitData.recruit.eventLocation?.event.coverImageFileUrl && {
+              images: [
+                {
+                  url: recruitData.recruit.eventLocation.event
+                    .coverImageFileUrl,
+
+                  alt: recruitData.recruit.manualEventName
+                    ? recruitData.recruit.manualEventName
+                    : recruitData.recruit.eventLocation!.event.name,
+                },
+              ],
+            }),
+          }}
+        />
+      )}
+      <Box sx={{ height: "100%", overflowY: "scroll" }}>
+        <SubPageHeader title="募集詳細" />
+        {recruitStatus === "pending" && <LoadingSpinner />}
+        {recruitStatus === "success" && (
+          <Container maxWidth="sm" sx={{ padding: "24px" }}>
+            <Box sx={{ marginBottom: "15px" }}>
+              {recruitData.recruit.eventLocation ? (
+                <img
+                  src={
+                    recruitData.recruit.eventLocation.event.coverImageFileUrl
+                  }
+                  style={{
+                    objectFit: "cover",
+                    maxHeight: "220px",
+                    width: "100%",
+                    cursor: "pointer",
+                    borderRadius: "10px",
+                  }}
+                  alt="image"
+                />
+              ) : (
+                <Box
+                  sx={{
+                    height: "220px",
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    borderRadius: "10px",
+                    backgroundColor: grey[400],
+                  }}
+                >
+                  <Box sx={{ color: grey[600], fontSize: "36px" }}>
+                    NO IMAGE
+                  </Box>
+                </Box>
+              )}
+            </Box>
+
+            {/* イベント名 */}
+            <Box sx={{ fontSize: "20px" }}>
+              {recruitData.recruit.manualEventName
+                ? recruitData.recruit.manualEventName
+                : recruitData.recruit.eventLocation!.event.name}
+            </Box>
+
+            {recruitData.recruit.eventLocation?.id && (
+              <Box sx={{ display: "flex", marginY: "7px" }}>
+                <Link
+                  href={`/event_locations/${recruitData.recruit.eventLocation.id}`}
+                  style={{ marginLeft: "auto" }}
+                >
+                  イベント詳細
+                </Link>
               </Box>
             )}
-          </Box>
 
-          {/* イベント名 */}
-          <Box sx={{ fontSize: "20px" }}>
-            {recruitData.recruit.manualEventName
-              ? recruitData.recruit.manualEventName
-              : recruitData.recruit.eventLocation!.event.name}
-          </Box>
-
-          {recruitData.recruit.eventLocation?.id && (
-            <Box sx={{ display: "flex", marginY: "7px" }}>
-              <Link
-                href={`/event_locations/${recruitData.recruit.eventLocation.id}`}
-                style={{ marginLeft: "auto" }}
-              >
-                イベント詳細
-              </Link>
-            </Box>
-          )}
-
-          {recruitData.recruit && (
-            <>
-              <RecruitInfo recruit={recruitData.recruit} />
-              {recruitData.recruit.user && (
-                <>
-                  <Divider sx={{ marginY: "20px" }} />
-                  <CommentsToRecruit
-                    recruit={recruitData.recruit}
-                    refetchRecruit={refetchRecruit}
-                  />
-                </>
-              )}
-            </>
-          )}
-        </Container>
-      )}
-    </Box>
+            {recruitData.recruit && (
+              <>
+                <RecruitInfo recruit={recruitData.recruit} />
+                {recruitData.recruit.user && (
+                  <>
+                    <Divider sx={{ marginY: "20px" }} />
+                    <CommentsToRecruit
+                      recruit={recruitData.recruit}
+                      refetchRecruit={refetchRecruit}
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </Container>
+        )}
+      </Box>
+    </>
   );
 };

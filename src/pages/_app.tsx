@@ -21,7 +21,6 @@ import { initializeFirebaseApp } from "@/libs/firebaseClient";
 import { FirebaseAuthProvider } from "@/components/providers/FirebaseAuthProvider";
 import { DefaultSeo } from "next-seo";
 import nextSeoConfig from "../../next-seo.config";
-import Head from "next/head";
 
 const notoJp = Noto_Sans_JP({
   weight: ["400", "700"],
@@ -60,24 +59,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           <QueryClientProvider client={customQueryClient}>
             <IsMobileProvider>
               <RouterHistoryProvider>
-                <Head>
-                  {/* TODO: 不要なら削除 */}
-                  {/* Twitter用 next-seoだと反映されないため, _document.tsxだと重複する */}
-                  {/* <meta
-                    name="twitter:title"
-                    content={process.env.NEXT_PUBLIC_SERVICE_NAME}
-                  />
-                  <meta
-                    name="twitter:description"
-                    content={
-                      "脱出ゲームや謎解きイベントに一緒に行く人を募集＆応募できるサービスです。投稿した内容はTwitterにも一緒に投稿できます。"
-                    }
-                  />
-                  <meta
-                    name="twitter:image"
-                    content={process.env.NEXT_PUBLIC_HOST + "/service_logo.png"}
-                  /> */}
-                </Head>
                 <main className={notoJp.className} style={{ height: "100%" }}>
                   {getLayout(
                     <>
