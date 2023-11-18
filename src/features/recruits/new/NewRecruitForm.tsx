@@ -69,7 +69,9 @@ export const NewRecruitForm = () => {
     if (eventLocationOptsStatus !== "success") return [];
     return eventLocationOptsData.eventLocationOptions.map((opt) => ({
       value: opt.id,
-      label: `${opt.name} @ ${opt.building}(${opt.location})`,
+      label: !!opt.building
+        ? `${opt.name} @ ${opt.building}(${opt.location})`
+        : `${opt.name} @ ${opt.location}`,
       event: opt.event,
     }));
   }, [eventLocationOptsData, eventLocationOptsStatus]);

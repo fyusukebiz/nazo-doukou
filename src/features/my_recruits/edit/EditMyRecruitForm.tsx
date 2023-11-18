@@ -116,7 +116,7 @@ export const EditMyRecruitForm = ({ recruit }: Props) => {
       { path: { recruitId: recruit.id } },
       {
         onSuccess: () => {
-          router.push("/my_recruits");
+          router.back();
         },
       }
     );
