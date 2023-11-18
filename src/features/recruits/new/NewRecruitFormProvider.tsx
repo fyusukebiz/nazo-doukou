@@ -20,14 +20,9 @@ const schema = z
         })
         .optional(),
     }),
-    numberOfPeople: z
-      .string()
-      .refine((v) => {
-        return !isNaN(Number(v));
-      }, "数値を入力してください")
-      .refine((v) => {
-        return !!v && Number(v) > 0;
-      }, "1以上の値を入力してください"),
+    numberOfPeople: z.string().refine((v) => {
+      return !v || !isNaN(Number(v));
+    }, "数値を入力してください"),
     description: z.string().min(10).max(200),
     possibleDates: z
       .object({

@@ -20,10 +20,10 @@ export const convertMyRecruitDataForPatch = ({
         data.eventLocation.value && {
           eventLocationId: data.eventLocation.value,
         }),
-      ...(data.numberOfPeople && {
+      ...(!!data.numberOfPeople && {
         numberOfPeople: Number(data.numberOfPeople) as number,
       }),
-      ...(data.description && {
+      ...(!!data.description && {
         description: data.description.trim(),
       }),
     },

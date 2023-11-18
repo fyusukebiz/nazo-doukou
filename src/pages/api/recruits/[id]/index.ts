@@ -306,7 +306,7 @@ const patchHandler = async (
         manualEventName: z.string().max(30).optional(),
         manualLocation: z.string().max(30).optional(),
         eventLocationId: z.string().optional(),
-        numberOfPeople: z.number().min(1),
+        numberOfPeople: z.number().optional(),
         description: z.string().min(10).max(200),
       }),
       recruitTagIds: z.string().array(),
@@ -449,10 +449,7 @@ const deleteHandler = async (
   if (!recruit) return res.status(404).json({ error: "募集がありません" });
 
   // 投稿者かadminしか削除できない
-  if (
-    !recruit.user ||
-    (recruit.user.role !== "ADMIN" && recruit.user.id !== user.id)
-  ) {
+  if (!recruit.user || recruit.user.id !== user.id) {
     return res.status(403).json({ error: "権限がありません" });
   }
 

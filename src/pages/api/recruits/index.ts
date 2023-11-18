@@ -173,18 +173,15 @@ const getHandler = async (
 
     const result = await prismaWithPaginate.recruit
       .paginate({
-        ...(user && {
-          where: { userId: user.role === "ADMIN" ? null : user.id },
-        }),
-        ...(freeWord && {
-          where: {
-            ...(user && { userId: user.id }),
+        where: {
+          ...(user && { userId: user.id }),
+          ...(freeWord && {
             OR: [
               { eventLocation: { event: { name: { contains: freeWord } } } },
               { manualEventName: { contains: freeWord } },
             ],
-          },
-        }),
+          }),
+        },
         include: {
           eventLocation: { include: { event: true, location: true } },
           possibleDates: true,
@@ -293,7 +290,7 @@ const postHandler = async (
         manualEventName: z.string().max(30).optional(),
         manualLocation: z.string().max(30).optional(),
         eventLocationId: z.string().optional(),
-        numberOfPeople: z.number().min(1),
+        numberOfPeople: z.number().optional(),
         description: z.string().min(10).max(200),
       }),
       recruitTagIds: z.string().array(),
