@@ -2,7 +2,6 @@ import { Recruit } from "@/features/recruits/detail/Recruit";
 import { generateReadSignedUrl } from "@/libs/cloudStorage";
 import prisma from "@/libs/prisma";
 import { GetServerSideProps } from "next";
-import { NextSeo } from "next-seo";
 
 export const getServerSideProps: GetServerSideProps = async ({
   req,
@@ -24,37 +23,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     ? recruit.manualEventName
     : recruit.eventLocation!.event.name;
 
-  console.log("recruit", recruit);
-  console.log("coverImageFileUrl", coverImageFileUrl);
-  console.log("name", name);
-
+  // 下の情報は、_app.tsxで使う
   return { props: { event: { name, coverImageFileUrl } } };
 };
 
-type Props = {
-  event: {
-    name: string;
-    coverImageFileUrl?: string;
-  };
-};
-
-export default function RecruitPage({ event }: Props) {
-  return (
-    <>
-      <NextSeo
-        openGraph={{
-          title: event.name,
-          ...(event.coverImageFileUrl && {
-            images: [
-              {
-                url: event.coverImageFileUrl,
-                alt: event.name,
-              },
-            ],
-          }),
-        }}
-      />
-      <Recruit />
-    </>
-  );
+export default function RecruitPage() {
+  return <Recruit />;
 }

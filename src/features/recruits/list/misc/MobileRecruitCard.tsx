@@ -18,7 +18,7 @@ export const MobileRecruitCard = (props: Props) => {
   const handleClickCard = () => {
     if (!saveScrollPosition) return;
     saveScrollPosition();
-    router.push(`/recruits/${recruit.id}?tab=recruitInfo`);
+    router.push(`/recruits/${recruit.id}`);
   };
 
   const location = useMemo(() => {

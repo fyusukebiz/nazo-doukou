@@ -1,15 +1,12 @@
 import { SubPageHeader } from "@/components/layouts/SubPageHeader";
 import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useRecruitQuery } from "@/react_queries/recruits/useRecruitQuery";
-import { Box, Container, Divider, Tab } from "@mui/material";
+import { Box, Container, Divider } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useRouter } from "next/router";
-import { SyntheticEvent, useCallback, useState } from "react";
 import { RecruitInfo } from "./RecruitInfo";
 import { CommentsToRecruit } from "./CommentsToRecruit";
 import Link from "next/link";
-
-type Tab = "recruitInfo" | "commentsToRecruit";
 
 export const Recruit = () => {
   const router = useRouter();
@@ -22,18 +19,15 @@ export const Recruit = () => {
     path: { recruitId },
   });
 
-  const [tab, setTab] = useState<Tab>("recruitInfo");
-
   // TODO: ブラウザバックしたときに正しく動かない、react-queryかブラウザのバグ？
-  const handleChangeTab = useCallback(
-    (event: SyntheticEvent, newValue: Tab) => {
-      setTab(newValue);
-      // router.push(`/recruits/${recruitId}?tab=${newValue}`, undefined, {
-      //   shallow: true,
-      // });
-    },
-    []
-  );
+  // const handleChangeTab = useCallback(
+  //   (event: SyntheticEvent, newValue: Tab) => {
+  // router.push(`/recruits/${recruitId}?tab=${newValue}`, undefined, {
+  //   shallow: true,
+  // });
+  //   },
+  //   []
+  // );
 
   // 初回の設定
   // useEffect(() => {
