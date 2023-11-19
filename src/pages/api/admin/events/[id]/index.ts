@@ -128,9 +128,12 @@ const getHandler = async (
       ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
       ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
     })),
-    gameTypes: event.eventGameTypes.map((egt) => ({
-      id: egt.gameType.id,
-      name: egt.gameType.name,
+    eventGameTypes: event.eventGameTypes.map((egt) => ({
+      id: egt.id,
+      gameType: {
+        id: egt.gameType.id,
+        name: egt.gameType.name,
+      },
     })),
   };
 
@@ -153,6 +156,7 @@ export type PatchEventByAdminRequestBody = {
     twitterContentTag?: string;
     gameTypeIds: string[];
     eventLocations: {
+      id?: string; // undefinedなら新規作成
       locationId: string;
       description?: string;
       building?: string;
@@ -188,6 +192,7 @@ const patchHandler = async (
       gameTypeIds: z.string().array(),
       eventLocations: z
         .object({
+          id: z.string().optional(),
           locationId: z.string().min(1),
           building: z.string().max(12).optional(),
           description: z.string().max(200).optional(),
@@ -236,26 +241,36 @@ const patchHandler = async (
     },
   });
 
-  // TODO: 一旦全て消す、後々更新に切り替えること
-  for (const egtId of eventInDb.eventGameTypes.map((egt) => egt.id)) {
-    await prisma.eventGameType.delete({
-      where: { id: egtId },
-    });
-  }
-  const gameTypeIds = validation.data.event.gameTypeIds;
-  for (const gameTypeId of gameTypeIds) {
+  /* EventGameType  */
+  const newGameTypeIds = validation.data.event.gameTypeIds;
+  const gameTypeIdsInDb = eventInDb.eventGameTypes.map((egt) => egt.gameTypeId);
+
+  // 作成
+  const gameTypeIdsToCreate = newGameTypeIds.filter((newGtId) =>
+    gameTypeIdsInDb.every((gtIdInDb) => gtIdInDb !== newGtId)
+  );
+  for (const gameTypeId of gameTypeIdsToCreate) {
     await prisma.eventGameType.create({
       data: { eventId, gameTypeId },
     });
   }
 
-  for (const eleId of eventInDb.eventLocations.map((el) => el.id)) {
-    await prisma.eventLocation.delete({
-      where: { id: eleId },
+  //削除
+  const gameTypeIdsToDelete = gameTypeIdsInDb.filter((gtIdInDb) =>
+    newGameTypeIds.every((newGtId) => gtIdInDb !== newGtId)
+  );
+  for (const gameTypeId of gameTypeIdsToDelete) {
+    await prisma.eventGameType.delete({
+      where: { eventId_gameTypeId: { eventId, gameTypeId } },
     });
   }
-  const eventLocations = validation.data.event.eventLocations;
-  for (const el of eventLocations) {
+
+  /* EventLocation */
+  const newEventLocations = validation.data.event.eventLocations;
+
+  // 新規作成
+  const eventLocationsToCreate = newEventLocations.filter((el) => !el.id);
+  for (const el of eventLocationsToCreate) {
     await prisma.eventLocation.create({
       data: {
         eventId: eventId,
@@ -266,6 +281,36 @@ const patchHandler = async (
         ...(el.endedAt && { endedAt: el.endedAt }),
         ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
       },
+    });
+  }
+
+  // 更新
+  const eventLocationsToUpdate = newEventLocations.filter((el) => !!el.id);
+  for (const el of eventLocationsToUpdate) {
+    await prisma.eventLocation.update({
+      where: { id: el.id },
+      data: {
+        locationId: el.locationId,
+        description: !!el.description ? el.description : null,
+        building: !!el.building ? el.building : null,
+        startedAt: !!el.startedAt ? el.startedAt : null,
+        endedAt: !!el.endedAt ? el.endedAt : null,
+        detailedSchedule: !!el.detailedSchedule ? el.detailedSchedule : null,
+      },
+    });
+  }
+
+  // 削除
+  const eventLocationsInDb = eventInDb.eventLocations;
+  const eventLocationIdsToDelete = eventLocationsInDb
+    .filter((elInDb) =>
+      newEventLocations.every((newEl) => elInDb.id !== newEl.id)
+    )
+    .map((el) => el.id);
+
+  for (const eleId of eventLocationIdsToDelete) {
+    await prisma.eventLocation.delete({
+      where: { id: eleId },
     });
   }
 

@@ -30,8 +30,11 @@ export type EventDetail = {
     endedAt?: string;
     detailedSchedule?: string;
   }[];
-  gameTypes: {
+  eventGameTypes: {
     id: string;
-    name: string;
+    gameType: {
+      id: string;
+      name: string;
+    };
   }[];
 };

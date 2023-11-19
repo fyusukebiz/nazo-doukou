@@ -23,7 +23,7 @@ const schema = z.object({
   sex: z.object({ value: z.nativeEnum(Sex), label: z.string() }).nullable(),
   startedAt: z.date().nullable(),
   description: z.string(),
-  twitter: z.string(),
+  twitter: z.string().regex(/^([^@]|^$)/i, "@をつけないでください"),
   instagram: z.string(),
   userGameTypes: z
     .object({

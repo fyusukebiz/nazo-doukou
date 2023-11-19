@@ -23,9 +23,10 @@ export const convertEditEventDataForPatch = ({
       ...(data.numberOfPeopleInTeam && {
         numberOfPeopleInTeam: data.numberOfPeopleInTeam.trim(),
       }),
-      gameTypeIds: data.gameTypes.map((gameType) => gameType.value),
+      gameTypeIds: data.gameTypes.map((gameType) => gameType.id),
       ...(data.timeRequired && { timeRequired: data.timeRequired.trim() }),
       eventLocations: data.eventLocations.map((el) => ({
+        ...(el.id && { id: el.id }), // 新規作成ならidが入らない
         locationId: el.location.value!, // バリデーションでnullではない
         ...(el.building && { building: el.building.trim() }),
         ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),

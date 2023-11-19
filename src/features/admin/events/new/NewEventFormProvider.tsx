@@ -10,7 +10,7 @@ const schema = z.object({
   sourceUrl: z.string(),
   twitterTag: z.string().regex(/^([^#]|^$)/i, "#をつけないでください"),
   twitterContentTag: z.string().regex(/^([^#]|^$)/i, "#をつけないでください"),
-  gameTypes: z.object({ label: z.string(), value: z.string() }).array(),
+  gameTypes: z.object({ id: z.string(), name: z.string() }).array(),
   coverImageFile: z
     .custom<File | null>()
     .refine(

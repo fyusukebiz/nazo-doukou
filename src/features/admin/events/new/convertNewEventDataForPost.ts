@@ -23,7 +23,7 @@ export const convertNewEventDataForPost = ({
       ...(data.numberOfPeopleInTeam && {
         numberOfPeopleInTeam: data.numberOfPeopleInTeam,
       }),
-      gameTypeIds: data.gameTypes.map((gameType) => gameType.value),
+      gameTypeIds: data.gameTypes.map((gameType) => gameType.id),
       ...(data.timeRequired && { timeRequired: data.timeRequired.trim() }),
       eventLocations: data.eventLocations.map((el) => ({
         locationId: el.location.value!, // バリデーションでnullではない

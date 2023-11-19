@@ -1,7 +1,7 @@
 import { LoadingButton } from "@mui/lab";
-import { Grid, Box, Button } from "@mui/material";
-import { useMemo } from "react";
-import { SubmitHandler, useFieldArray } from "react-hook-form";
+import { Grid, Box, Button, Chip } from "@mui/material";
+import { useCallback, useMemo } from "react";
+import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
   EditEventFormSchema,
   defaultEventLocation,
@@ -23,7 +23,6 @@ import axios from "axios";
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
 import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
-import { MultipleSelectWithLabelRHF } from "@/components/forms/hook_form/MultipleSelectWithLabelRHF";
 
 type Props = {
   eventId: string;
@@ -34,8 +33,11 @@ export const EditEventForm = ({ eventId }: Props) => {
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useEditEventFormContext();
+  const gameTypes = useWatch({ control, name: "gameTypes" });
+
   const { patchEventByAdmin } = usePatchEventByAdmin();
 
   const { data: prefecturesData, status: prefecturesStatus } =
@@ -52,8 +54,8 @@ export const EditEventForm = ({ eventId }: Props) => {
     name: "eventLocations",
   });
 
-  const { data: organizationsData, status: organizationsStatus } =
-    useOrganizationsQuery();
+  // const { data: organizationsData, status: organizationsStatus } =
+  //   useOrganizationsQuery();
 
   const { refetch: refetchUploadSignedUrls } = useUploadSignedUrlsQuery();
 
@@ -64,23 +66,6 @@ export const EditEventForm = ({ eventId }: Props) => {
       .flat()
       .map((loc) => ({ value: loc.id, label: loc.name }));
   }, [prefecturesData, prefecturesStatus]);
-
-  const gameTypes = useMemo(
-    () =>
-      gameTypesData?.gameTypes.map((type) => ({
-        value: type.id,
-        label: type.name,
-      })) ?? [],
-    [gameTypesData]
-  );
-
-  const organizations = useMemo(() => {
-    if (organizationsStatus !== "success") return [];
-    return organizationsData.organizations.map((org) => ({
-      value: org.id,
-      label: org.name,
-    }));
-  }, [organizationsData, organizationsStatus]);
 
   const onSubmit: SubmitHandler<EditEventFormSchema> = async (rawData) => {
     // 画像データがあれば事前にアップロード
@@ -111,10 +96,27 @@ export const EditEventForm = ({ eventId }: Props) => {
       {
         onSuccess: async (res) => {
           toast.success("更新しました");
+          router.back();
         },
       }
     );
   };
+
+  const handleClickGameType = useCallback(
+    ({ gameType }: { gameType: { id: string; name: string } }) => {
+      const index = gameTypes.findIndex((gt) => gt.id === gameType.id);
+      if (index > -1) {
+        // 削除
+        const newGameTypes = [...gameTypes];
+        newGameTypes.splice(index, 1);
+        setValue("gameTypes", newGameTypes);
+      } else {
+        // 追加
+        setValue("gameTypes", [...gameTypes, gameType]);
+      }
+    },
+    [gameTypes, setValue]
+  );
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -184,16 +186,30 @@ export const EditEventForm = ({ eventId }: Props) => {
         </Grid>
 
         <Grid item xs={12}>
-          <MultipleSelectWithLabelRHF<
-            EditEventFormSchema,
-            { label: string; value: string }
-          >
-            name="gameTypes"
-            control={control}
-            label="種類"
-            placeholder="種類"
-            options={gameTypes}
-          />
+          <Box sx={{ marginBottom: "8px" }}>
+            <Box component="label" sx={{ fontWeight: "bold" }}>
+              種類
+            </Box>
+          </Box>
+          <Box sx={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            {gameTypesData?.gameTypes.map((gt) => (
+              <Chip
+                key={gt.id}
+                label={gt.name}
+                color="teal"
+                variant={
+                  gameTypes.find((gameType) => gameType.id === gt.id)
+                    ? "filled"
+                    : "outlined"
+                }
+                onClick={() =>
+                  handleClickGameType({
+                    gameType: gt,
+                  })
+                }
+              />
+            ))}
+          </Box>
         </Grid>
 
         <Grid item xs={12}>
@@ -220,6 +236,9 @@ export const EditEventForm = ({ eventId }: Props) => {
           <Box sx={{ marginBottom: "5px" }}>
             <Box component="label" sx={{ fontWeight: "bold" }}>
               開催地情報
+            </Box>
+            <Box sx={{ color: "red", fontSize: "12px" }}>
+              ※「開催地を削除する」と、それに紐づいている募集も削除されます！削除前に募集が紐づいてないかを確認してください。
             </Box>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "15px" }}>

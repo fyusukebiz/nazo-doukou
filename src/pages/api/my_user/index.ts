@@ -142,7 +142,11 @@ const postHandler = async (
   const schema = z.object({
     user: z.object({
       name: z.string().min(1).max(255),
-      twitter: z.string().max(30).optional(),
+      twitter: z
+        .string()
+        .max(30)
+        .regex(/^([^@]|^$)/i, "@をつけないでください")
+        .optional(),
       instagram: z.string().max(30).optional(),
     }),
   });
@@ -201,7 +205,11 @@ const patchHandler = async (
       age: z.number().optional(),
       startedAt: z.string().optional(), // TODO: date型にすること
       description: z.string().optional(),
-      twitter: z.string().optional(),
+      twitter: z
+        .string()
+        .max(30)
+        .regex(/^([^@]|^$)/i, "@をつけないでください")
+        .optional(),
       instagram: z.string().optional(),
     }),
     userGameTypes: z

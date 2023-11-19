@@ -24,11 +24,11 @@ const schema = z.object({
         message: `ファイルサイズは最大${process.env.NEXT_PUBLIC_MAX_FILE_SIZE_MB}MBです`,
       }
     ),
-
   organization: z.object({ label: z.string(), value: z.string().nullable() }),
-  gameTypes: z.object({ label: z.string(), value: z.string() }).array(),
+  gameTypes: z.object({ id: z.string(), name: z.string() }).array(),
   eventLocations: z
     .object({
+      id: z.string().optional(), // 新規ならundefined
       location: z.object({
         value: z
           .string()
@@ -63,6 +63,7 @@ type Props = {
 };
 
 export const defaultEventLocation = {
+  id: undefined,
   location: { value: null, label: "" },
   startedAt: null,
   endedAt: null,
@@ -89,20 +90,18 @@ export const EditEventFormProvider = ({ children, event }: Props) => {
         ? { label: event.organization.name, value: event.organization.id }
         : { label: "未選択", value: null },
       eventLocations: event.eventLocations.map((el) => ({
-        location: {
-          value: el.location.id,
-          label: el.location.name,
-        },
+        id: el.id,
         building: el.building ?? "",
         description: el.description ?? "",
         startedAt: el.startedAt ? new Date(el.startedAt) : null,
         endedAt: el.endedAt ? new Date(el.endedAt) : null,
         detailedSchedule: el.detailedSchedule ?? "",
+        location: {
+          value: el.location.id,
+          label: el.location.name,
+        },
       })),
-      gameTypes: event.gameTypes.map((type) => ({
-        label: type.name,
-        value: type.id,
-      })),
+      gameTypes: event.eventGameTypes.map((egt) => egt.gameType),
     },
   });
 

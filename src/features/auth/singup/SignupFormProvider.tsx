@@ -6,7 +6,10 @@ import { z } from "zod";
 const schema = z
   .object({
     name: z.string().min(1).max(30),
-    twitter: z.string().max(30),
+    twitter: z
+      .string()
+      .max(30)
+      .regex(/^([^@]|^$)/i, "@をつけないでください"),
     instagram: z.string().max(30),
     email: z
       .string()

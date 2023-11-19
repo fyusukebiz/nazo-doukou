@@ -7,7 +7,6 @@ import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
 import { User } from "@prisma/client";
 import { RecruitDetail } from "@/types/recruit";
-import { userAgent } from "next/server";
 
 export default async function handler(
   req: NextApiRequest,
