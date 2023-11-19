@@ -81,7 +81,6 @@ export const EditEventForm = ({ eventId }: Props) => {
         rawData.coverImageFile,
         options
       );
-      console.log(`${rawData.coverImageFile.size} => ${compressedFile.size}`);
       // アップロード用のリンク取得
       const urlData = await refetchUploadSignedUrls();
       const upload = urlData.data?.uploads?.[0];

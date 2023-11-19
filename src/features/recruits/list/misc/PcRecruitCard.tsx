@@ -49,10 +49,12 @@ export const PcRecruitCard = (props: Props) => {
           style={{
             objectFit: "cover",
             maxHeight: "220px",
+            minHeight: "90px",
             width: "100%",
             borderRadius: "10px",
           }}
           alt="image"
+          loading="lazy"
         />
       ) : (
         <Box

@@ -42,12 +42,14 @@ export const RecruitCard = (props: Props) => {
           style={{
             objectFit: "cover",
             maxHeight: "220px",
+            minHeight: "90px",
             width: "100%",
             cursor: "pointer",
             borderRadius: "10px",
           }}
           onClick={handleClickCard}
           alt="image"
+          loading="lazy"
         />
       ) : (
         <Box

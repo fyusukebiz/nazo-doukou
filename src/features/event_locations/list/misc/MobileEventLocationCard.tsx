@@ -57,6 +57,7 @@ export const MobileEventLocationCard = (props: Props) => {
               borderRadius: "10px",
             }}
             alt="image"
+            loading="lazy"
           />
         ) : (
           <Box

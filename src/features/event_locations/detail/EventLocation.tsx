@@ -46,6 +46,7 @@ export const EventLocation = () => {
                 style={{
                   objectFit: "cover",
                   maxHeight: "220px",
+                  minHeight: "90px",
                   width: "100%",
                   cursor: "pointer",
                   borderRadius: "10px",

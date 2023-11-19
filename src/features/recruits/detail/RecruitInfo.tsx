@@ -267,6 +267,7 @@ export const RecruitInfo = (props: Props) => {
           dangerouslySetInnerHTML={{
             __html: insertLinkInText(recruit.description),
           }}
+          className="word-wrap"
         ></Box>
       )}
     </Box>

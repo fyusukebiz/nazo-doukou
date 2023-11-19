@@ -26,6 +26,7 @@ export const EventCard = (props: Props) => {
           style={{
             objectFit: "cover",
             maxHeight: "220px",
+            minHeight: "90px",
             width: "100%",
             marginBottom: "8px",
             cursor: "pointer",
@@ -33,6 +34,7 @@ export const EventCard = (props: Props) => {
           }}
           onClick={handleClickCard}
           alt="image"
+          loading="lazy"
         />
       ) : (
         <Box
