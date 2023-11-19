@@ -23,6 +23,7 @@ import axios from "axios";
 import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { BiCalendar } from "react-icons/bi";
 import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
+import imageCompression from "browser-image-compression";
 
 export const NewEventForm = () => {
   const router = useRouter();
@@ -67,10 +68,21 @@ export const NewEventForm = () => {
     // 画像データがあれば事前にアップロード
     let coverImageFileKey: string | undefined;
     if (rawData.coverImageFile) {
+      // ファイルを圧縮
+      const options = {
+        maxSizeMB: 0.3, // 最大ファイルサイズ
+        maxWidthOrHeight: 1000, // 最大画像幅もしくは高さ
+      };
+      const compressedFile = await imageCompression(
+        rawData.coverImageFile,
+        options
+      );
+      // アップロード用のリンク取得
       const urlData = await refetchUploadSignedUrls();
       const upload = urlData.data?.uploads?.[0];
+      // アップロード
       if (upload) {
-        await axios.put(upload.url, rawData.coverImageFile, {
+        await axios.put(upload.url, compressedFile, {
           headers: {
             "Content-Type": "application/octet-stream",
           },
