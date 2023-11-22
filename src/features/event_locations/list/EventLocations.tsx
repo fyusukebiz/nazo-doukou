@@ -4,6 +4,7 @@ import { Box, Container, Grid, Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import {
   ChangeEvent,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -74,23 +75,11 @@ export const EventLocations = () => {
     sessionStorage.setItem("eventLocationSearchPage", _page.toString());
   };
 
-  // 1. 前回の検索結果を復元
-  useEffect(() => {
-    const rawParams = sessionStorage.getItem("eventLocationSearchParams");
-    if (rawParams) {
-      setQueryParams(JSON.parse(rawParams));
-    }
-    const rawPage = sessionStorage.getItem("eventLocationSearchPage");
-    if (rawPage) setPage(Number(rawPage));
-    setIsInitialized(true); // 初回リクエスト開始
-    // formattedQueryParamsが計算されてから、react-queryのリクエスト処理が発生することを確認した
-  }, []);
-
   // ページを切り替える時、スクロールを上までも戻す
   const listBoxRef = useRef<HTMLHRElement>(null);
   const { routerHistory } = useRouterHistoryContext();
 
-  // 2. 初期フェッチ後のスクロール
+  // 初期フェッチ後のスクロール
   useEffect(() => {
     if (eventLocationsStatus !== "success") return;
     if (/^\/event_locations\//.test(routerHistory[1])) {
@@ -209,6 +198,8 @@ export const EventLocations = () => {
             isOpen={isSearchModalOpen}
             onClose={onCloseSearchModal}
             setQueryParams={setQueryParams}
+            setIsInitialized={setIsInitialized}
+            setPage={setPage}
           />
 
           {eventLocationsStatus !== "success" && <LoadingSpinner />}

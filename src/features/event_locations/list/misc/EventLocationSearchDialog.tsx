@@ -11,7 +11,14 @@ import {
 } from "@mui/material";
 import { teal } from "@mui/material/colors";
 import { TransitionProps } from "@mui/material/transitions";
-import { Dispatch, Ref, SetStateAction, forwardRef, useMemo } from "react";
+import {
+  Dispatch,
+  Ref,
+  SetStateAction,
+  forwardRef,
+  useEffect,
+  useMemo,
+} from "react";
 import {
   EventLocationSearchFormSchema,
   defaultEventLocationSearchFormValues,
@@ -35,10 +42,12 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   setQueryParams: Dispatch<SetStateAction<EventLocationSearchFormSchema>>;
+  setIsInitialized: Dispatch<SetStateAction<boolean>>;
+  setPage: Dispatch<SetStateAction<number>>;
 };
 
 export const EventLocationSearchDialog = (props: Props) => {
-  const { isOpen, onClose, setQueryParams } = props;
+  const { isOpen, onClose, setQueryParams, setIsInitialized, setPage } = props;
   const { reset, getValues } = useEventLocationSearchFormContext();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -48,6 +57,7 @@ export const EventLocationSearchDialog = (props: Props) => {
   const { data: prefecturesData, status: prefecturesStatus } =
     usePrefecturesQuery();
 
+  // 場所の選択肢
   const locationOpts = useMemo(() => {
     if (prefecturesStatus !== "success") return [];
     return prefecturesData.prefectures
@@ -60,6 +70,7 @@ export const EventLocationSearchDialog = (props: Props) => {
       .flat();
   }, [prefecturesData, prefecturesStatus]);
 
+  // ゲームタイプの選択肢
   const gameTypeOpts = useMemo(() => {
     if (gameTypesStatus !== "success") return [];
     return gameTypesData.gameTypes.map((type) => ({
@@ -68,6 +79,7 @@ export const EventLocationSearchDialog = (props: Props) => {
     }));
   }, [gameTypesData, gameTypesStatus]);
 
+  // 検索ボタンを押した時
   const handleClickSearch = () => {
     const values = getValues();
 
@@ -78,10 +90,25 @@ export const EventLocationSearchDialog = (props: Props) => {
     onClose();
   };
 
+  // 全てのクリアボタンを押した時
   const handleClear = () => {
     sessionStorage.removeItem("companySearchParams");
     reset(defaultEventLocationSearchFormValues);
   };
+
+  // 前回の検索結果を復元
+  useEffect(() => {
+    const rawParams = sessionStorage.getItem("eventLocationSearchParams");
+    if (rawParams) {
+      const params = JSON.parse(rawParams);
+      setQueryParams(params);
+      reset(params);
+    }
+    const rawPage = sessionStorage.getItem("eventLocationSearchPage");
+    if (rawPage) setPage(Number(rawPage));
+    setIsInitialized(true); // 初回リクエスト開始
+    // formattedQueryParamsが計算されてから、react-queryのリクエスト処理が発生することを確認した
+  }, [reset, setIsInitialized, setPage, setQueryParams]);
 
   return (
     <Dialog
