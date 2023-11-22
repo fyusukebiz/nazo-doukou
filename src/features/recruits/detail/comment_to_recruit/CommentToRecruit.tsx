@@ -46,7 +46,6 @@ export const CommentToRecruit = (props: Props) => {
       { path: { commentToRecruitId: commentToRecruit.id } },
       {
         onSuccess: () => {
-          // queryClient.invalidateQueries({ queryKey: ["getRecruit"] });
           refetchRecruit();
         },
       }

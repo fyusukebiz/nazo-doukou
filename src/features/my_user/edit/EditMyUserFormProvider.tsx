@@ -51,7 +51,7 @@ export const EditMyUserFormProvider = ({ children, myUser }: Props) => {
     defaultValues: {
       name: myUser.name,
       iconImageFile: null,
-      iconImageFileKey: "",
+      iconImageFileKey: myUser.iconImageFileKey || "",
       sex: myUser.sex
         ? sexOptions.find((opt) => opt.value === myUser.sex)!
         : null,

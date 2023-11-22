@@ -14,11 +14,12 @@ import { useRouter } from "next/router";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { MobileRecruitCard } from "./misc/MobileRecruitCard";
 import { useRouterHistoryContext } from "../../common/RouterHistoryProvider";
-import { grey, teal } from "@mui/material/colors";
+import { grey, teal, blue } from "@mui/material/colors";
 import { FaSearch } from "react-icons/fa";
 import { PcRecruitCard } from "./misc/PcRecruitCard";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
 import { Yusei_Magic } from "next/font/google";
+import { TwitterShareButton, XIcon } from "react-share";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -71,6 +72,31 @@ export const Recruits = () => {
   return (
     <Box ref={listBoxRef} sx={{ height: "100%", overflowY: "scroll" }}>
       <Container sx={{ padding: "16px" }} maxWidth="xl">
+        {/* 通知＆シェアボタン */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid",
+            borderColor: blue[300],
+            borderRadius: "10px",
+            marginBottom: "15px",
+            padding: "5px 10px",
+          }}
+        >
+          <Box>2023/11/17リリース</Box>
+          <Box sx={{ marginLeft: "10px" }}>フォローしてね！⇨</Box>
+          <TwitterShareButton
+            url={process.env.NEXT_PUBLIC_TWITTER_URL || ""}
+            style={{
+              marginLeft: "10px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <XIcon size={30} round />
+          </TwitterShareButton>
+        </Box>
         {/* 募集 or イベント */}
         <Box
           sx={{
@@ -125,6 +151,7 @@ export const Recruits = () => {
             size="small"
             sx={{ maxWidth: "500px", width: "400px" }}
             value={freeWord}
+            placeholder="タイトルで検索"
             onChange={(e) => setFreeWord(e.target.value)}
             inputProps={{
               style: {

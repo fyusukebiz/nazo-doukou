@@ -3,7 +3,12 @@ import { grey } from "@mui/material/colors";
 import { CustomCard } from "@/components/cards/CustomCard";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
 import { setCookie } from "cookies-next";
 import { cookieOptions } from "@/constants/cookieOptions";
 import { usePostConfirmMyUser } from "@/react_queries/my_user/usePostConfirmMyUser";
@@ -22,6 +27,9 @@ export const Login = () => {
     setIsLoading(true);
     try {
       const auth = getAuth();
+
+      // これを入れないと頻繁にログアウトさせられる
+      // await setPersistence(auth, browserSessionPersistence); // TODO:
 
       // Firebaseで用意されているメールアドレスとパスワードでログインするための関数
       const userCredential = await signInWithEmailAndPassword(

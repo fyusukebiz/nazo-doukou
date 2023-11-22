@@ -15,6 +15,7 @@ export const useLogoutAndClearStorage = () => {
       await signOut(auth); // firebaseでログアウト
       deleteCookie("fbUid"); // TODO: BE側で実装する
       await refetchLogout(); // サーバー側でクッキーを消しに行く
+      sessionStorage.clear();
       toast.success("ログアウトしました");
       router.push("/auth/login");
     } catch (error) {

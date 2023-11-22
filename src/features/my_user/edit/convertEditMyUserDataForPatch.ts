@@ -2,15 +2,17 @@ import { EditMyUserFormSchema } from "./EditMyUserFormProvider";
 
 export const convertEditMyUserDataForPatch = ({
   data,
-  iconImageFileKey,
+  newIconImageFileKey,
 }: {
   data: EditMyUserFormSchema;
-  iconImageFileKey?: string;
+  newIconImageFileKey?: string;
 }) => {
   return {
     user: {
       name: data.name,
-      iconImageFileKey: iconImageFileKey,
+      iconImageFileKey: newIconImageFileKey
+        ? newIconImageFileKey
+        : data.iconImageFileKey,
       ...(data.sex && { sex: data.sex.value }),
       // ...(data.age && {age: data.age}),
       ...(data.startedAt && { startedAt: data.startedAt.toISOString() }),

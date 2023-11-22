@@ -96,6 +96,7 @@ const getHandler = async (
     myUser: {
       id: user.id,
       name: user.name || "名無しさん",
+      ...(user.iconImageFileKey && { iconImageFileKey: user.iconImageFileKey }),
       ...(user.iconImageFileKey && {
         iconImageUrl: await generateReadSignedUrl(user.iconImageFileKey),
       }),
@@ -225,16 +226,21 @@ const patchHandler = async (
   if (!validation.success)
     return res.status(422).json({ errors: getZodFormattedErrors(validation) });
 
+  const userData = validation.data.user;
+
   // requrestにiconImageFileKeyが存在して、DBにuser.iconImageFileKeyが存在する時、古いiconImageFileを削除
-  if (validation.data.user.iconImageFileKey) {
+  if (userData.iconImageFileKey) {
     const userIdDb = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },
     });
-    if (userIdDb.iconImageFileKey) await deleteFile(userIdDb.iconImageFileKey);
+    if (
+      userIdDb.iconImageFileKey &&
+      userData.iconImageFileKey !== userIdDb.iconImageFileKey
+    )
+      await deleteFile(userIdDb.iconImageFileKey);
   }
 
   // 更新
-  const userData = validation.data.user;
   await prisma.user.update({
     where: { id: user.id },
     data: {

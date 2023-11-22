@@ -38,6 +38,10 @@ const getHandler = async (
   res: NextApiResponse<GetEventLocationsResponseSuccessBody | ResponseErrorBody>
 ) => {
   const page = Number(req.query.page || 1);
+  const eventName = req.query.eventName as string | undefined;
+  const locationIds = (req.query.locationIds as string | undefined)?.split(",");
+  const gameTypeIds = (req.query.gameTypeIds as string | undefined)?.split(",");
+  // const date = req.query.date as string | undefined;
 
   const prismaWithPaginate = prisma.$extends({
     model: { eventLocation: { paginate } },
@@ -45,6 +49,33 @@ const getHandler = async (
 
   const [eventLocations, meta] = await prismaWithPaginate.eventLocation
     .paginate({
+      where: {
+        ...((eventName || (gameTypeIds && gameTypeIds.length > 0)) && {
+          // event: {
+          //   ...(eventName && { name: eventName }),
+          //   ...(gameTypeIds && {
+          //     eventGameTypes: { some: { gameTypeId: { in: gameTypeIds } } },
+          //   }),
+          // },
+          // TODO: SQLを見てみること
+          AND: [
+            ...(eventName ? [{ event: { name: eventName } }] : []),
+            ...(gameTypeIds
+              ? [
+                  {
+                    event: {
+                      eventGameTypes: {
+                        some: { gameTypeId: { in: gameTypeIds } },
+                      },
+                    },
+                  },
+                ]
+              : []),
+          ],
+        }),
+        ...(locationIds &&
+          locationIds.length > 0 && { locationId: { in: locationIds } }),
+      },
       include: {
         event: true,
         location: { include: { prefecture: true } },

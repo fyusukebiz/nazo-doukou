@@ -3,6 +3,7 @@ import { Sex, LikeOrDislike } from "@prisma/client";
 export type UserDetail = {
   id: string;
   name: string;
+  iconImageFileKey?: string;
   iconImageUrl?: string;
   sex?: Sex;
   age?: number;

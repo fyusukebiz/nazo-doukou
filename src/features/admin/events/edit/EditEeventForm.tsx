@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Grid, Box, Button, Chip } from "@mui/material";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
   EditEventFormSchema,
@@ -38,6 +38,7 @@ export const EditEventForm = ({ eventId }: Props) => {
     formState: { errors },
   } = useEditEventFormContext();
   const gameTypes = useWatch({ control, name: "gameTypes" });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { patchEventByAdmin } = usePatchEventByAdmin();
 
@@ -60,16 +61,23 @@ export const EditEventForm = ({ eventId }: Props) => {
 
   const { refetch: refetchUploadSignedUrls } = useUploadSignedUrlsQuery();
 
-  const locations = useMemo(() => {
+  const locationOpts = useMemo(() => {
     if (prefecturesStatus !== "success") return [];
     return prefecturesData.prefectures
-      .map((pref) => pref.locations)
-      .flat()
-      .map((loc) => ({ value: loc.id, label: loc.name }));
+      .map((pref) =>
+        pref.locations.map((loc) => ({
+          value: loc.id,
+          label: `${pref.name} / ${loc.name}`,
+        }))
+      )
+      .flat();
   }, [prefecturesData, prefecturesStatus]);
 
   const onSubmit: SubmitHandler<EditEventFormSchema> = async (rawData) => {
+    setIsLoading(true);
+
     // 画像データがあれば事前にアップロード
+    // TODO: try catchにすべき
     let coverImageFileKey: string | undefined;
     if (rawData.coverImageFile) {
       // ファイルを圧縮
@@ -93,6 +101,7 @@ export const EditEventForm = ({ eventId }: Props) => {
         });
         coverImageFileKey = upload.fileKey;
       } else {
+        setIsLoading(false);
         toast.error("アップロード用のURLを取得できませんでした");
         return;
       }
@@ -108,7 +117,11 @@ export const EditEventForm = ({ eventId }: Props) => {
       {
         onSuccess: async (res) => {
           toast.success("更新しました");
+          setIsLoading(false);
           router.back();
+        },
+        onError: async () => {
+          setIsLoading(false);
         },
       }
     );
@@ -286,7 +299,7 @@ export const EditEventForm = ({ eventId }: Props) => {
                     control={control}
                     label="開催地"
                     placeholder="開催地"
-                    options={locations}
+                    options={locationOpts}
                   />
                 </Box>
                 <InputWithLabelRHF<EditEventFormSchema>
@@ -349,7 +362,7 @@ export const EditEventForm = ({ eventId }: Props) => {
           color="teal"
           size="large"
           sx={{ width: "100%" }}
-          loading={patchEventByAdmin.isPending}
+          loading={isLoading}
         >
           保存
         </LoadingButton>

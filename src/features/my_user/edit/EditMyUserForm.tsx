@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Grid, Box, Chip } from "@mui/material";
+import { Grid, Box, Chip, Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { SubmitHandler, useWatch } from "react-hook-form";
 import {
@@ -15,7 +15,7 @@ import { BiCalendar } from "react-icons/bi";
 import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
 import { LikeOrDislike } from "@prisma/client";
 import { Avatar } from "./Avatar";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useUploadSignedUrlsQuery } from "@/react_queries/upload_signed_urls";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -43,10 +43,10 @@ export const EditMyUserForm = ({ myUser }: Props) => {
   const { data: strongAreasData, status: strongAreasStatus } =
     useStrongAreasQuery();
   const { refetch: refetchUploadSignedUrls } = useUploadSignedUrlsQuery();
-  // console.log(errors);
+
   const onSubmit: SubmitHandler<EditMyUserFormSchema> = async (rawData) => {
     // 画像データがあれば事前にアップロード
-    let iconImageFileKey: string | undefined;
+    let newIconImageFileKey: string | undefined;
     if (rawData.iconImageFile) {
       const urlData = await refetchUploadSignedUrls();
       const upload = urlData.data?.uploads?.[0];
@@ -56,7 +56,7 @@ export const EditMyUserForm = ({ myUser }: Props) => {
             "Content-Type": "application/octet-stream",
           },
         });
-        iconImageFileKey = upload.fileKey;
+        newIconImageFileKey = upload.fileKey;
       } else {
         toast.error("アップロード用のURLを取得できませんでした");
         return;
@@ -65,7 +65,7 @@ export const EditMyUserForm = ({ myUser }: Props) => {
     // // 送信用にデータを加工
     const dataToPatch = convertEditMyUserDataForPatch({
       data: rawData,
-      iconImageFileKey: iconImageFileKey,
+      newIconImageFileKey: newIconImageFileKey,
     });
 
     patchMyUser.mutate(
@@ -143,7 +143,20 @@ export const EditMyUserForm = ({ myUser }: Props) => {
 
         <Grid item xs={12}>
           <Box sx={{ marginBottom: "8px", fontWeight: "bold" }}>アイコン</Box>
-          <Avatar initialAvatarUrl={myUser.iconImageUrl} />
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Avatar initialAvatarUrl={myUser.iconImageUrl} />
+            {/* TODO: 削除機能は後でつける */}
+            {/* {myUser.iconImageUrl && (
+              <Button
+                variant="text"
+                onClick={() => {
+                  setValue("iconImageFileKey", "");
+                }}
+              >
+                削除
+              </Button>
+            )} */}
+          </Box>
         </Grid>
 
         <Grid item xs={12}>

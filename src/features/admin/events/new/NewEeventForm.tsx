@@ -1,6 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Grid, Box, Button, Chip } from "@mui/material";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SubmitHandler, useFieldArray, useWatch } from "react-hook-form";
 import {
   NewEventFormSchema,
@@ -34,6 +34,7 @@ export const NewEventForm = () => {
     formState: { errors },
   } = useNewEventFormContext();
   const gameTypes = useWatch({ control, name: "gameTypes" });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { postEventByAdmin } = usePostEventByAdmin();
 
@@ -56,16 +57,23 @@ export const NewEventForm = () => {
 
   const { refetch: refetchUploadSignedUrls } = useUploadSignedUrlsQuery();
 
-  const locations = useMemo(() => {
+  const locationOpts = useMemo(() => {
     if (prefecturesStatus !== "success") return [];
     return prefecturesData.prefectures
-      .map((pref) => pref.locations)
-      .flat()
-      .map((loc) => ({ value: loc.id, label: loc.name }));
+      .map((pref) =>
+        pref.locations.map((loc) => ({
+          value: loc.id,
+          label: `${pref.name} / ${loc.name}`,
+        }))
+      )
+      .flat();
   }, [prefecturesData, prefecturesStatus]);
 
   const onSubmit: SubmitHandler<NewEventFormSchema> = async (rawData) => {
+    setIsLoading(true);
+
     // 画像データがあれば事前にアップロード
+    // TODO: try catchにすべき
     let coverImageFileKey: string | undefined;
     if (rawData.coverImageFile) {
       // ファイルを圧縮
@@ -89,6 +97,7 @@ export const NewEventForm = () => {
         });
         coverImageFileKey = upload.fileKey;
       } else {
+        setIsLoading(false);
         toast.error("アップロード用のURLを取得できませんでした");
         return;
       }
@@ -104,7 +113,11 @@ export const NewEventForm = () => {
       {
         onSuccess: async (res) => {
           toast.success("作成しました");
+          setIsLoading(false);
           router.back();
+        },
+        onError: async () => {
+          setIsLoading(false);
         },
       }
     );
@@ -279,7 +292,7 @@ export const NewEventForm = () => {
                     control={control}
                     label="開催地"
                     placeholder="開催地"
-                    options={locations}
+                    options={locationOpts}
                   />
                 </Box>
                 <InputWithLabelRHF<NewEventFormSchema>
@@ -340,7 +353,7 @@ export const NewEventForm = () => {
           color="teal"
           size="large"
           sx={{ width: "100%" }}
-          loading={postEventByAdmin.isPending}
+          loading={isLoading}
         >
           保存
         </LoadingButton>

@@ -39,7 +39,6 @@ export const Avatar = ({ initialAvatarUrl }: Props) => {
   return (
     <Box>
       {imageUrl ? (
-        // <Box sx={{ position: "relative" }}>
         <MuiAvatar
           alt="avatar"
           src={imageUrl}
@@ -47,7 +46,6 @@ export const Avatar = ({ initialAvatarUrl }: Props) => {
           onClick={handleClickAttachImage}
         />
       ) : (
-        // </Box>
         <Box
           sx={{
             borderRadius: "50%",
