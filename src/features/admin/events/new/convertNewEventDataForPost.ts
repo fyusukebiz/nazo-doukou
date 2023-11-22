@@ -27,12 +27,21 @@ export const convertNewEventDataForPost = ({
       ...(data.timeRequired && { timeRequired: data.timeRequired.trim() }),
       eventLocations: data.eventLocations.map((el) => ({
         locationId: el.location.value!, // バリデーションでnullではない
+        dateType: el.dateType,
         ...(el.building && { building: el.building.trim() }),
-        ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
-        ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
+        ...(el.dateType === "RANGE" &&
+          el.startedAt && { startedAt: el.startedAt.toISOString() }),
+        ...(el.dateType === "RANGE" &&
+          el.endedAt && { endedAt: el.endedAt.toISOString() }),
         ...(el.detailedSchedule && {
           detailedSchedule: el.detailedSchedule.trim(),
         }),
+        eventLocationDates:
+          el.dateType === "INDIVISUAL"
+            ? el.eventLocationDates
+                .filter((eld): eld is { date: Date } => !!eld.date)
+                .map((eld) => eld.date.toISOString())
+            : [],
         ...(el.description && { description: el.description.trim() }),
       })),
     },

@@ -41,7 +41,7 @@ const getHandler = async (
   const eventName = req.query.eventName as string | undefined;
   const locationIds = (req.query.locationIds as string | undefined)?.split(",");
   const gameTypeIds = (req.query.gameTypeIds as string | undefined)?.split(",");
-  // const date = req.query.date as string | undefined;
+  const date = req.query.date as string | undefined;
 
   const prismaWithPaginate = prisma.$extends({
     model: { eventLocation: { paginate } },
@@ -50,28 +50,37 @@ const getHandler = async (
   const [eventLocations, meta] = await prismaWithPaginate.eventLocation
     .paginate({
       where: {
-        ...((eventName || (gameTypeIds && gameTypeIds.length > 0)) && {
-          // event: {
-          //   ...(eventName && { name: eventName }),
-          //   ...(gameTypeIds && {
-          //     eventGameTypes: { some: { gameTypeId: { in: gameTypeIds } } },
-          //   }),
-          // },
-          // TODO: SQLを見てみること
-          AND: [
-            ...(eventName ? [{ event: { name: eventName } }] : []),
-            ...(gameTypeIds
-              ? [
-                  {
-                    event: {
-                      eventGameTypes: {
-                        some: { gameTypeId: { in: gameTypeIds } },
-                      },
-                    },
-                  },
-                ]
-              : []),
+        ...(date && {
+          OR: [
+            {
+              AND: [
+                { dateType: "RANGE" },
+                {
+                  OR: [
+                    { startedAt: { lte: new Date(date) } },
+                    { startedAt: null },
+                  ],
+                },
+                {
+                  OR: [{ endedAt: { gte: new Date(date) } }, { endedAt: null }],
+                },
+              ],
+            },
+            {
+              AND: [
+                { dateType: "INDIVISUAL" },
+                { eventLocationDates: { some: { date: new Date(date) } } },
+              ],
+            },
           ],
+        }),
+        ...((eventName || (gameTypeIds && gameTypeIds.length > 0)) && {
+          event: {
+            ...(eventName && { name: { contains: eventName } }),
+            ...(gameTypeIds && {
+              eventGameTypes: { some: { gameTypeId: { in: gameTypeIds } } },
+            }),
+          },
         }),
         ...(locationIds &&
           locationIds.length > 0 && { locationId: { in: locationIds } }),
@@ -79,6 +88,7 @@ const getHandler = async (
       include: {
         event: true,
         location: { include: { prefecture: true } },
+        eventLocationDates: true,
       },
       orderBy: { createdAt: "desc" },
     })
@@ -92,8 +102,13 @@ const getHandler = async (
     eventLocations.map(async (el) => {
       return {
         id: el.id,
+        dateType: el.dateType,
         ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
-        ...(el.endedAt && { startedAt: el.endedAt.toISOString() }),
+        ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
+        eventLocationDates: el.eventLocationDates.map((eld) => ({
+          id: eld.id,
+          date: eld.date.toISOString(),
+        })),
         event: {
           id: el.event.id,
           name: el.event.name,

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/libs/prisma";
 import { ResponseErrorBody } from "@/types/responseErrorBody";
 import { z } from "zod";
-import { Event, User } from "@prisma/client";
+import { Event, EventLocationDateType, User } from "@prisma/client";
 import { EventDetail } from "@/types/event";
 import { deleteFile, generateReadSignedUrl } from "@/libs/cloudStorage";
 import { getCookie } from "cookies-next";
@@ -88,6 +88,7 @@ const getHandler = async (
       eventLocations: {
         include: {
           location: { include: { prefecture: true } },
+          eventLocationDates: true,
         },
       },
     },
@@ -122,11 +123,16 @@ const getHandler = async (
         id: el.location.id,
         name: el.location.name,
       },
+      dateType: el.dateType,
       ...(el.building && { building: el.building }),
       ...(el.description && { description: el.description }),
       ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
       ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
       ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
+      eventLocationDates: el.eventLocationDates.map((eld) => ({
+        id: eld.id,
+        date: eld.date.toISOString(),
+      })),
     })),
     eventGameTypes: event.eventGameTypes.map((egt) => ({
       id: egt.id,
@@ -160,8 +166,10 @@ export type PatchEventByAdminRequestBody = {
       locationId: string;
       description?: string;
       building?: string;
+      dateType: EventLocationDateType;
       startedAt?: string;
       endedAt?: string;
+      eventLocationDates: string[];
       detailedSchedule?: string;
     }[];
   };
@@ -196,8 +204,10 @@ const patchHandler = async (
           locationId: z.string().min(1),
           building: z.string().max(12).optional(),
           description: z.string().max(200).optional(),
+          dateType: z.nativeEnum(EventLocationDateType), // どちらのタイプでも強制入力ではない
           startedAt: z.string().optional(),
           endedAt: z.string().optional(),
+          eventLocationDates: z.string().array(),
           detailedSchedule: z.string().max(100).optional(),
         })
         .array(),
@@ -245,7 +255,7 @@ const patchHandler = async (
   const newGameTypeIds = validation.data.event.gameTypeIds;
   const gameTypeIdsInDb = eventInDb.eventGameTypes.map((egt) => egt.gameTypeId);
 
-  // 作成
+  // EventGameType：作成
   const gameTypeIdsToCreate = newGameTypeIds.filter((newGtId) =>
     gameTypeIdsInDb.every((gtIdInDb) => gtIdInDb !== newGtId)
   );
@@ -255,7 +265,7 @@ const patchHandler = async (
     });
   }
 
-  //削除
+  // EventGameType：削除
   const gameTypeIdsToDelete = gameTypeIdsInDb.filter((gtIdInDb) =>
     newGameTypeIds.every((newGtId) => gtIdInDb !== newGtId)
   );
@@ -268,36 +278,81 @@ const patchHandler = async (
   /* EventLocation */
   const newEventLocations = validation.data.event.eventLocations;
 
-  // 新規作成
+  // EventLocation：新規作成
   const eventLocationsToCreate = newEventLocations.filter((el) => !el.id);
   for (const el of eventLocationsToCreate) {
-    await prisma.eventLocation.create({
+    const eventLocation = await prisma.eventLocation.create({
       data: {
         eventId: eventId,
         locationId: el.locationId,
+        dateType: el.dateType,
         ...(el.description && { description: el.description }),
         ...(el.building && { building: el.building }),
-        ...(el.startedAt && { startedAt: el.startedAt }),
-        ...(el.endedAt && { endedAt: el.endedAt }),
-        ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
+        ...(el.dateType === "RANGE" &&
+          el.startedAt && { startedAt: el.startedAt }),
+        ...(el.dateType === "RANGE" && el.endedAt && { endedAt: el.endedAt }),
+        ...(el.detailedSchedule && {
+          detailedSchedule: el.detailedSchedule,
+        }),
       },
     });
+
+    if (el.dateType === "INDIVISUAL") {
+      for (const eventLocationDate of el.eventLocationDates) {
+        await prisma.eventLocationDate.create({
+          data: { eventLocationId: eventLocation.id, date: eventLocationDate },
+        });
+      }
+    }
   }
 
-  // 更新
+  // EventLocation：更新
   const eventLocationsToUpdate = newEventLocations.filter((el) => !!el.id);
   for (const el of eventLocationsToUpdate) {
-    await prisma.eventLocation.update({
+    const eventLocationInDb = await prisma.eventLocation.update({
       where: { id: el.id },
       data: {
         locationId: el.locationId,
+        dateType: el.dateType,
         description: !!el.description ? el.description : null,
         building: !!el.building ? el.building : null,
-        startedAt: !!el.startedAt ? el.startedAt : null,
-        endedAt: !!el.endedAt ? el.endedAt : null,
+        startedAt:
+          el.dateType === "RANGE" && !!el.startedAt ? el.startedAt : null,
+        endedAt: el.dateType === "RANGE" && !!el.endedAt ? el.endedAt : null,
         detailedSchedule: !!el.detailedSchedule ? el.detailedSchedule : null,
       },
+      include: { eventLocationDates: true },
     });
+
+    /* EventLocationDate */
+
+    if (el.dateType === "INDIVISUAL") {
+      // EventLocationDate：削除
+      const eventLocationDatesInDb = eventLocationInDb.eventLocationDates;
+      const eventLocationDatesToDelete = eventLocationDatesInDb.filter(
+        (eldInDb) => !el.eventLocationDates.includes(eldInDb.date.toISOString())
+      );
+      for (const eld of eventLocationDatesToDelete) {
+        await prisma.eventLocationDate.delete({ where: { id: eld.id } });
+      }
+
+      // EventLocationDate：新規作成＆更新
+      for (const eventLocationDate of el.eventLocationDates) {
+        await prisma.eventLocationDate.upsert({
+          where: {
+            eventLocationId_date: {
+              eventLocationId: eventLocationInDb.id,
+              date: eventLocationDate,
+            },
+          },
+          create: {
+            eventLocationId: eventLocationInDb.id,
+            date: eventLocationDate,
+          },
+          update: {},
+        });
+      }
+    }
   }
 
   // 削除

@@ -155,6 +155,12 @@ model Location {
   @@unique([prefectureId, name])
 }
 
+enum EventLocationDateType {
+  RANGE
+  INDIVISUAL
+}
+
+
 model EventLocation {
   id String @id @default(cuid())
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -163,13 +169,26 @@ model EventLocation {
   locationId String
   building String?
   description String? @db.Text // location.nameがothersの時や開催日時が不明確の場合に、書き入れる
-  startedAt DateTime?
-  endedAt DateTime?
-  detailedSchedule String? @db.Text
+  dateType EventLocationDateType @default(RANGE)
+  startedAt DateTime? // RANGEタイプの時のみ使う
+  endedAt DateTime? // RANGEタイプの時のみ使う
+  detailedSchedule String? @db.Text // TODO: 後で消す
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   recruits Recruit[]
+  eventLocationDates EventLocationDate[]
+}
+
+model EventLocationDate{
+  id String @id @default(cuid())
+  eventLocation EventLocation @relation(fields: [eventLocationId], references: [id], onDelete: Cascade)
+  eventLocationId String
+  date DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventLocationId, date])
 }
 
 model Recruit {

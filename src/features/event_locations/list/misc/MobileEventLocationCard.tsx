@@ -21,16 +21,25 @@ export const MobileEventLocationCard = (props: Props) => {
   };
 
   const period = useMemo(() => {
-    if (!eventLocation.startedAt && !eventLocation.endedAt) return undefined;
-    return `${
-      eventLocation.startedAt
-        ? format(new Date(eventLocation.startedAt), "MM/d")
-        : ""
-    } ~ ${
-      eventLocation.endedAt
-        ? format(new Date(eventLocation.endedAt), "MM/d")
-        : ""
-    }`;
+    if (eventLocation.dateType === "RANGE") {
+      if (!eventLocation.startedAt && !eventLocation.endedAt) {
+        return "";
+      }
+      return `${
+        eventLocation.startedAt
+          ? format(new Date(eventLocation.startedAt), "MM/d")
+          : ""
+      } ~ ${
+        eventLocation.endedAt
+          ? format(new Date(eventLocation.endedAt), "MM/d")
+          : ""
+      }`;
+    } else {
+      //  eventLocation.dateType === "INDIVISUAL"
+      return eventLocation.eventLocationDates
+        .map((eld) => format(new Date(eld.date), "MM/d"))
+        .join(", ");
+    }
   }, [eventLocation]);
 
   return (
@@ -100,7 +109,7 @@ export const MobileEventLocationCard = (props: Props) => {
           <Box>{eventLocation.event.timeRequired}</Box>
         )}
 
-        {period && <Box>{period}</Box>}
+        {period && <Box className="ellipsis">{period}</Box>}
       </Box>
     </Box>
   );

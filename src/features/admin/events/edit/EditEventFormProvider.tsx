@@ -1,5 +1,6 @@
 import { EventDetail } from "@/types/event";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EventLocationDateType } from "@prisma/client";
 import { ReactNode } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -34,19 +35,22 @@ const schema = z.object({
           .string()
           .nullable()
           .transform((value, ctx) => {
-            if (value == null)
+            if (value == null) {
               ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: "開催地を選択してください",
               });
+            }
             return value;
           }),
         label: z.string(),
       }),
       building: z.string().max(12),
       description: z.string().max(200),
+      dateType: z.nativeEnum(EventLocationDateType),
       startedAt: z.date().nullable(),
       endedAt: z.date().nullable(),
+      eventLocationDates: z.object({ date: z.date().nullable() }).array(),
       detailedSchedule: z.string().max(100),
     })
     .array(),
@@ -65,11 +69,13 @@ type Props = {
 export const defaultEventLocation = {
   id: undefined,
   location: { value: null, label: "" },
+  dateType: "RANGE" as const,
   startedAt: null,
   endedAt: null,
   building: "",
   detailedSchedule: "",
   description: "",
+  eventLocationDates: [{ date: null }],
 };
 
 export const EditEventFormProvider = ({ children, event }: Props) => {
@@ -93,8 +99,12 @@ export const EditEventFormProvider = ({ children, event }: Props) => {
         id: el.id,
         building: el.building ?? "",
         description: el.description ?? "",
+        dateType: el.dateType,
         startedAt: el.startedAt ? new Date(el.startedAt) : null,
         endedAt: el.endedAt ? new Date(el.endedAt) : null,
+        eventLocationDates: el.eventLocationDates.map((eld) => ({
+          date: new Date(eld.date),
+        })),
         detailedSchedule: el.detailedSchedule ?? "",
         location: {
           value: el.location.id,

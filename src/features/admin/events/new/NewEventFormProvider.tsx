@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EventLocationDateType } from "@prisma/client";
 import { ReactNode } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -31,19 +32,22 @@ const schema = z.object({
           .string()
           .nullable()
           .transform((value, ctx) => {
-            if (value == null)
+            if (value == null) {
               ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: "開催地を選択してください",
               });
+            }
             return value;
           }),
         label: z.string(),
       }),
       building: z.string().max(12),
       description: z.string().max(200),
+      dateType: z.nativeEnum(EventLocationDateType),
       startedAt: z.date().nullable(),
       endedAt: z.date().nullable(),
+      eventLocationDates: z.object({ date: z.date().nullable() }).array(),
       detailedSchedule: z.string().max(100),
     })
     .array(),
@@ -60,11 +64,13 @@ type Props = {
 
 export const defaultEventLocation = {
   location: { value: null, label: "" },
+  dateType: "RANGE" as const,
   startedAt: null,
   endedAt: null,
   building: "",
   detailedSchedule: "",
   description: "",
+  eventLocationDates: [{ date: null }],
 };
 
 export const NewEventFormProvider = ({ children }: Props) => {

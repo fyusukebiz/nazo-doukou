@@ -7,7 +7,7 @@ import { generateReadSignedUrl } from "@/libs/cloudStorage";
 import { EventSimple } from "@/types/event";
 import { getCookie } from "cookies-next";
 import { verifyIdToken } from "@/libs/firebaseClient";
-import { User } from "@prisma/client";
+import { EventLocationDateType, User } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
@@ -122,11 +122,13 @@ export type PostEventByAdminRequestBody = {
     twitterContentTag?: string;
     gameTypeIds: string[];
     eventLocations: {
-      description?: string;
-      building?: string;
       locationId: string;
+      building?: string;
+      description?: string;
+      dateType: EventLocationDateType;
       startedAt?: string;
       endedAt?: string;
+      eventLocationDates: string[];
       detailedSchedule?: string;
     }[];
   };
@@ -157,8 +159,10 @@ const postHandler = async (
           locationId: z.string().min(1),
           building: z.string().max(12).optional(),
           description: z.string().max(200).optional(),
+          dateType: z.nativeEnum(EventLocationDateType), // どちらのタイプでも強制入力ではない
           startedAt: z.string().optional(),
           endedAt: z.string().optional(),
+          eventLocationDates: z.string().array(),
           detailedSchedule: z.string().max(100).optional(),
         })
         .array(),
@@ -199,20 +203,30 @@ const postHandler = async (
     });
   }
 
-  for (const eleData of eventData.eventLocations) {
-    await prisma.eventLocation.create({
+  for (const el of eventData.eventLocations) {
+    const eventLocation = await prisma.eventLocation.create({
       data: {
         eventId: event.id,
-        locationId: eleData.locationId,
-        ...(eleData.startedAt && { startedAt: eleData.startedAt }),
-        ...(eleData.endedAt && { endedAt: eleData.endedAt }),
-        ...(eleData.building && { building: eleData.building }),
-        ...(eleData.description && { description: eleData.description }),
-        ...(eleData.detailedSchedule && {
-          detailedSchedule: eleData.detailedSchedule,
+        locationId: el.locationId,
+        dateType: el.dateType,
+        ...(el.building && { building: el.building }),
+        ...(el.description && { description: el.description }),
+        ...(el.dateType === "RANGE" &&
+          el.startedAt && { startedAt: el.startedAt }),
+        ...(el.dateType === "RANGE" && el.endedAt && { endedAt: el.endedAt }),
+        ...(el.detailedSchedule && {
+          detailedSchedule: el.detailedSchedule,
         }),
       },
     });
+
+    if (el.dateType === "INDIVISUAL") {
+      for (const eventLocationDate of el.eventLocationDates) {
+        await prisma.eventLocationDate.create({
+          data: { eventLocationId: eventLocation.id, date: eventLocationDate },
+        });
+      }
+    }
   }
 
   res.status(200).end();

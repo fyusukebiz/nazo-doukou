@@ -46,6 +46,12 @@ async function main() {
     data: { prefectureId: tokyo.id, name: "町田" },
   });
   await prisma.location.create({
+    data: { prefectureId: tokyo.id, name: "後楽園" },
+  });
+  await prisma.location.create({
+    data: { prefectureId: tokyo.id, name: "六本木" },
+  });
+  await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "お台場" },
   });
   await prisma.location.create({
@@ -95,8 +101,6 @@ async function main() {
   const recruitTags = [
     "初心者です🔰",
     "初心者歓迎🙌",
-    // "ゆるく楽しみたいです",
-    // "本気でクリア目指してます",
     "わいわい楽しく🎉",
     "原作知らなくてもOK👌",
   ];

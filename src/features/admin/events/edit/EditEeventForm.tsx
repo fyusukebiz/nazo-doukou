@@ -24,6 +24,7 @@ import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerR
 import { BiCalendar } from "react-icons/bi";
 import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
 import imageCompression from "browser-image-compression";
+import { EventLocationDateInputsRHF } from "./EventLocationDateInputsRHF";
 
 type Props = {
   eventId: string;
@@ -35,6 +36,7 @@ export const EditEventForm = ({ eventId }: Props) => {
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useEditEventFormContext();
   const gameTypes = useWatch({ control, name: "gameTypes" });
@@ -267,7 +269,7 @@ export const EditEventForm = ({ eventId }: Props) => {
             </Box>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-            {eventLocationFields.map((field, index) => (
+            {eventLocationFields.map((field, elIndex) => (
               <Box
                 key={field.id}
                 sx={{
@@ -285,53 +287,124 @@ export const EditEventForm = ({ eventId }: Props) => {
                     color="teal"
                     size="small"
                     sx={{ marginLeft: "auto" }}
-                    onClick={() => removeEventLocation(index)}
+                    onClick={() => removeEventLocation(elIndex)}
                   >
                     開催地を削除する
                   </Button>
                 </Box>
-                <Box>
-                  <SingleSelectWithLabelRHF<
-                    EditEventFormSchema,
-                    { label: string; value: string }
-                  >
-                    name={`eventLocations.${index}.location`}
-                    control={control}
-                    label="開催地"
-                    placeholder="開催地"
-                    options={locationOpts}
-                  />
-                </Box>
+                <SingleSelectWithLabelRHF<
+                  EditEventFormSchema,
+                  { label: string; value: string }
+                >
+                  name={`eventLocations.${elIndex}.location`}
+                  control={control}
+                  label="開催地"
+                  placeholder="開催地"
+                  options={locationOpts}
+                />
                 <InputWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocations.${index}.building`}
+                  name={`eventLocations.${elIndex}.building`}
                   label="建物名"
                   control={control}
                   fullWidth
                 />
-                <DatePickerWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocations.${index}.startedAt`}
-                  label="開始日"
-                  control={control}
-                  endIcon={<BiCalendar size={30} />}
-                  isClearable={true}
-                />
-                <DatePickerWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocations.${index}.endedAt`}
-                  label="終了日"
-                  control={control}
-                  endIcon={<BiCalendar size={30} />}
-                  isClearable={true}
-                />
+                <Box>
+                  <Box component="label" sx={{ fontWeight: "bold" }}>
+                    日時入力方式
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      marginTop: "8px",
+                    }}
+                  >
+                    <Button
+                      color="teal"
+                      variant={
+                        watch(`eventLocations.${elIndex}.dateType`) === "RANGE"
+                          ? "contained"
+                          : "outlined"
+                      }
+                      onClick={() =>
+                        setValue(`eventLocations.${elIndex}.dateType`, "RANGE")
+                      }
+                    >
+                      範囲
+                    </Button>
+                    <Button
+                      color="teal"
+                      variant={
+                        watch(`eventLocations.${elIndex}.dateType`) ===
+                        "INDIVISUAL"
+                          ? "contained"
+                          : "outlined"
+                      }
+                      onClick={() =>
+                        setValue(
+                          `eventLocations.${elIndex}.dateType`,
+                          "INDIVISUAL"
+                        )
+                      }
+                    >
+                      個別
+                    </Button>
+                  </Box>
+                </Box>
+                {watch(`eventLocations.${elIndex}.dateType`) === "RANGE" && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "15px",
+                      border: `1px solid ${grey[300]}`,
+                      borderRadius: "5px",
+                      padding: "20px",
+                    }}
+                  >
+                    <DatePickerWithLabelRHF<EditEventFormSchema>
+                      name={`eventLocations.${elIndex}.startedAt`}
+                      label="開始日"
+                      control={control}
+                      endIcon={<BiCalendar size={30} />}
+                    />
+                    <DatePickerWithLabelRHF<EditEventFormSchema>
+                      name={`eventLocations.${elIndex}.endedAt`}
+                      label="終了日"
+                      control={control}
+                      endIcon={<BiCalendar size={30} />}
+                    />
+                  </Box>
+                )}
+                {watch(`eventLocations.${elIndex}.dateType`) ===
+                  "INDIVISUAL" && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                      border: `1px solid ${grey[300]}`,
+                      borderRadius: "5px",
+                      padding: "20px",
+                    }}
+                  >
+                    <EventLocationDateInputsRHF
+                      eventLocationIndex={elIndex}
+                      control={control}
+                    />
+                  </Box>
+                )}
                 <Grid item xs={12}>
                   <InputWithLabelRHF<EditEventFormSchema>
-                    name={`eventLocations.${index}.detailedSchedule`}
+                    name={`eventLocations.${elIndex}.detailedSchedule`}
                     label="スケジュール"
                     control={control}
                     fullWidth
                   />
                 </Grid>
                 <InputWithLabelRHF<EditEventFormSchema>
-                  name={`eventLocations.${index}.description`}
+                  name={`eventLocations.${elIndex}.description`}
                   label="詳細"
                   control={control}
                   multiline

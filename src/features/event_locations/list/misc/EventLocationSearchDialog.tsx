@@ -79,6 +79,21 @@ export const EventLocationSearchDialog = (props: Props) => {
     }));
   }, [gameTypesData, gameTypesStatus]);
 
+  // 前回の検索結果を復元
+  useEffect(() => {
+    const rawParams = sessionStorage.getItem("eventLocationSearchParams");
+    if (rawParams) {
+      const params = JSON.parse(rawParams);
+      params.date = new Date(params.date);
+      setQueryParams(params);
+      reset(params);
+    }
+    const rawPage = sessionStorage.getItem("eventLocationSearchPage");
+    if (rawPage) setPage(Number(rawPage));
+    setIsInitialized(true); // 初回リクエスト開始
+    // formattedQueryParamsが計算されてから、react-queryのリクエスト処理が発生することを確認した
+  }, [reset, setIsInitialized, setPage, setQueryParams]);
+
   // 検索ボタンを押した時
   const handleClickSearch = () => {
     const values = getValues();
@@ -95,20 +110,6 @@ export const EventLocationSearchDialog = (props: Props) => {
     sessionStorage.removeItem("companySearchParams");
     reset(defaultEventLocationSearchFormValues);
   };
-
-  // 前回の検索結果を復元
-  useEffect(() => {
-    const rawParams = sessionStorage.getItem("eventLocationSearchParams");
-    if (rawParams) {
-      const params = JSON.parse(rawParams);
-      setQueryParams(params);
-      reset(params);
-    }
-    const rawPage = sessionStorage.getItem("eventLocationSearchPage");
-    if (rawPage) setPage(Number(rawPage));
-    setIsInitialized(true); // 初回リクエスト開始
-    // formattedQueryParamsが計算されてから、react-queryのリクエスト処理が発生することを確認した
-  }, [reset, setIsInitialized, setPage, setQueryParams]);
 
   return (
     <Dialog

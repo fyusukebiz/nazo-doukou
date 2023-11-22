@@ -1,3 +1,5 @@
+import { EventLocationDateType } from "@prisma/client";
+
 export type EventSimple = {
   id: string;
   name: string;
@@ -26,8 +28,10 @@ export type EventDetail = {
     };
     building?: string;
     description?: string;
+    dateType: EventLocationDateType;
     startedAt?: string;
     endedAt?: string;
+    eventLocationDates: { id: string; date: string }[];
     detailedSchedule?: string;
   }[];
   eventGameTypes: {

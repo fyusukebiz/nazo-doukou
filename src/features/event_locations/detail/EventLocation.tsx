@@ -33,6 +33,25 @@ export const EventLocation = () => {
       : `${el.location.prefecture.name} / ${el.location.name}`;
   }, [eleData]);
 
+  const period = useMemo(() => {
+    if (!eleData) return;
+
+    const el = eleData.eventLocation;
+    if (el.dateType === "RANGE") {
+      if (!el.startedAt && !el.endedAt) {
+        return "";
+      }
+      return `${el.startedAt ? format(new Date(el.startedAt), "MM/d") : ""} ~ ${
+        el.endedAt ? format(new Date(el.endedAt), "MM/d") : ""
+      }`;
+    } else {
+      //  eventLocation.dateType === "INDIVISUAL"
+      return el.eventLocationDates
+        .map((eld) => format(new Date(eld.date), "MM/d"))
+        .join(", ");
+    }
+  }, [eleData]);
+
   return (
     <Box sx={{ height: "100%", overflowY: "scroll" }}>
       <SubPageHeader title="イベント詳細" />
@@ -144,26 +163,7 @@ export const EventLocation = () => {
 
             {location && <Row item="場所" content={location} />}
 
-            {(eleData.eventLocation.startedAt ||
-              eleData.eventLocation.endedAt) && (
-              <Row
-                item="開催期間"
-                content={
-                  <Box>
-                    {eleData.eventLocation.startedAt
-                      ? format(
-                          new Date(eleData.eventLocation.startedAt),
-                          "MM/d"
-                        )
-                      : ""}
-                    {" ~ "}
-                    {eleData.eventLocation.endedAt
-                      ? format(new Date(eleData.eventLocation.endedAt), "MM/d")
-                      : ""}
-                  </Box>
-                }
-              />
-            )}
+            {<Row item="開催期間" content={<Box>{period}</Box>} />}
 
             {eleData.eventLocation.detailedSchedule && (
               <Row

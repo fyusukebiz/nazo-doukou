@@ -48,17 +48,23 @@ const getHandler = async (
         },
       },
       location: { include: { prefecture: true } },
+      eventLocationDates: true,
     },
   });
   if (!el) return res.status(404).json({ error: "イベントが存在しません" });
 
   const eventLocationData = {
     id: el.id,
+    dateType: el.dateType,
     ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
     ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
     ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
     ...(el.building && { building: el.building }),
     ...(el.description && { description: el.description }),
+    eventLocationDates: el.eventLocationDates.map((eld) => ({
+      id: eld.id,
+      date: eld.date.toISOString(),
+    })),
     event: {
       id: el.event.id,
       name: el.event.name,
