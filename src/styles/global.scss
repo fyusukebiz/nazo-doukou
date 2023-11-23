@@ -25,3 +25,21 @@ body,
 .react-datepicker__month {
   font-size: 16px;
 }
+
+// full-calendar
+.fc {
+  .fc-toolbar-title {
+    font-size: 1.2em !important;
+  }
+
+  .fc-header-toolbar {
+    margin-bottom: 15px !important;
+  }
+
+  .fc-button {
+    padding: 5px;
+    &.fc-today-button {
+      padding: 5px 10px;
+    }
+  }
+}

@@ -3,12 +3,15 @@ import { LoadingSpinner } from "@/components/spinners/LoadingSpinner";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
 import { useEventLocationQuery } from "@/react_queries/event_locations/useEventLocationQuery";
 import { Box, Container } from "@mui/material";
-import { blue, grey } from "@mui/material/colors";
+import { blue, grey, teal } from "@mui/material/colors";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import { ReactNode, useMemo } from "react";
 import { Yusei_Magic } from "next/font/google";
 import { insertLinkInText } from "@/utils/insertLinkInText";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import allLocales from "@fullcalendar/core/locales-all";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -21,36 +24,17 @@ export const EventLocation = () => {
   const router = useRouter();
   const eventLocationId = router.query.id as string;
 
-  const { data: eleData, status: eventLocationStatus } = useEventLocationQuery({
+  const { data: elData, status: eventLocationStatus } = useEventLocationQuery({
     path: { eventLocationId },
   });
 
   const location = useMemo(() => {
-    if (!eleData) return;
-    const el = eleData.eventLocation;
+    if (!elData) return;
+    const el = elData.eventLocation;
     return el.building
       ? `${el.location.prefecture.name} / ${el.location.name} / ${el.building}`
       : `${el.location.prefecture.name} / ${el.location.name}`;
-  }, [eleData]);
-
-  const period = useMemo(() => {
-    if (!eleData) return;
-
-    const el = eleData.eventLocation;
-    if (el.dateType === "RANGE") {
-      if (!el.startedAt && !el.endedAt) {
-        return "";
-      }
-      return `${el.startedAt ? format(new Date(el.startedAt), "M/d") : ""} ~ ${
-        el.endedAt ? format(new Date(el.endedAt), "M/d") : ""
-      }`;
-    } else {
-      //  eventLocation.dateType === "INDIVISUAL"
-      return el.eventLocationDates
-        .map((eld) => format(new Date(eld.date), "M/d"))
-        .join(", ");
-    }
-  }, [eleData]);
+  }, [elData]);
 
   return (
     <Box sx={{ height: "100%", overflowY: "scroll" }}>
@@ -59,9 +43,9 @@ export const EventLocation = () => {
       {eventLocationStatus === "success" && (
         <Container maxWidth="sm" sx={{ padding: "24px" }}>
           <Box sx={{ marginBottom: "15px" }}>
-            {eleData.eventLocation.event.coverImageFileUrl ? (
+            {elData.eventLocation.event.coverImageFileUrl ? (
               <img
-                src={eleData.eventLocation.event.coverImageFileUrl}
+                src={elData.eventLocation.event.coverImageFileUrl}
                 style={{
                   objectFit: "cover",
                   maxHeight: "220px",
@@ -98,13 +82,13 @@ export const EventLocation = () => {
             }}
           >
             <Box sx={{ fontSize: "20px" }}>
-              {eleData.eventLocation.event.name}
+              {elData.eventLocation.event.name}
             </Box>
 
-            {eleData.eventLocation.event.sourceUrl && (
+            {elData.eventLocation.event.sourceUrl && (
               <Box sx={{ display: "flex" }}>
                 <a
-                  href={eleData.eventLocation.event.sourceUrl}
+                  href={elData.eventLocation.event.sourceUrl}
                   style={{ marginLeft: "auto" }}
                 >
                   公式
@@ -112,16 +96,16 @@ export const EventLocation = () => {
               </Box>
             )}
 
-            {eleData.eventLocation.event.gameTypes.length > 0 && (
+            {elData.eventLocation.event.gameTypes.length > 0 && (
               <Row
                 item="種類"
-                content={eleData.eventLocation.event.gameTypes
+                content={elData.eventLocation.event.gameTypes
                   .map((type) => type.name)
                   .join(", ")}
               />
             )}
 
-            {eleData.eventLocation.event.twitterTag && (
+            {elData.eventLocation.event.twitterTag && (
               <Row
                 item="Xタグ"
                 content={
@@ -129,54 +113,123 @@ export const EventLocation = () => {
                     href={
                       "https://twitter.com/search?q=" +
                       encodeURIComponent(
-                        "#" + eleData.eventLocation.event.twitterTag
+                        "#" + elData.eventLocation.event.twitterTag
                       )
                     }
                     target="_blank"
                   >
-                    {eleData.eventLocation.event.twitterTag}
+                    {elData.eventLocation.event.twitterTag}
                   </a>
                 }
               />
             )}
 
-            {eleData.eventLocation.event.organization && (
+            {elData.eventLocation.event.organization && (
               <Row
                 item="主催団体"
-                content={eleData.eventLocation.event.organization.name}
+                content={elData.eventLocation.event.organization.name}
               />
             )}
 
-            {eleData.eventLocation.event.numberOfPeopleInTeam && (
+            {elData.eventLocation.event.numberOfPeopleInTeam && (
               <Row
                 item="チーム人数"
-                content={eleData.eventLocation.event.numberOfPeopleInTeam}
+                content={elData.eventLocation.event.numberOfPeopleInTeam}
               />
             )}
 
-            {eleData.eventLocation.event.timeRequired && (
+            {elData.eventLocation.event.timeRequired && (
               <Row
                 item="所要時間"
-                content={eleData.eventLocation.event.timeRequired}
+                content={elData.eventLocation.event.timeRequired}
               />
             )}
 
             {location && <Row item="場所" content={location} />}
 
-            {<Row item="開催期間" content={<Box>{period}</Box>} />}
+            {elData.eventLocation.dateType === "RANGE" &&
+              (elData.eventLocation.startedAt ||
+                elData.eventLocation.endedAt) && (
+                <Row
+                  item="開催期間"
+                  content={
+                    <Box>
+                      {!elData.eventLocation.startedAt &&
+                      !elData.eventLocation.endedAt
+                        ? ""
+                        : `${
+                            elData.eventLocation.startedAt
+                              ? format(
+                                  new Date(elData.eventLocation.startedAt),
+                                  "M/d"
+                                )
+                              : ""
+                          } ~ ${
+                            elData.eventLocation.endedAt
+                              ? format(
+                                  new Date(elData.eventLocation.endedAt),
+                                  "M/d"
+                                )
+                              : ""
+                          }`}
+                    </Box>
+                  }
+                />
+              )}
 
-            {eleData.eventLocation.detailedSchedule && (
+            {elData.eventLocation.dateType === "INDIVISUAL" &&
+              elData.eventLocation.eventLocationDates.length > 0 && (
+                <Box>
+                  <Box sx={{ width: "100px", marginBottom: "10px" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "90px",
+                        backgroundColor: blue[100],
+                        height: "30px",
+                        borderRadius: "4px",
+                        flexShrink: 0,
+                      }}
+                      className={yuseiMagic.className}
+                    >
+                      <Box sx={{ color: blue[700], fontSize: "14px" }}>
+                        開催日
+                      </Box>
+                    </Box>
+                  </Box>
+                  <FullCalendar
+                    locales={allLocales}
+                    locale="ja"
+                    plugins={[dayGridPlugin]}
+                    initialView="dayGridMonth"
+                    firstDay={1} // 月曜始まり
+                    timeZone="Asia/Tokyo"
+                    contentHeight="auto"
+                    events={elData.eventLocation.eventLocationDates.map(
+                      (eld) => ({
+                        start: format(new Date(eld.date), "yyy-MM-dd"),
+                        display: "background",
+                        color: teal[500] as string,
+                      })
+                    )}
+                  />
+                </Box>
+              )}
+
+            {elData.eventLocation.detailedSchedule && (
               <Row
                 item="スケジュール"
-                content={eleData.eventLocation.detailedSchedule}
+                content={elData.eventLocation.detailedSchedule}
               />
             )}
 
-            {eleData.eventLocation.description && (
+            {elData.eventLocation.description && (
               <Box
                 sx={{ whiteSpace: "pre-wrap" }}
                 dangerouslySetInnerHTML={{
-                  __html: insertLinkInText(eleData.eventLocation.description),
+                  __html: insertLinkInText(elData.eventLocation.description),
                 }}
               ></Box>
             )}
