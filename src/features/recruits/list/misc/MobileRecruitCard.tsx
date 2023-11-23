@@ -98,7 +98,7 @@ export const MobileRecruitCard = (props: Props) => {
 
         <Box>
           {recruit.possibleDates
-            .map((date) => format(new Date(date.date), "MM/d"))
+            .map((date) => format(new Date(date.date), "M/d"))
             .join(", ")}
         </Box>
 

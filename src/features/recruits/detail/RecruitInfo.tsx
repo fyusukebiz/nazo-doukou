@@ -71,7 +71,7 @@ export const RecruitInfo = (props: Props) => {
         <RecruitItem
           item="候補日"
           content={
-            format(new Date(recruit.possibleDates[0].date), "MM/d") +
+            format(new Date(recruit.possibleDates[0].date), "M/d") +
             " " +
             recruit.possibleDates[0].hours
           }
@@ -88,7 +88,7 @@ export const RecruitInfo = (props: Props) => {
             .map(
               (date, index) =>
                 toCircled(index + 1) +
-                format(new Date(date.date), "MM/d") +
+                format(new Date(date.date), "M/d") +
                 " " +
                 date.hours
             )

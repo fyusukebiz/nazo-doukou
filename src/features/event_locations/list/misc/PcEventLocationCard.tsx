@@ -27,17 +27,17 @@ export const PcEventLocationCard = (props: Props) => {
       }
       return `${
         eventLocation.startedAt
-          ? format(new Date(eventLocation.startedAt), "MM/d")
+          ? format(new Date(eventLocation.startedAt), "M/d")
           : ""
       } ~ ${
         eventLocation.endedAt
-          ? format(new Date(eventLocation.endedAt), "MM/d")
+          ? format(new Date(eventLocation.endedAt), "M/d")
           : ""
       }`;
     } else {
       //  eventLocation.dateType === "INDIVISUAL"
       return eventLocation.eventLocationDates
-        .map((eld) => format(new Date(eld.date), "MM/d"))
+        .map((eld) => format(new Date(eld.date), "M/d"))
         .join(", ");
     }
   }, [eventLocation]);

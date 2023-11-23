@@ -41,13 +41,13 @@ export const EventLocation = () => {
       if (!el.startedAt && !el.endedAt) {
         return "";
       }
-      return `${el.startedAt ? format(new Date(el.startedAt), "MM/d") : ""} ~ ${
-        el.endedAt ? format(new Date(el.endedAt), "MM/d") : ""
+      return `${el.startedAt ? format(new Date(el.startedAt), "M/d") : ""} ~ ${
+        el.endedAt ? format(new Date(el.endedAt), "M/d") : ""
       }`;
     } else {
       //  eventLocation.dateType === "INDIVISUAL"
       return el.eventLocationDates
-        .map((eld) => format(new Date(eld.date), "MM/d"))
+        .map((eld) => format(new Date(eld.date), "M/d"))
         .join(", ");
     }
   }, [eleData]);

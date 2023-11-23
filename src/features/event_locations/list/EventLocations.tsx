@@ -107,27 +107,33 @@ export const EventLocations = () => {
           {/* 通知＆シェアボタン */}
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
               border: "1px solid",
               borderColor: blue[300],
               borderRadius: "10px",
               marginBottom: "15px",
-              padding: "5px 10px",
+              padding: "5px 7px",
             }}
           >
-            <Box>2023/11/17リリース</Box>
-            <Box sx={{ marginLeft: "10px" }}>フォローしてね！⇨</Box>
-            <TwitterShareButton
-              url={process.env.NEXT_PUBLIC_TWITTER_URL || ""}
-              style={{
-                marginLeft: "10px",
+            <Box
+              sx={{
                 display: "flex",
-                justifyContent: "center",
+                alignItems: "center",
+                justifyContent: "space-between",
+                maxWidth: "350px",
               }}
             >
-              <XIcon size={30} round />
-            </TwitterShareButton>
+              <Box>2023/11/17リリース</Box>
+              <Box>フォローしてね！⇨</Box>
+              <TwitterShareButton
+                url={process.env.NEXT_PUBLIC_TWITTER_URL || ""}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <XIcon size={30} round />
+              </TwitterShareButton>
+            </Box>
           </Box>
 
           {/* 募集 or イベント */}

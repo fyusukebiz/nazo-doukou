@@ -24,7 +24,7 @@ export const makeTwitterText = ({ isSelectType, rawData, url }: Props) => {
   rawData.possibleDates.forEach((date) => {
     text += `${
       rawData.possibleDates.length > 1 ? toCircled(date.priority) : ""
-    }${format(date.date!, "MM/d")} ${date.hours}`;
+    }${format(date.date!, "M/d")} ${date.hours}`;
     text += "\n";
   });
   text += `${rawData.numberOfPeople.toString()}人募集`;

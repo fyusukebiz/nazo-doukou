@@ -80,7 +80,7 @@ export const RecruitCard = (props: Props) => {
           {/* 日付 */}
           <Box sx={{ marginRight: "10px" }}>
             {recruit.possibleDates
-              .map((date) => format(new Date(date.date), "MM/d"))
+              .map((date) => format(new Date(date.date), "M/d"))
               .join(", ")}
           </Box>
           {/* 場所 */}
