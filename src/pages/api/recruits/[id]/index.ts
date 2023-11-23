@@ -306,7 +306,7 @@ const patchHandler = async (
         manualLocation: z.string().max(30).optional(),
         eventLocationId: z.string().optional(),
         numberOfPeople: z.number().optional(),
-        description: z.string().min(10).max(200),
+        description: z.string().min(10).max(300),
       }),
       recruitTagIds: z.string().array(),
       possibleDates: z

@@ -22,7 +22,7 @@ const schema = z
     numberOfPeople: z.string().refine((v) => {
       return !isNaN(Number(v));
     }, "数値を入力してください"),
-    description: z.string().min(10).max(200),
+    description: z.string().min(10).max(300),
     possibleDates: z
       .object({
         date: z
