@@ -6,7 +6,7 @@ export type EventLocationSearchQueryParams = {
   eventName?: string;
   locationIds?: string[];
   gameTypeIds?: string[];
-  date?: Date;
+  selectedDate?: Date;
 };
 
 type GetEventLocationsRequest = {
@@ -26,7 +26,8 @@ const getEventLocations = async (req: GetEventLocationsRequest) => {
     urlSearchParam.set("locationIds", params.locationIds.join(","));
   if (params.gameTypeIds && params.gameTypeIds.length > 0)
     urlSearchParam.set("gameTypeIds", params.gameTypeIds.join(","));
-  if (params.date) urlSearchParam.set("date", params.date.toISOString());
+  if (params.selectedDate)
+    urlSearchParam.set("selectedDate", params.selectedDate.toISOString());
 
   const { data } = await axios.get<GetEventLocationsResponseSuccessBody>(
     `/api/event_locations?${urlSearchParam.toString()}`

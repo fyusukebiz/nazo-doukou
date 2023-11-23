@@ -1,6 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import prefecturesCities from "./prefectures_cities.json";
 
+function generateRandomDate(from: Date, to: Date) {
+  return new Date(
+    from.getTime() + Math.random() * (to.getTime() - from.getTime())
+  );
+}
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -18,10 +24,10 @@ async function main() {
     where: { name: "神奈川県" },
   });
 
-  await prisma.location.create({
+  const akihabara = await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "秋葉原" },
   });
-  await prisma.location.create({
+  const asakusa = await prisma.location.create({
     data: { prefectureId: tokyo.id, name: "浅草" },
   });
   await prisma.location.create({
@@ -106,6 +112,46 @@ async function main() {
   ];
   for (const recruitTag of recruitTags) {
     await prisma.recruitTag.create({ data: { name: recruitTag } });
+  }
+
+  for (const index of [...Array(16)].map((_, i) => i)) {
+    const event = await prisma.event.create({
+      data: {
+        name: `test${index}`,
+      },
+    });
+
+    await prisma.eventLocation.create({
+      data: {
+        eventId: event.id,
+        locationId: akihabara.id,
+        dateType: "RANGE",
+        startedAt: generateRandomDate(
+          new Date(2023, 11, 1),
+          new Date(2023, 11, 5)
+        ),
+        endedAt: generateRandomDate(
+          new Date(2023, 11, 6),
+          new Date(2023, 11, 10)
+        ),
+      },
+    });
+
+    await prisma.eventLocation.create({
+      data: {
+        eventId: event.id,
+        locationId: asakusa.id,
+        dateType: "RANGE",
+        startedAt: generateRandomDate(
+          new Date(2023, 11, 1),
+          new Date(2023, 11, 5)
+        ),
+        endedAt: generateRandomDate(
+          new Date(2023, 11, 6),
+          new Date(2023, 11, 10)
+        ),
+      },
+    });
   }
 }
 

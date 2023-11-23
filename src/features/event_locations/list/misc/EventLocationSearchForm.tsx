@@ -56,7 +56,7 @@ export const EventLocationSearchForm = (props: Props) => {
         </Grid>
         <Grid item xs={12}>
           <DatePickerWithLabelRHF<EventLocationSearchFormSchema>
-            name="date"
+            name="selectedDate"
             label="日付"
             control={control}
             placeholder="日付"

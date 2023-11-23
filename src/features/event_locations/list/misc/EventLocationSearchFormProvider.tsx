@@ -17,7 +17,7 @@ const schema = z.object({
       label: z.string(),
     })
     .array(),
-  date: z.date().nullable(),
+  selectedDate: z.date().nullable(),
 });
 
 export type EventLocationSearchFormSchema = z.infer<typeof schema>;
@@ -29,7 +29,7 @@ export const defaultEventLocationSearchFormValues = {
   eventName: "",
   locations: [],
   gameTypes: [],
-  date: null,
+  selectedDate: null,
 };
 
 type Props = {

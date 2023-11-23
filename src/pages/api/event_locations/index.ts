@@ -41,7 +41,7 @@ const getHandler = async (
   const eventName = req.query.eventName as string | undefined;
   const locationIds = (req.query.locationIds as string | undefined)?.split(",");
   const gameTypeIds = (req.query.gameTypeIds as string | undefined)?.split(",");
-  const date = req.query.date as string | undefined;
+  const selectedDate = req.query.selectedDate as string | undefined;
 
   const prismaWithPaginate = prisma.$extends({
     model: { eventLocation: { paginate } },
@@ -50,26 +50,33 @@ const getHandler = async (
   const [eventLocations, meta] = await prismaWithPaginate.eventLocation
     .paginate({
       where: {
-        ...(date && {
+        ...(selectedDate && {
           OR: [
             {
               AND: [
                 { dateType: "RANGE" },
                 {
                   OR: [
-                    { startedAt: { lte: new Date(date) } },
+                    { startedAt: { lte: new Date(selectedDate) } },
                     { startedAt: null },
                   ],
                 },
                 {
-                  OR: [{ endedAt: { gte: new Date(date) } }, { endedAt: null }],
+                  OR: [
+                    { endedAt: { gte: new Date(selectedDate) } },
+                    { endedAt: null },
+                  ],
                 },
               ],
             },
             {
               AND: [
                 { dateType: "INDIVISUAL" },
-                { eventLocationDates: { some: { date: new Date(date) } } },
+                {
+                  eventLocationDates: {
+                    some: { date: new Date(selectedDate) },
+                  },
+                },
               ],
             },
           ],

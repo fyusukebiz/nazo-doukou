@@ -4,7 +4,6 @@ import { Box, Container, Grid, Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import {
   ChangeEvent,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -53,7 +52,9 @@ export const EventLocations = () => {
       ...(queryParams.gameTypes && {
         gameTypeIds: queryParams.gameTypes.map((type) => type.value),
       }),
-      ...(queryParams.date && { date: queryParams.date }),
+      ...(queryParams.selectedDate && {
+        selectedDate: queryParams.selectedDate,
+      }),
     }),
     [queryParams]
   );

@@ -82,9 +82,32 @@ export const EventLocationSearchDialog = (props: Props) => {
   // 前回の検索結果を復元
   useEffect(() => {
     const rawParams = sessionStorage.getItem("eventLocationSearchParams");
+
     if (rawParams) {
-      const params = JSON.parse(rawParams);
-      params.date = new Date(params.date);
+      const parsedParams = JSON.parse(rawParams) as Omit<
+        EventLocationSearchFormSchema,
+        "selectedDate"
+      > & { selectedDate: string | null };
+
+      //バリデーション
+      const isValid = Object.keys(parsedParams).every((key) => {
+        return ["eventName", "locations", "gameTypes", "selectedDate"].includes(
+          key
+        );
+      });
+      if (!isValid) {
+        sessionStorage.removeItem("eventLocationSearchParams");
+        return;
+      }
+
+      const { selectedDate, ...attr } = parsedParams;
+
+      const params = {
+        selectedDate: parsedParams.selectedDate
+          ? new Date(parsedParams.selectedDate)
+          : null,
+        ...attr,
+      };
       setQueryParams(params);
       reset(params);
     }
@@ -97,11 +120,10 @@ export const EventLocationSearchDialog = (props: Props) => {
   // 検索ボタンを押した時
   const handleClickSearch = () => {
     const values = getValues();
-
     setQueryParams(values);
     // 検索条件を保存
     sessionStorage.setItem("eventLocationSearchParams", JSON.stringify(values));
-
+    setPage(1);
     onClose();
   };
 
