@@ -1,7 +1,6 @@
 import { Box, Chip } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
 import { useRouter } from "next/router";
-import { format } from "date-fns";
 import { EventLocationSimple } from "@/types/eventLocation";
 import { useMemo } from "react";
 import { formatDateTimeFlex } from "@/utils/formatDateTimeFlex";

@@ -124,7 +124,7 @@ export const EventLocations = () => {
               }}
             >
               <Box>2023/11/17リリース</Box>
-              <Box>フォローしてね！⇨</Box>
+              <Box>フォローしてね！</Box>
               <TwitterShareButton
                 url={process.env.NEXT_PUBLIC_TWITTER_URL || ""}
                 style={{
