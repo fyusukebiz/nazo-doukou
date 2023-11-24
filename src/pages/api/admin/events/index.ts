@@ -133,7 +133,7 @@ export type PostEventByAdminRequestBody = {
     }[];
   };
 };
-export type PostEventByAdminResponseSuccessBody = "";
+export type PostEventByAdminResponseSuccessBody = { eventLocationId: string };
 
 const postHandler = async (
   req: NextApiRequest,
@@ -203,6 +203,7 @@ const postHandler = async (
     });
   }
 
+  const eventLocationIds = [] as string[];
   for (const el of eventData.eventLocations) {
     const eventLocation = await prisma.eventLocation.create({
       data: {
@@ -220,6 +221,8 @@ const postHandler = async (
       },
     });
 
+    eventLocationIds.push(eventLocation.id);
+
     if (el.dateType === "INDIVISUAL") {
       for (const eventLocationDate of el.eventLocationDates) {
         await prisma.eventLocationDate.create({
@@ -229,5 +232,5 @@ const postHandler = async (
     }
   }
 
-  res.status(200).end();
+  res.status(200).json({ eventLocationId: eventLocationIds[0] });
 };

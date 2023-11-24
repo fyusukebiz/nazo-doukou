@@ -1,14 +1,18 @@
 import { format } from "date-fns";
-import { NewAdminRecruitFormSchema } from "./NewAdminRecruitFormProvider";
+import { NewRecruitFormSchema } from "./NewRecruitFormProvider";
 import { toCircled } from "@/utils/toCircled";
 
 type Props = {
   isSelectType: boolean;
-  rawData: NewAdminRecruitFormSchema;
+  rawData: NewRecruitFormSchema;
   url: string;
 };
 
-export const makeTwitterText = ({ isSelectType, rawData, url }: Props) => {
+export const makeTwitterTextForRecruit = ({
+  isSelectType,
+  rawData,
+  url,
+}: Props) => {
   let text = "";
   text += "#謎解き同行者募集 #謎同行 #脱出ゲーム";
   if (rawData.eventLocation.event?.twitterContentTag)

@@ -28,9 +28,10 @@ import { useRecruitTagsQuery } from "@/react_queries/recruit_tags/useRecruitTags
 import { useEventLocationOptionsQuery } from "@/react_queries/event_locations/useEventLocationOptionsQuery";
 import { FaTrash } from "react-icons/fa";
 import { grey } from "@mui/material/colors";
-import { makeTwitterText } from "./makeTwitterText";
+import { makeTwitterTextForRecruit } from "./makeTwitterTextForRecruit";
 import { usePostRecruitByAdmin } from "@/react_queries/admin/recruits/usePostRecruitByAdmin";
 import axios from "axios";
+import { getFirebaseDynamicLinksShortUrl } from "@/utils/getFirebaseDynamicLinksShortUrl";
 
 export const NewAdminRecruitForm = () => {
   const router = useRouter();
@@ -88,19 +89,8 @@ export const NewAdminRecruitForm = () => {
           router.push("/admin/recruits");
           if (willPostToTwitter) {
             const url = `${process.env.NEXT_PUBLIC_HOST}/recruits/${res.recruitId}`;
-
-            // 短縮URLを取得 TODO: 2025/8にサービス終了する
-            const body = {
-              longDynamicLink: `${process.env.NEXT_PUBLIC_FIREBASE_DYNAMIC_LINK}?link=${url}`,
-              suffix: { option: "SHORT" },
-            };
-            const shortenUrlData = await axios.post(
-              `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${process.env.NEXT_PUBLIC_FIREBASE_APIKEY}`,
-              body
-            );
-            const shortUrl = shortenUrlData.data.shortLink;
-
-            const text = makeTwitterText({
+            const shortUrl = await getFirebaseDynamicLinksShortUrl(url);
+            const text = makeTwitterTextForRecruit({
               isSelectType,
               rawData,
               url: shortUrl,

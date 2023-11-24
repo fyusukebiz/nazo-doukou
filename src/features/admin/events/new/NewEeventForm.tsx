@@ -25,6 +25,8 @@ import { BiCalendar } from "react-icons/bi";
 import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
 import imageCompression from "browser-image-compression";
 import { EventLocationDateInputsRHF } from "./EventLocationDateInputsRHF";
+import { getFirebaseDynamicLinksShortUrl } from "@/utils/getFirebaseDynamicLinksShortUrl";
+import { makeTwitterTextForEvent } from "./makeTwitterTextForEvent";
 
 export const NewEventForm = () => {
   const router = useRouter();
@@ -115,6 +117,18 @@ export const NewEventForm = () => {
       {
         onSuccess: async (res) => {
           toast.success("作成しました");
+
+          const url = `${process.env.NEXT_PUBLIC_HOST}/event_locations/${res.eventLocationId}`;
+          const shortUrl = await getFirebaseDynamicLinksShortUrl(url);
+          const text = makeTwitterTextForEvent({ rawData, url: shortUrl });
+          const urlSearchParam = new URLSearchParams();
+          urlSearchParam.set("text", text);
+
+          window.open(
+            `https://twitter.com/intent/tweet?${urlSearchParam.toString()}`,
+            "_blank"
+          );
+
           setIsLoading(false);
           router.back();
         },
