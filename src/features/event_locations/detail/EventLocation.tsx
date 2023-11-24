@@ -12,6 +12,7 @@ import { insertLinkInText } from "@/utils/insertLinkInText";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import allLocales from "@fullcalendar/core/locales-all";
+import { formatDateTimeFlex } from "@/utils/formatDateTimeFlex";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -159,17 +160,19 @@ export const EventLocation = () => {
                         ? ""
                         : `${
                             elData.eventLocation.startedAt
-                              ? format(
-                                  new Date(elData.eventLocation.startedAt),
-                                  "M/d"
-                                )
+                              ? formatDateTimeFlex({
+                                  rawDate: elData.eventLocation.startedAt,
+                                  hideFromThisYear: true,
+                                  hideTime: true,
+                                })
                               : ""
                           } ~ ${
                             elData.eventLocation.endedAt
-                              ? format(
-                                  new Date(elData.eventLocation.endedAt),
-                                  "M/d"
-                                )
+                              ? formatDateTimeFlex({
+                                  rawDate: elData.eventLocation.endedAt,
+                                  hideFromThisYear: true,
+                                  hideTime: true,
+                                })
                               : ""
                           }`}
                     </Box>

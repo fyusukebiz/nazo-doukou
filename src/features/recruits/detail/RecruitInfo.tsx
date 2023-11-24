@@ -11,6 +11,7 @@ import { Yusei_Magic } from "next/font/google";
 import { PiCaretDownBold, PiCaretUpBold } from "react-icons/pi";
 import { toCircled } from "@/utils/toCircled";
 import { insertLinkInText } from "@/utils/insertLinkInText";
+import { formatDateTimeFlex } from "@/utils/formatDateTimeFlex";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -71,7 +72,11 @@ export const RecruitInfo = (props: Props) => {
         <RecruitItem
           item="候補日"
           content={
-            format(new Date(recruit.possibleDates[0].date), "M/d") +
+            formatDateTimeFlex({
+              rawDate: recruit.possibleDates[0].date,
+              hideFromThisYear: true,
+              hideTime: true,
+            }) +
             " " +
             recruit.possibleDates[0].hours
           }
@@ -88,7 +93,11 @@ export const RecruitInfo = (props: Props) => {
             .map(
               (date, index) =>
                 toCircled(index + 1) +
-                format(new Date(date.date), "M/d") +
+                formatDateTimeFlex({
+                  rawDate: date.date,
+                  hideFromThisYear: true,
+                  hideTime: true,
+                }) +
                 " " +
                 date.hours
             )

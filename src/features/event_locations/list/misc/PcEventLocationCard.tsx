@@ -2,8 +2,8 @@ import { Box, Chip } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { format } from "date-fns";
 import { EventLocationSimple } from "@/types/eventLocation";
+import { formatDateTimeFlex } from "@/utils/formatDateTimeFlex";
 
 type Props = {
   eventLocation: EventLocationSimple;
@@ -27,17 +27,31 @@ export const PcEventLocationCard = (props: Props) => {
       }
       return `${
         eventLocation.startedAt
-          ? format(new Date(eventLocation.startedAt), "M/d")
+          ? formatDateTimeFlex({
+              rawDate: eventLocation.startedAt,
+              hideFromThisYear: true,
+              hideTime: true,
+            })
           : ""
       } ~ ${
         eventLocation.endedAt
-          ? format(new Date(eventLocation.endedAt), "M/d")
+          ? formatDateTimeFlex({
+              rawDate: eventLocation.endedAt,
+              hideFromThisYear: true,
+              hideTime: true,
+            })
           : ""
       }`;
     } else {
       //  eventLocation.dateType === "INDIVISUAL"
       return eventLocation.eventLocationDates
-        .map((eld) => format(new Date(eld.date), "M/d"))
+        .map((eld) =>
+          formatDateTimeFlex({
+            rawDate: eld.date,
+            hideFromThisYear: true,
+            hideTime: true,
+          })
+        )
         .join(", ");
     }
   }, [eventLocation]);

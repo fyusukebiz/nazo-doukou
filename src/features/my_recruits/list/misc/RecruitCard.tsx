@@ -80,7 +80,13 @@ export const RecruitCard = (props: Props) => {
           {/* 日付 */}
           <Box sx={{ marginRight: "10px" }}>
             {recruit.possibleDates
-              .map((date) => format(new Date(date.date), "M/d"))
+              .map((date) =>
+                formatDateTimeFlex({
+                  rawDate: date.date,
+                  hideFromThisYear: true,
+                  hideTime: true,
+                })
+              )
               .join(", ")}
           </Box>
           {/* 場所 */}
@@ -103,7 +109,7 @@ export const RecruitCard = (props: Props) => {
           <Box sx={{ marginLeft: "auto", color: grey[500], fontSize: "12px" }}>
             {formatDateTimeFlex({
               rawDate: recruit.createdAt,
-              hideYear: true,
+              hideFromThisYear: true,
             })}
           </Box>
         </Box>

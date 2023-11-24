@@ -1,30 +1,36 @@
-import { format, isToday, getHours, getMinutes } from 'date-fns';
+import { format, isToday, getHours, getMinutes, getYear } from "date-fns";
 
 export const formatDateTimeFlex = ({
   rawDate,
   hideTime = false,
-  hideYear = false,
+  hideFromThisYear = false, // 今年以降
 }: {
   rawDate: string;
   hideTime?: boolean;
-  hideYear?: boolean;
+  hideFromThisYear?: boolean;
 }) => {
-  if (rawDate === '') return '';
+  if (rawDate === "") return "";
 
   const date = new Date(rawDate);
+  const now = new Date();
   if (isToday(date)) {
     if (hideTime) {
-      return '今日';
+      return "今日";
     } else {
-      return `今日 ${String(getHours(date)).padStart(2, '0')}:${String(getMinutes(date)).padStart(2, '0')}`;
+      return `今日 ${String(getHours(date)).padStart(2, "0")}:${String(
+        getMinutes(date)
+      ).padStart(2, "0")}`;
     }
-  } else if (hideTime && hideYear) {
-    return format(date, 'MM/dd');
-  } else if (!hideTime && hideYear) {
-    return format(date, 'MM/dd HH:mm');
-  } else if (hideTime && !hideYear) {
-    return format(date, 'yyyy/MM/dd');
+  } else if (hideTime && hideFromThisYear) {
+    return format(date, `${getYear(date) < getYear(now) ? "yyyy/" : ""}M/d`);
+  } else if (!hideTime && hideFromThisYear) {
+    return format(
+      date,
+      `${getYear(date) < getYear(now) ? "yyyy/" : ""}M/d HH:mm`
+    );
+  } else if (hideTime && !hideFromThisYear) {
+    return format(date, "yyyy/M/d");
   } else {
-    return format(date, 'yyyy/MM/dd HH:mm');
+    return format(date, "yyyy/M/d HH:mm");
   }
 };

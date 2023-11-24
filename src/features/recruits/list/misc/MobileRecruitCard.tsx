@@ -98,7 +98,13 @@ export const MobileRecruitCard = (props: Props) => {
 
         <Box>
           {recruit.possibleDates
-            .map((date) => format(new Date(date.date), "M/d"))
+            .map((date) =>
+              formatDateTimeFlex({
+                rawDate: date.date,
+                hideFromThisYear: true,
+                hideTime: true,
+              })
+            )
             .join(", ")}
         </Box>
 
@@ -113,7 +119,7 @@ export const MobileRecruitCard = (props: Props) => {
           >
             {formatDateTimeFlex({
               rawDate: recruit.createdAt,
-              hideYear: true,
+              hideFromThisYear: true,
             })}
           </Box>
         </Box>

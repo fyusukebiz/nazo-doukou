@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { EventLocationSimple } from "@/types/eventLocation";
 import { useMemo } from "react";
+import { formatDateTimeFlex } from "@/utils/formatDateTimeFlex";
 
 type Props = {
   eventLocation: EventLocationSimple;
@@ -27,17 +28,31 @@ export const MobileEventLocationCard = (props: Props) => {
       }
       return `${
         eventLocation.startedAt
-          ? format(new Date(eventLocation.startedAt), "M/d")
+          ? formatDateTimeFlex({
+              rawDate: eventLocation.startedAt,
+              hideFromThisYear: true,
+              hideTime: true,
+            })
           : ""
       } ~ ${
         eventLocation.endedAt
-          ? format(new Date(eventLocation.endedAt), "M/d")
+          ? formatDateTimeFlex({
+              rawDate: eventLocation.endedAt,
+              hideFromThisYear: true,
+              hideTime: true,
+            })
           : ""
       }`;
     } else {
       //  eventLocation.dateType === "INDIVISUAL"
       return eventLocation.eventLocationDates
-        .map((eld) => format(new Date(eld.date), "M/d"))
+        .map((eld) =>
+          formatDateTimeFlex({
+            rawDate: eld.date,
+            hideFromThisYear: true,
+            hideTime: true,
+          })
+        )
         .join(", ");
     }
   }, [eventLocation]);

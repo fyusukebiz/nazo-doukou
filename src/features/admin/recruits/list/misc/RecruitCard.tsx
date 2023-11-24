@@ -66,7 +66,7 @@ export const RecruitCard = (props: Props) => {
           <Box sx={{ marginLeft: "auto", color: grey[500], fontSize: "12px" }}>
             {formatDateTimeFlex({
               rawDate: recruit.createdAt,
-              hideYear: true,
+              hideFromThisYear: true,
             })}
           </Box>
         </Box>

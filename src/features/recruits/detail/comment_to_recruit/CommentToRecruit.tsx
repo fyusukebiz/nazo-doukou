@@ -89,7 +89,7 @@ export const CommentToRecruit = (props: Props) => {
           >
             {formatDateTimeFlex({
               rawDate: commentToRecruit.createdAt,
-              hideYear: true,
+              hideFromThisYear: true,
             })}
           </Box>
           {/* ボタン類 */}
