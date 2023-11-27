@@ -16,11 +16,13 @@ export default async function handler(
   const currentFbUserIdToken = getCookie("currentFbUserIdToken", { req, res });
 
   if (!currentFbUserIdToken) {
+    console.warn("## currentFbUserIdToken", currentFbUserIdToken);
     return res.status(401).json({ error: "ログインしてください" });
   }
 
   const fbAuthRes = await verifyIdToken(currentFbUserIdToken);
   if (!fbAuthRes.ok) {
+    console.warn("## fbAuthRes.ok === false", fbAuthRes);
     return res.status(401).json({ error: "再ログインしてください。" });
   }
   const data = await fbAuthRes.json();
@@ -28,16 +30,19 @@ export default async function handler(
   const fbUid = fbUser.localId;
 
   if (!fbUser.emailVerified) {
+    console.warn("## fbUser.emailVerified === false");
     return res.status(401).json({ error: "メール認証が未完了です" });
   }
 
   const user = await prisma.user.findUnique({ where: { fbUid } });
   const userId = getCookie("userId", { req, res });
   if (!user || user.id !== userId) {
+    console.warn("## !user || user.id !== userId === false", user, userId);
     return res.status(401).json({ error: "再ログインしてください。" });
   }
 
   if (user.role !== "ADMIN") {
+    console.warn("## user.role is not ADMIN");
     return res.status(403).json({ error: "権限がありません" });
   }
 

@@ -46,7 +46,7 @@ export const MobileTopBar = () => {
         currentFbUser.emailVerified ? (
           <Box sx={{ marginLeft: "auto" }}>
             <MenuButton ref={menuRef}>
-              <MenuItem
+              {/* <MenuItem
                 sx={{ fontSize: "20px" }}
                 onClick={() => {
                   router.push("/recruits/new");
@@ -54,7 +54,7 @@ export const MobileTopBar = () => {
                 }}
               >
                 新規募集
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem
                 sx={{ fontSize: "20px" }}
                 onClick={() => {

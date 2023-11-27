@@ -3,12 +3,7 @@ import { grey } from "@mui/material/colors";
 import { CustomCard } from "@/components/cards/CustomCard";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  setPersistence,
-  browserSessionPersistence,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { setCookie } from "cookies-next";
 import { cookieOptions } from "@/constants/cookieOptions";
 import { usePostConfirmMyUser } from "@/react_queries/my_user/usePostConfirmMyUser";
@@ -27,9 +22,6 @@ export const Login = () => {
     setIsLoading(true);
     try {
       const auth = getAuth();
-
-      // これを入れないと頻繁にログアウトさせられる
-      // await setPersistence(auth, browserSessionPersistence); // TODO:
 
       // Firebaseで用意されているメールアドレスとパスワードでログインするための関数
       const userCredential = await signInWithEmailAndPassword(
@@ -66,10 +58,11 @@ export const Login = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        paddingX: "10px",
         bgcolor: grey[50],
         height: "100%",
-        px: "10px",
         backgroundImage: "url(/auth_background.png)",
+        overflowY: "scroll",
       }}
     >
       <CustomCard sx={{ maxWidth: "350px", opacity: 0.8 }}>
@@ -78,16 +71,15 @@ export const Login = () => {
           sx={{ display: "flex", flexDirection: "column", gap: "20px" }}
         >
           <img
-            src="/service_logo.png"
-            alt="service_logo"
-            style={{ height: "100px", objectFit: "contain" }}
+            src="/nazo-neko.png"
+            alt="謎ねこ"
+            style={{ height: "130px", objectFit: "contain" }}
           />
           <Box
             sx={{
               fontSize: "28px",
               textAlign: "center",
               fontWeight: "bold",
-              paddingTop: "30px",
             }}
           >
             ログイン

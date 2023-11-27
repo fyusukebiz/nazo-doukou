@@ -83,7 +83,9 @@ const getHandler = async (
         }),
         ...((eventName || (gameTypeIds && gameTypeIds.length > 0)) && {
           event: {
-            ...(eventName && { name: { contains: eventName } }),
+            ...(eventName && {
+              name: { contains: eventName, mode: "insensitive" },
+            }),
             ...(gameTypeIds && {
               eventGameTypes: { some: { gameTypeId: { in: gameTypeIds } } },
             }),

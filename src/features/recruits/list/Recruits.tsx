@@ -20,6 +20,8 @@ import { PcRecruitCard } from "./misc/PcRecruitCard";
 import { useIsMobileContext } from "@/features/common/IsMobileProvider";
 import { Yusei_Magic } from "next/font/google";
 import { TwitterShareButton, XIcon } from "react-share";
+import { GoPlusCircle } from "react-icons/go";
+import { useFirebaseAuthContext } from "@/components/providers/FirebaseAuthProvider";
 
 const yuseiMagic = Yusei_Magic({
   weight: ["400"],
@@ -30,6 +32,7 @@ const yuseiMagic = Yusei_Magic({
 
 export const Recruits = () => {
   const router = useRouter();
+  const { currentFbUser } = useFirebaseAuthContext();
   const { isMobile } = useIsMobileContext();
   const [page, setPage] = useState(Number(router.query.page || 1));
   const [freeWord, setFreeWord] = useState("");
@@ -109,6 +112,7 @@ export const Recruits = () => {
             display: "flex",
             textAlign: "center",
             fontSize: "18px",
+            marginBottom: "15px",
           }}
           className={yuseiMagic.className}
         >
@@ -150,7 +154,7 @@ export const Recruits = () => {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            marginY: "15px",
+            marginBottom: "15px",
           }}
         >
           <OutlinedInput
@@ -195,6 +199,21 @@ export const Recruits = () => {
               希望日順
             </Button>
           </ButtonGroup>
+        </Box>
+
+        <Box sx={{ display: "flex", marginBottom: "15px" }}>
+          <Button
+            sx={{ marginLeft: "auto" }}
+            variant="contained"
+            color="info"
+            size="small"
+            startIcon={<GoPlusCircle size={20} />}
+            onClick={() => {
+              router.push(!!currentFbUser ? "/recruits/new" : "/auth/signup");
+            }}
+          >
+            新規募集
+          </Button>
         </Box>
 
         {/* 検索結果 */}

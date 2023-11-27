@@ -44,5 +44,11 @@ export const makeTwitterTextForEvent = ({ rawData, url }: Props) => {
   text += "\n";
   text += rawData.sourceUrl;
 
+  text += "\n";
+  text += "\n";
+  text += "詳細↓";
+  text += "\n";
+  text += url;
+
   return text;
 };

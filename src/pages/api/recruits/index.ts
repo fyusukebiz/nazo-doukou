@@ -177,8 +177,12 @@ const getHandler = async (
           ...(user && { userId: user.id }),
           ...(freeWord && {
             OR: [
-              { eventLocation: { event: { name: { contains: freeWord } } } },
-              { manualEventName: { contains: freeWord } },
+              {
+                eventLocation: {
+                  event: { name: { contains: freeWord, mode: "insensitive" } },
+                },
+              },
+              { manualEventName: { contains: freeWord, mode: "insensitive" } },
             ],
           }),
         },

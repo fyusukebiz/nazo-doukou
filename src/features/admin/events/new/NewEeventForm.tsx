@@ -120,6 +120,7 @@ export const NewEventForm = () => {
 
           const url = `${process.env.NEXT_PUBLIC_HOST}/event_locations/${res.eventLocationId}`;
           const shortUrl = await getFirebaseDynamicLinksShortUrl(url);
+          console.log("shortUrl", shortUrl);
           const text = makeTwitterTextForEvent({ rawData, url: shortUrl });
           const urlSearchParam = new URLSearchParams();
           urlSearchParam.set("text", text);
