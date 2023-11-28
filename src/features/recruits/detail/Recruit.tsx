@@ -54,7 +54,7 @@ export const Recruit = () => {
 
   return (
     <Box sx={{ height: "100%", overflowY: "scroll" }}>
-      <SubPageHeader title="募集詳細" />
+      <SubPageHeader title="募集詳細" path="/recruits" />
       {recruitStatus === "pending" && <LoadingSpinner />}
       {recruitStatus === "success" && (
         <Container maxWidth="sm" sx={{ padding: "24px" }}>

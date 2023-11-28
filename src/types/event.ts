@@ -32,7 +32,6 @@ export type EventDetail = {
     startedAt?: string;
     endedAt?: string;
     eventLocationDates: { id: string; date: string }[];
-    detailedSchedule?: string;
   }[];
   eventGameTypes: {
     id: string;

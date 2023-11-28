@@ -134,7 +134,6 @@ export type PostEventByAdminRequestBody = {
       startedAt?: string;
       endedAt?: string;
       eventLocationDates: string[];
-      detailedSchedule?: string;
     }[];
   };
 };
@@ -162,13 +161,12 @@ const postHandler = async (
       eventLocations: z
         .object({
           locationId: z.string().min(1),
-          building: z.string().max(12).optional(),
+          building: z.string().max(20).optional(),
           description: z.string().max(200).optional(),
           dateType: z.nativeEnum(EventLocationDateType), // どちらのタイプでも強制入力ではない
           startedAt: z.string().optional(),
           endedAt: z.string().optional(),
           eventLocationDates: z.string().array(),
-          detailedSchedule: z.string().max(100).optional(),
         })
         .array(),
     }),
@@ -220,9 +218,6 @@ const postHandler = async (
         ...(el.dateType === "RANGE" &&
           el.startedAt && { startedAt: el.startedAt }),
         ...(el.dateType === "RANGE" && el.endedAt && { endedAt: el.endedAt }),
-        ...(el.detailedSchedule && {
-          detailedSchedule: el.detailedSchedule,
-        }),
       },
     });
 

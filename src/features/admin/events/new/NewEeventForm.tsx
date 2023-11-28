@@ -403,14 +403,6 @@ export const NewEventForm = () => {
                     />
                   </Box>
                 )}
-                <Grid item xs={12}>
-                  <InputWithLabelRHF<NewEventFormSchema>
-                    name={`eventLocations.${elIndex}.detailedSchedule`}
-                    label="スケジュール"
-                    control={control}
-                    fullWidth
-                  />
-                </Grid>
                 <InputWithLabelRHF<NewEventFormSchema>
                   name={`eventLocations.${elIndex}.description`}
                   label="詳細"

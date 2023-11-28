@@ -395,14 +395,6 @@ export const EditEventForm = ({ eventId }: Props) => {
                     />
                   </Box>
                 )}
-                <Grid item xs={12}>
-                  <InputWithLabelRHF<EditEventFormSchema>
-                    name={`eventLocations.${elIndex}.detailedSchedule`}
-                    label="スケジュール"
-                    control={control}
-                    fullWidth
-                  />
-                </Grid>
                 <InputWithLabelRHF<EditEventFormSchema>
                   name={`eventLocations.${elIndex}.description`}
                   label="詳細"

@@ -42,13 +42,12 @@ const schema = z.object({
           }),
         label: z.string(),
       }),
-      building: z.string().max(12),
+      building: z.string().max(20),
       description: z.string().max(200),
       dateType: z.nativeEnum(EventLocationDateType),
       startedAt: z.date().nullable(),
       endedAt: z.date().nullable(),
       eventLocationDates: z.object({ date: z.date() }).array(),
-      detailedSchedule: z.string().max(100),
     })
     .array(),
 });
@@ -68,7 +67,6 @@ export const defaultEventLocation = {
   startedAt: null,
   endedAt: null,
   building: "",
-  detailedSchedule: "",
   description: "",
   eventLocationDates: [],
 };

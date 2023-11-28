@@ -28,7 +28,6 @@ export type EventLocationDetail = {
   startedAt?: string;
   endedAt?: string;
   eventLocationDates: { id: string; date: string }[];
-  detailedSchedule?: string;
   building?: string;
   description?: string;
   event: {

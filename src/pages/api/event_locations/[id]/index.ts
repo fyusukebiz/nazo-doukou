@@ -58,7 +58,6 @@ const getHandler = async (
     dateType: el.dateType,
     ...(el.startedAt && { startedAt: el.startedAt.toISOString() }),
     ...(el.endedAt && { endedAt: el.endedAt.toISOString() }),
-    ...(el.detailedSchedule && { detailedSchedule: el.detailedSchedule }),
     ...(el.building && { building: el.building }),
     ...(el.description && { description: el.description }),
     eventLocationDates: el.eventLocationDates.map((eld) => ({

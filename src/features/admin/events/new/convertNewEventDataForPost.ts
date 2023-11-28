@@ -33,9 +33,6 @@ export const convertNewEventDataForPost = ({
           el.startedAt && { startedAt: el.startedAt.toISOString() }),
         ...(el.dateType === "RANGE" &&
           el.endedAt && { endedAt: el.endedAt.toISOString() }),
-        ...(el.detailedSchedule && {
-          detailedSchedule: el.detailedSchedule.trim(),
-        }),
         eventLocationDates:
           el.dateType === "INDIVISUAL"
             ? el.eventLocationDates

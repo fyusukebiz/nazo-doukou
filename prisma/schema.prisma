@@ -172,7 +172,6 @@ model EventLocation {
   dateType EventLocationDateType @default(RANGE)
   startedAt DateTime? // RANGEタイプの時のみ使う
   endedAt DateTime? // RANGEタイプの時のみ使う
-  detailedSchedule String? @db.Text // TODO: 後で消す
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

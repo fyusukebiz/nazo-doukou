@@ -11,7 +11,7 @@ export const makeTwitterTextForEvent = ({ rawData, url }: Props) => {
   const eventLocation = rawData.eventLocations[0];
 
   let text = "";
-  text += "#謎解き同行者募集 #謎同行 #脱出ゲーム";
+  text += "#謎同行 #謎解き #脱出ゲーム";
   if (rawData.twitterContentTag) text += ` #${rawData.twitterContentTag}`;
   if (rawData.twitterTag) text += ` #${rawData.twitterTag}`;
   text += "\n";
@@ -42,7 +42,7 @@ export const makeTwitterTextForEvent = ({ rawData, url }: Props) => {
           .map((eld) => format(eld.date, "M/d"))
           .join(", ");
   text += "\n";
-  text += rawData.sourceUrl;
+  text += rawData.description;
 
   text += "\n";
   text += "\n";

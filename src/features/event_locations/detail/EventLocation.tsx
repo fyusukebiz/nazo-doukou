@@ -39,7 +39,7 @@ export const EventLocation = () => {
 
   return (
     <Box sx={{ height: "100%", overflowY: "scroll" }}>
-      <SubPageHeader title="イベント詳細" />
+      <SubPageHeader title="イベント詳細" path="/event_locations" />
       {eventLocationStatus === "pending" && <LoadingSpinner />}
       {eventLocationStatus === "success" && (
         <Container maxWidth="sm" sx={{ padding: "24px" }}>
@@ -224,13 +224,6 @@ export const EventLocation = () => {
                   />
                 </Box>
               )}
-
-            {elData.eventLocation.detailedSchedule && (
-              <Row
-                item="スケジュール"
-                content={elData.eventLocation.detailedSchedule}
-              />
-            )}
 
             {elData.eventLocation.description && (
               <Box
