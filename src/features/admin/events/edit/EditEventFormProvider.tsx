@@ -50,7 +50,7 @@ const schema = z.object({
       dateType: z.nativeEnum(EventLocationDateType),
       startedAt: z.date().nullable(),
       endedAt: z.date().nullable(),
-      eventLocationDates: z.object({ date: z.date().nullable() }).array(),
+      eventLocationDates: z.object({ date: z.date() }).array(),
       detailedSchedule: z.string().max(100),
     })
     .array(),
@@ -75,7 +75,7 @@ export const defaultEventLocation = {
   building: "",
   detailedSchedule: "",
   description: "",
-  eventLocationDates: [{ date: null }],
+  eventLocationDates: [],
 };
 
 export const EditEventFormProvider = ({ children, event }: Props) => {

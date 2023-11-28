@@ -210,13 +210,17 @@ export const EventLocation = () => {
                     firstDay={1} // 月曜始まり
                     timeZone="Asia/Tokyo"
                     contentHeight="auto"
-                    events={elData.eventLocation.eventLocationDates.map(
-                      (eld) => ({
+                    events={[
+                      ...elData.eventLocation.eventLocationDates.map((eld) => ({
                         start: format(new Date(eld.date), "yyy-MM-dd"),
                         display: "background",
                         color: teal[500] as string,
-                      })
-                    )}
+                      })),
+                      { title: "今日", start: format(new Date(), "yyy-MM-dd") },
+                    ]}
+                    eventBackgroundColor={blue[200]}
+                    eventBorderColor={blue[200]}
+                    eventTextColor={blue[700]}
                   />
                 </Box>
               )}

@@ -1,9 +1,11 @@
-import { DatePickerWithLabelRHF } from "@/components/forms/hook_form/DatePickerRHFWithLabel";
 import { Control, useFieldArray } from "react-hook-form";
-import { BiCalendar } from "react-icons/bi";
-import { Box, Button, IconButton } from "@mui/material";
-import { FaTrash } from "react-icons/fa";
 import { EditEventFormSchema } from "./EditEventFormProvider";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import allLocales from "@fullcalendar/core/locales-all";
+import { format, isSameDay } from "date-fns";
+import { blue, teal } from "@mui/material/colors";
 
 type Props = {
   control: Control<EditEventFormSchema, any>;
@@ -23,47 +25,36 @@ export const EventLocationDateInputsRHF = (props: Props) => {
   });
 
   return (
-    <>
-      <Box sx={{ display: "flex" }}>
-        <Button
-          color="teal"
-          variant="contained"
-          sx={{ marginLeft: "auto" }}
-          onClick={() => appendEventLocationDate({ date: null })}
-        >
-          追加
-        </Button>
-      </Box>
-      {eventLocationDateFields.map((field, eventLocationDateIndex) => (
-        <Box
-          key={eventLocationDateIndex}
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <DatePickerWithLabelRHF<EditEventFormSchema>
-            key={field.id}
-            name={`eventLocations.${eventLocationIndex}.eventLocationDates.${eventLocationDateIndex}.date`}
-            control={control}
-            endIcon={<BiCalendar size={30} />}
-          />
-          {eventLocationDateIndex !== 0 ? (
-            <IconButton
-              sx={{ marginLeft: "20px", padding: "0px", width: "20px" }}
-              onClick={() => removeEventLocationDate(eventLocationDateIndex)}
-            >
-              <FaTrash size={20} />
-            </IconButton>
-          ) : (
-            <Box
-              sx={{
-                marginLeft: "20px",
-                width: "20px",
-                height: "30px",
-                flexShrink: 0,
-              }}
-            ></Box>
-          )}
-        </Box>
-      ))}
-    </>
+    <FullCalendar
+      locales={allLocales}
+      locale="ja"
+      plugins={[dayGridPlugin, interactionPlugin]}
+      initialView="dayGridMonth"
+      firstDay={1} // 月曜始まり
+      timeZone="Asia/Tokyo"
+      contentHeight="auto"
+      selectable={true}
+      events={[
+        ...eventLocationDateFields.map((eld) => ({
+          start: format(new Date(eld.date), "yyy-MM-dd"),
+          display: "background",
+          color: teal[500] as string,
+        })),
+        { title: "今日", start: format(new Date(), "yyy-MM-dd") },
+      ]}
+      eventBackgroundColor={blue[200]}
+      eventBorderColor={blue[200]}
+      eventTextColor={blue[700]}
+      dateClick={(e) => {
+        const index = eventLocationDateFields.findIndex((elDate) =>
+          isSameDay(elDate.date, e.date)
+        );
+        if (index > -1) {
+          removeEventLocationDate(index);
+        } else {
+          appendEventLocationDate({ date: e.date });
+        }
+      }}
+    />
   );
 };

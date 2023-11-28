@@ -24,7 +24,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     : recruit.eventLocation!.event.name;
 
   // 下の情報は、_app.tsxで使う
-  return { props: { event: { name, coverImageFileUrl } } };
+  return {
+    props: { event: { name, ...(coverImageFileUrl && { coverImageFileUrl }) } },
+  };
 };
 
 export default function RecruitPage() {
