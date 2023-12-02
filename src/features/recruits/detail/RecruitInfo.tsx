@@ -161,6 +161,7 @@ export const RecruitInfo = (props: Props) => {
                     <Link
                       href={`https://twitter.com/${recruit.user.twitter}`}
                       target="_blank"
+                      rel="noopener noreferrer"
                     >
                       リンク
                     </Link>
@@ -174,6 +175,7 @@ export const RecruitInfo = (props: Props) => {
                     <Link
                       href={`https://www.instagram.com/${recruit.user.instagram}`}
                       target="_blank"
+                      rel="noopener noreferrer"
                     >
                       リンク
                     </Link>

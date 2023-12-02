@@ -39,14 +39,16 @@ const getHandler = async (
     include: { locations: true },
   });
 
-  const prefecturesData = prefectures.map((prefecture) => ({
-    id: prefecture.id,
-    name: prefecture.name,
-    locations: prefecture.locations.map((loc) => ({
-      id: loc.id,
-      name: loc.name,
-    })),
-  }));
+  const prefecturesData = prefectures
+    .sort((a, b) => a.sort - b.sort)
+    .map((prefecture) => ({
+      id: prefecture.id,
+      name: prefecture.name,
+      locations: prefecture.locations.map((loc) => ({
+        id: loc.id,
+        name: loc.name,
+      })),
+    }));
 
   res.status(200).json({
     prefectures: prefecturesData,

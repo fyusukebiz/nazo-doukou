@@ -14,7 +14,7 @@ export const makeTwitterTextForRecruit = ({
   url,
 }: Props) => {
   let text = "";
-  text += "#謎解き同行者募集 #謎同行 #脱出ゲーム";
+  text += "#謎解き同行者募集 #謎同行 #リアル脱出ゲーム";
   if (rawData.eventLocation.event?.twitterContentTag)
     text += ` #${rawData.eventLocation.event.twitterContentTag}`;
   if (rawData.eventLocation.event?.twitterTag)

@@ -3,7 +3,11 @@ export const insertLinkInText = (text: string) => {
     /(https?|ftp):\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#\u3001-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/g;
   var regexp_makeLink = function (url: string) {
     return (
-      '<a href="' + url + '" target="_blank" rel="noopener">' + url + "</a>"
+      '<a href="' +
+      url +
+      '" target="_blank" rel="noopener noreferrer">' +
+      url +
+      "</a>"
     );
   };
   if (text.match(regexp_url) != null) {

@@ -91,6 +91,8 @@ export const EventLocation = () => {
                 <a
                   href={elData.eventLocation.event.sourceUrl}
                   style={{ marginLeft: "auto" }}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   公式
                 </a>
@@ -118,6 +120,7 @@ export const EventLocation = () => {
                       )
                     }
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {elData.eventLocation.event.twitterTag}
                   </a>

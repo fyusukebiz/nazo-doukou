@@ -23,53 +23,50 @@ async function main() {
   const kanagawa = await prisma.prefecture.findFirstOrThrow({
     where: { name: "神奈川県" },
   });
-
-  const akihabara = await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "秋葉原" },
+  const chiba = await prisma.prefecture.findFirstOrThrow({
+    where: { name: "千葉県" },
   });
-  const asakusa = await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "浅草" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "上野" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "渋谷" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "新宿" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "原宿" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "下北沢" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "吉祥寺" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "町田" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "後楽園" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "六本木" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "お台場" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: tokyo.id, name: "その他" },
+  const saitama = await prisma.prefecture.findFirstOrThrow({
+    where: { name: "埼玉県" },
   });
 
-  await prisma.location.create({
-    data: { prefectureId: kanagawa.id, name: "横浜" },
-  });
-  await prisma.location.create({
-    data: { prefectureId: kanagawa.id, name: "その他" },
-  });
+  for (const area of [
+    "秋葉原",
+    "浅草",
+    "上野",
+    "渋谷",
+    "新宿",
+    "池袋",
+    "原宿",
+    "下北沢",
+    "吉祥寺",
+    "町田",
+    "後楽園",
+    "お台場",
+    "その他",
+  ]) {
+    await prisma.location.create({
+      data: { prefectureId: tokyo.id, name: "全域" },
+    });
+  }
+
+  for (const area of ["全域"]) {
+    await prisma.location.create({
+      data: { prefectureId: chiba.id, name: "全域" },
+    });
+  }
+
+  for (const area of ["全域"]) {
+    await prisma.location.create({
+      data: { prefectureId: saitama.id, name: "全域" },
+    });
+  }
+
+  for (const area of ["横浜", "その他"]) {
+    await prisma.location.create({
+      data: { prefectureId: kanagawa.id, name: "全域" },
+    });
+  }
 
   const gameTypes = [
     "ルーム型",
@@ -113,6 +110,14 @@ async function main() {
   for (const recruitTag of recruitTags) {
     await prisma.recruitTag.create({ data: { name: recruitTag } });
   }
+
+  const akihabara = await prisma.location.findFirstOrThrow({
+    where: { name: "秋葉原" },
+  });
+
+  const asakusa = await prisma.location.findFirstOrThrow({
+    where: { name: "浅草" },
+  });
 
   for (const index of [...Array(16)].map((_, i) => i)) {
     const event = await prisma.event.create({

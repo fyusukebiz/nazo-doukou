@@ -25,6 +25,7 @@ import { BiCalendar } from "react-icons/bi";
 import { useGameTypesQuery } from "@/react_queries/game_types/useGameTypesQuery";
 import imageCompression from "browser-image-compression";
 import { EventLocationDateInputsRHF } from "./EventLocationDateInputsRHF";
+import { useDeleteEventByAdmin } from "@/react_queries/admin/events/useDeleteEventByAdmin";
 
 type Props = {
   eventId: string;
@@ -43,6 +44,7 @@ export const EditEventForm = ({ eventId }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { patchEventByAdmin } = usePatchEventByAdmin();
+  const { deleteEventByAdmin } = useDeleteEventByAdmin();
 
   const { data: prefecturesData, status: prefecturesStatus } =
     usePrefecturesQuery();
@@ -144,6 +146,20 @@ export const EditEventForm = ({ eventId }: Props) => {
     },
     [gameTypes, setValue]
   );
+
+  const handleClickDelete = () => {
+    const result = window.confirm("イベントを削除しますか？");
+    if (!result) return;
+
+    deleteEventByAdmin.mutate(
+      { path: { eventId } },
+      {
+        onSuccess: () => {
+          router.back();
+        },
+      }
+    );
+  };
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -431,6 +447,16 @@ export const EditEventForm = ({ eventId }: Props) => {
         >
           保存
         </LoadingButton>
+      </Box>
+
+      <Box sx={{ display: "flex", marginTop: "10px" }}>
+        <Button
+          sx={{ marginLeft: "auto", color: grey[500] }}
+          size="small"
+          onClick={handleClickDelete}
+        >
+          削除
+        </Button>
       </Box>
     </Box>
   );
